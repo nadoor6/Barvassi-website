@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Barvassi · Vault</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #fafafa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 20px;
+            background: #0a0a0a;
+            line-height: 1.5;
+        }
+        
+        #bg-video {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1.01) translateZ(0);
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.55);
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .arabic-whisper {
+            position: fixed;
+            top: 28px;
+            left: 32px;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: #fafafa;
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 3;
+        }
+        
+        .app {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .glass-nav {
+            margin: 30px auto 0;
+            width: 100%;
+            max-width: 960px;
+            background: rgba(10, 10, 10, 0.25);
+            backdrop-filter: blur(20px) saturate(130%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 9999px;
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: border-color 0.7s ease, background 0.7s ease;
+        }
+        
+        .glass-nav:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: rgba(10, 10, 10, 0.35);
+        }
+        
+        .logo {
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: #fafafa;
+            opacity: 0.95;
+            cursor: default;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+        
+        .nav-link {
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            transition: color 0.7s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #fafafa;
+            transition: width 0.8s ease;
+        }
+        
+        .nav-link:hover {
+            color: #fafafa;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .nav-link.active {
+            color: #fafafa;
+        }
+        
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .nav-cta {
+            background: #fafafa;
+            color: #0a0a0a;
+            padding: 6px 20px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            transition: all 0.7s ease;
+            box-shadow: none !important;
+        }
+        
+        .nav-cta:hover {
+            background: #e6e6e6;
+            transform: scale(1.02);
+        }
+        
+        .nav-cta:active {
+            transform: scale(0.96);
+        }
+        
+        .page-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 20px 40px;
+            margin-top: 20px;
+            animation: fadeUp 1.6s ease both;
+        }
+        
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .page-title {
+            font-size: clamp(48px, 12vw, 120px);
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            color: #fafafa;
+            margin-bottom: 16px;
+        }
+        
+        .page-sub {
+            font-size: 18px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .footer-line {
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        
+        .footer-link {
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.7s ease;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 2px;
+        }
+        
+        .footer-link:hover {
+            color: rgba(255, 255, 255, 0.3);
+            border-bottom-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        @view-transition {
+            navigation: auto;
+        }
+        
+         ::view-transition-old(root) {
+            animation: fade-out 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        
+         ::view-transition-new(root) {
+            animation: fade-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        
+        @keyframes fade-out {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+        
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .glass-nav {
+                flex-direction: column;
+                align-items: stretch;
+                border-radius: 24px;
+                gap: 14px;
+                padding: 18px 24px;
+                max-width: 100%;
+            }
+            .logo {
+                text-align: center;
+                font-size: 18px;
+            }
+            .nav-links {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+            .nav-right {
+                justify-content: center;
+            }
+            .page-content {
+                padding: 40px 10px 30px;
+                margin-top: 10px;
+            }
+            .page-title {
+                font-size: 38px;
+            }
+            .arabic-whisper {
+                top: 16px;
+                left: 18px;
+                font-size: 11px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .glass-nav {
+                padding: 14px 16px;
+                border-radius: 20px;
+                gap: 12px;
+            }
+            .nav-link {
+                font-size: 10px;
+                letter-spacing: 0.05em;
+            }
+            .nav-cta {
+                font-size: 10px;
+                padding: 5px 16px;
+            }
+            .page-title {
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <video id="bg-video" autoplay loop muted playsinline preload="auto">
+        <source src="bgloopvideo.mp4" type="video/mp4" />
+    </video>
+    <div class="video-overlay"></div>
+    <div class="arabic-whisper">بارڤاسي</div>
+
+    <div class="app">
+        <nav class="glass-nav">
+            <div class="logo">B</div>
+            <div class="nav-links">
+                <a class="nav-link active" href="vault.html">Vault</a>
+                <a class="nav-link" href="journal.html">Journal</a>
+                <a class="nav-link" href="xviii.html">XVIII</a>
+                <a class="nav-link" href="about.html">About</a>
+            </div>
+            <div class="nav-right">
+                <button class="nav-cta">Enter Vault</button>
+            </div>
+        </nav>
+
+        <div class="page-content">
+            <h1 class="page-title">VAULT</h1>
+            <p class="page-sub">Coming Soon</p>
+        </div>
+
+        <div class="footer">
+            <div class="footer-line">© 2026 Barvassi · A Private World</div>
+            <a class="footer-link" href="#">Terms of Service &amp; Conditions</a>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const video = document.getElementById('bg-video');
+            video.play().catch(() => {
+                const start = () => {
+                    video.play().catch(() => {});
+                    document.removeEventListener('click', start);
+                };
+                document.addEventListener('click', start);
+            });
+        })();
+        document.querySelector('.nav-cta').addEventListener('click', function() {
+            const input = document.querySelector('.entry-input');
+            if (input) {
+                input.focus();
+                input.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        });
+        if (!document.startViewTransition) {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.7s ease';
+            window.addEventListener('load', function() {
+                setTimeout(() => {
+                    document.body.style.opacity = '1';
+                }, 50);
+            });
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = this.getAttribute('href');
+                    document.body.style.opacity = '0';
+                    setTimeout(() => {
+                        window.location.href = target;
+                    }, 700);
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
