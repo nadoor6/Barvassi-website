@@ -10,8 +10,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
     <style>
-        /* ===== RESET & BASE ===== */
-        
         * {
             margin: 0;
             padding: 0;
@@ -30,9 +28,7 @@
             background: #0a0a0a;
             overflow-x: hidden;
             line-height: 1.5;
-            font-weight: 400;
         }
-        /* ===== VIDEO BACKGROUND ===== */
         
         #bg-video {
             position: fixed;
@@ -44,10 +40,7 @@
             object-fit: cover;
             z-index: 0;
             pointer-events: none;
-            backface-visibility: hidden;
-            will-change: transform;
         }
-        /* ===== DARK OVERLAY ===== */
         
         .video-overlay {
             position: fixed;
@@ -59,7 +52,6 @@
             z-index: 1;
             pointer-events: none;
         }
-        /* ===== ARABIC WHISPER ===== */
         
         .arabic-whisper {
             position: fixed;
@@ -73,7 +65,6 @@
             pointer-events: none;
             z-index: 3;
         }
-        /* ===== MAIN APP ===== */
         
         .app {
             position: relative;
@@ -86,7 +77,6 @@
             justify-content: center;
             align-items: center;
         }
-        /* ===== GLASS NAV ===== */
         
         .glass-nav {
             margin: 30px auto 0;
@@ -94,7 +84,6 @@
             max-width: 960px;
             background: rgba(10, 10, 10, 0.25);
             backdrop-filter: blur(20px) saturate(130%);
-            -webkit-backdrop-filter: blur(20px) saturate(130%);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 9999px;
             padding: 14px 32px;
@@ -109,14 +98,20 @@
             background: rgba(10, 10, 10, 0.35);
         }
         
-        .logo {
+        .logo a {
             font-weight: 700;
             font-size: 20px;
             letter-spacing: 0.4em;
             text-transform: uppercase;
             color: #fafafa;
             opacity: 0.95;
-            cursor: default;
+            text-decoration: none;
+            transition: opacity 0.7s ease;
+            cursor: pointer;
+        }
+        
+        .logo a:hover {
+            opacity: 0.7;
         }
         
         .nav-links {
@@ -182,7 +177,6 @@
             border: none;
             cursor: pointer;
             transition: all 0.7s ease;
-            box-shadow: none !important;
         }
         
         .nav-cta:hover {
@@ -193,7 +187,6 @@
         .nav-cta:active {
             transform: scale(0.96);
         }
-        /* ===== HERO ===== */
         
         .hero {
             flex: 1;
@@ -262,7 +255,6 @@
             max-width: 520px;
             line-height: 1.6;
         }
-        /* ===== ENTRY PILL ===== */
         
         .entry-container {
             position: relative;
@@ -326,7 +318,6 @@
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.7s ease;
-            box-shadow: none !important;
         }
         
         .entry-btn:hover {
@@ -337,7 +328,6 @@
         .entry-btn:active {
             transform: scale(0.95);
         }
-        /* ===== FOOTER ===== */
         
         .footer {
             margin-top: 50px;
@@ -371,18 +361,92 @@
             color: rgba(255, 255, 255, 0.3);
             border-bottom-color: rgba(255, 255, 255, 0.15);
         }
-        /* ===== VIEW TRANSITIONS ===== */
+        /* ===== TERMS MODAL ===== */
+        
+        .terms-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        
+        .terms-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .terms-modal {
+            max-width: 600px;
+            width: 90%;
+            padding: 40px;
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            text-align: left;
+            transform: translateY(20px);
+            transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+        }
+        
+        .terms-overlay.active .terms-modal {
+            transform: translateY(0);
+        }
+        
+        .terms-modal h2 {
+            font-weight: 500;
+            font-size: 20px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            color: #fafafa;
+        }
+        
+        .terms-modal p {
+            font-weight: 300;
+            font-size: 14px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 12px;
+        }
+        
+        .terms-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.7s ease;
+            font-family: inherit;
+            padding: 4px 8px;
+        }
+        
+        .terms-close:hover {
+            color: #fafafa;
+        }
         
         @view-transition {
             navigation: auto;
         }
         
          ::view-transition-old(root) {
-            animation: fade-out 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+            animation: fade-out 0.7s ease both;
         }
         
          ::view-transition-new(root) {
-            animation: fade-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+            animation: fade-in 0.7s ease both;
         }
         
         @keyframes fade-out {
@@ -402,17 +466,6 @@
                 opacity: 1;
             }
         }
-        /* ===== FALLBACK (for older browsers) ===== */
-        
-        .no-view-transition body {
-            opacity: 0;
-            transition: opacity 0.7s ease;
-        }
-        
-        .no-view-transition body.loaded {
-            opacity: 1;
-        }
-        /* ===== RESPONSIVE ===== */
         
         @media (max-width: 768px) {
             .glass-nav {
@@ -423,9 +476,9 @@
                 padding: 18px 24px;
                 max-width: 100%;
             }
-            .logo {
-                text-align: center;
+            .logo a {
                 font-size: 18px;
+                text-align: center;
             }
             .nav-links {
                 justify-content: center;
@@ -501,35 +554,27 @@
 
 <body>
 
-    <!-- ===== VIDEO BACKGROUND ===== -->
     <video id="bg-video" autoplay loop muted playsinline preload="auto">
         <source src="bgloopvideo.mp4" type="video/mp4" />
     </video>
-
-    <!-- ===== DARK OVERLAY ===== -->
     <div class="video-overlay"></div>
-
-    <!-- ===== ARABIC WATERMARK ===== -->
     <div class="arabic-whisper">بارڤاسي</div>
 
-    <!-- ===== MAIN APP ===== -->
     <div class="app">
-
-        <!-- ===== GLASS HEADER ===== -->
-        <nav class="glass-nav" role="navigation" aria-label="Main navigation">
-            <div class="logo">B</div>
+        <nav class="glass-nav">
+            <div class="logo"><a href="index.html">B</a></div>
             <div class="nav-links">
+                <a class="nav-link active" href="index.html">Home</a>
                 <a class="nav-link" href="vault.html">Vault</a>
                 <a class="nav-link" href="journal.html">Journal</a>
                 <a class="nav-link" href="xviii.html">XVIII</a>
                 <a class="nav-link" href="about.html">About</a>
             </div>
             <div class="nav-right">
-                <button class="nav-cta" aria-label="Enter the vault">Enter Vault</button>
+                <button class="nav-cta">Enter Vault</button>
             </div>
         </nav>
 
-        <!-- ===== HERO ===== -->
         <section class="hero">
             <div class="tagline">Clé Dixhuit</div>
             <h1 class="headline">
@@ -540,39 +585,51 @@
                 The private vault. Request entry by invitation only.
             </p>
 
-            <!-- ===== ENTRY PILL ===== -->
             <div class="entry-container">
                 <div class="entry-pill">
-                    <input type="email" class="entry-input" placeholder="Passphrase or Key" aria-label="Enter your passphrase or key" />
-                    <button class="entry-btn" aria-label="Unlock vault">Enter</button>
+                    <input type="email" class="entry-input" placeholder="Passphrase or Key" />
+                    <button class="entry-btn">Enter</button>
                 </div>
             </div>
 
-            <!-- ===== FOOTER ===== -->
             <div class="footer">
                 <div class="footer-line">© 2026 Barvassi · A Private World</div>
-                <a class="footer-link" href="#">Terms of Service &amp; Conditions</a>
+                <a class="footer-link" id="termsLink">Terms of Service &amp; Conditions</a>
             </div>
         </section>
+    </div>
 
+    <!-- TERMS MODAL -->
+    <div class="terms-overlay" id="termsOverlay">
+        <div class="terms-modal">
+            <button class="terms-close" id="termsClose">✕</button>
+            <h2>Terms of Service</h2>
+            <p>
+                By accessing Clé Dixhuit, you acknowledge that you have read, understood, and agree to be bound by these terms. The vault is a private space, invitation only. Any unauthorized access is strictly prohibited.
+            </p>
+            <p>
+                All content within Barvassi is the sole property of the House of Barvassi. No reproduction, distribution, or modification is permitted without explicit written consent. Silence is expected. Respect the vault.
+            </p>
+            <p>
+                — The House of Barvassi, Aleppo.
+            </p>
+        </div>
     </div>
 
     <script>
-        // ===== VIDEO PLAYBACK =====
+        // ===== VIDEO =====
         (function() {
             const video = document.getElementById('bg-video');
             video.play().catch(() => {
-                const startVideo = () => {
+                const start = () => {
                     video.play().catch(() => {});
-                    document.removeEventListener('click', startVideo);
-                    document.removeEventListener('touchstart', startVideo);
+                    document.removeEventListener('click', start);
                 };
-                document.addEventListener('click', startVideo);
-                document.addEventListener('touchstart', startVideo);
+                document.addEventListener('click', start);
             });
         })();
 
-        // ===== ENTRY BUTTON =====
+        // ===== ENTRY =====
         const entryBtn = document.querySelector('.entry-btn');
         const entryInput = document.querySelector('.entry-input');
 
@@ -597,7 +654,6 @@
             }
         });
 
-        // ===== NAV CTA SCROLL =====
         document.querySelector('.nav-cta').addEventListener('click', function() {
             entryInput.focus();
             entryInput.scrollIntoView({
@@ -606,15 +662,36 @@
             });
         });
 
+        // ===== TERMS MODAL =====
+        const termsLink = document.getElementById('termsLink');
+        const termsOverlay = document.getElementById('termsOverlay');
+        const termsClose = document.getElementById('termsClose');
+
+        function openTerms(e) {
+            e.preventDefault();
+            termsOverlay.classList.add('active');
+        }
+
+        function closeTerms() {
+            termsOverlay.classList.remove('active');
+        }
+
+        termsLink.addEventListener('click', openTerms);
+        termsClose.addEventListener('click', closeTerms);
+        termsOverlay.addEventListener('click', function(e) {
+            if (e.target === termsOverlay) closeTerms();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && termsOverlay.classList.contains('active')) closeTerms();
+        });
+
         // ===== FALLBACK FOR OLD BROWSERS =====
         if (!document.startViewTransition) {
-            document.body.classList.add('no-view-transition');
             document.body.style.opacity = '0';
             document.body.style.transition = 'opacity 0.7s ease';
             window.addEventListener('load', function() {
                 setTimeout(() => {
                     document.body.style.opacity = '1';
-                    document.body.classList.add('loaded');
                 }, 50);
             });
             document.querySelectorAll('.nav-link').forEach(link => {

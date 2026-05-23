@@ -5,11 +5,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Barvassi · About</title>
-    <!-- Use same styles as xviii.html, just change active class and content -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
     <style>
+        /* Same styles as xviii.html */
+        
         * {
             margin: 0;
             padding: 0;
@@ -96,14 +97,20 @@
             background: rgba(10, 10, 10, 0.35);
         }
         
-        .logo {
+        .logo a {
             font-weight: 700;
             font-size: 20px;
             letter-spacing: 0.4em;
             text-transform: uppercase;
             color: #fafafa;
             opacity: 0.95;
-            cursor: default;
+            text-decoration: none;
+            transition: opacity 0.7s ease;
+            cursor: pointer;
+        }
+        
+        .logo a:hover {
+            opacity: 0.7;
         }
         
         .nav-links {
@@ -169,7 +176,6 @@
             border: none;
             cursor: pointer;
             transition: all 0.7s ease;
-            box-shadow: none !important;
         }
         
         .nav-cta:hover {
@@ -253,16 +259,90 @@
             border-bottom-color: rgba(255, 255, 255, 0.15);
         }
         
+        .terms-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        
+        .terms-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .terms-modal {
+            max-width: 600px;
+            width: 90%;
+            padding: 40px;
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            text-align: left;
+            transform: translateY(20px);
+            transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+        }
+        
+        .terms-overlay.active .terms-modal {
+            transform: translateY(0);
+        }
+        
+        .terms-modal h2 {
+            font-weight: 500;
+            font-size: 20px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            color: #fafafa;
+        }
+        
+        .terms-modal p {
+            font-weight: 300;
+            font-size: 14px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 12px;
+        }
+        
+        .terms-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.7s ease;
+            font-family: inherit;
+            padding: 4px 8px;
+        }
+        
+        .terms-close:hover {
+            color: #fafafa;
+        }
+        
         @view-transition {
             navigation: auto;
         }
         
          ::view-transition-old(root) {
-            animation: fade-out 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+            animation: fade-out 0.7s ease both;
         }
         
          ::view-transition-new(root) {
-            animation: fade-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+            animation: fade-in 0.7s ease both;
         }
         
         @keyframes fade-out {
@@ -292,9 +372,9 @@
                 padding: 18px 24px;
                 max-width: 100%;
             }
-            .logo {
-                text-align: center;
+            .logo a {
                 font-size: 18px;
+                text-align: center;
             }
             .nav-links {
                 justify-content: center;
@@ -348,8 +428,9 @@
 
     <div class="app">
         <nav class="glass-nav">
-            <div class="logo">B</div>
+            <div class="logo"><a href="index.html">B</a></div>
             <div class="nav-links">
+                <a class="nav-link" href="index.html">Home</a>
                 <a class="nav-link" href="vault.html">Vault</a>
                 <a class="nav-link" href="journal.html">Journal</a>
                 <a class="nav-link" href="xviii.html">XVIII</a>
@@ -367,12 +448,21 @@
 
         <div class="footer">
             <div class="footer-line">© 2026 Barvassi · A Private World</div>
-            <a class="footer-link" href="#">Terms of Service &amp; Conditions</a>
+            <a class="footer-link" id="termsLink">Terms of Service &amp; Conditions</a>
+        </div>
+    </div>
+
+    <div class="terms-overlay" id="termsOverlay">
+        <div class="terms-modal">
+            <button class="terms-close" id="termsClose">✕</button>
+            <h2>Terms of Service</h2>
+            <p>By accessing Clé Dixhuit, you acknowledge that you have read, understood, and agree to be bound by these terms. The vault is a private space, invitation only. Any unauthorized access is strictly prohibited.</p>
+            <p>All content within Barvassi is the sole property of the House of Barvassi. No reproduction, distribution, or modification is permitted without explicit written consent. Silence is expected. Respect the vault.</p>
+            <p>— The House of Barvassi, Aleppo.</p>
         </div>
     </div>
 
     <script>
-        // Copy same script from xviii.html
         (function() {
             const video = document.getElementById('bg-video');
             video.play().catch(() => {
@@ -383,16 +473,29 @@
                 document.addEventListener('click', start);
             });
         })();
-        document.querySelector('.nav-cta').addEventListener('click', function() {
-            const input = document.querySelector('.entry-input');
-            if (input) {
-                input.focus();
-                input.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-            }
+
+        const termsLink = document.getElementById('termsLink');
+        const termsOverlay = document.getElementById('termsOverlay');
+        const termsClose = document.getElementById('termsClose');
+
+        function openTerms(e) {
+            e.preventDefault();
+            termsOverlay.classList.add('active');
+        }
+
+        function closeTerms() {
+            termsOverlay.classList.remove('active');
+        }
+
+        termsLink.addEventListener('click', openTerms);
+        termsClose.addEventListener('click', closeTerms);
+        termsOverlay.addEventListener('click', function(e) {
+            if (e.target === termsOverlay) closeTerms();
         });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && termsOverlay.classList.contains('active')) closeTerms();
+        });
+
         if (!document.startViewTransition) {
             document.body.style.opacity = '0';
             document.body.style.transition = 'opacity 0.7s ease';
