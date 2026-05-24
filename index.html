@@ -4,12 +4,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The House of Barvassi</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+    <title>Barvassi · Clé Dixhuit</title>
     <style>
+        /* ===== RESET & BASE ===== */
+        
         * {
             margin: 0;
             padding: 0;
@@ -17,26 +15,38 @@
         }
         
         body {
-            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             background: #0a0a0a;
-            color: #fafafa;
+            color: #1a1a1a;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            overflow: hidden;
         }
-        /* ===== VIDEO BACKGROUND ===== */
+        /* ===== SPLIT SCREEN (2.5/4 : 1.5/4) ===== */
+        
+        .split-screen {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+        /* ===== LEFT PANEL (Video) ===== */
+        
+        .left-panel {
+            flex: 2.5;
+            /* 62.5% width */
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
         
         #bg-video {
-            position: fixed;
+            position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(1.01) translateZ(0);
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             z-index: 0;
             pointer-events: none;
@@ -45,260 +55,251 @@
         }
         
         .video-overlay {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 10, 10, 0.55);
+            background: rgba(10, 10, 10, 0.6);
             z-index: 1;
             pointer-events: none;
         }
-        /* ===== ARABIC WHISPER ===== */
+        /* ===== LEFT PANEL CONTENT ===== */
         
-        .arabic-whisper {
-            position: fixed;
-            top: 28px;
-            left: 32px;
-            font-size: 12px;
-            font-weight: 300;
-            letter-spacing: 2px;
-            color: #fafafa;
-            opacity: 0.04;
-            pointer-events: none;
-            z-index: 3;
-            font-family: 'SF Pro Display', sans-serif;
-        }
-        /* ===== MAIN APP ===== */
-        
-        .app {
+        .left-content {
             position: relative;
             z-index: 2;
-            width: 100%;
-            max-width: 1200px;
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-        }
-        /* ===== GLASS HEADER ===== */
-        
-        .glass-nav {
-            margin-bottom: 40px;
-            background: rgba(10, 10, 10, 0.2);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 9999px;
-            padding: 14px 36px;
-            transition: border-color 1.2s ease;
-        }
-        
-        .glass-nav:hover {
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .logo-link {
-            font-family: 'Playfair Display', serif;
-            font-size: 22px;
-            font-weight: 400;
-            letter-spacing: 0.15em;
-            color: #fafafa;
-            text-decoration: none;
-            opacity: 0.9;
-            transition: opacity 1.2s ease;
-        }
-        
-        .logo-link:hover {
-            opacity: 0.5;
-        }
-        /* ===== MAIN TEXT ===== */
-        
-        .main-text {
+            height: 100%;
+            padding: 60px;
             text-align: center;
-            margin-bottom: 48px;
-        }
-        
-        .headline {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(48px, 10vw, 100px);
-            font-weight: 400;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
             color: #fafafa;
-            margin-bottom: 8px;
         }
         
-        .headline span {
-            color: rgba(255, 255, 255, 0.2);
-            font-weight: 300;
+        .left-logo {
+            max-width: 45%;
+            max-height: 120px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            opacity: 0.9;
+            filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.3));
         }
         
-        .sub-line {
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            font-weight: 300;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.2);
-            margin-top: 4px;
-        }
-        /* ===== ENTRY CONTAINER (MORPHING BUTTON) ===== */
-        
-        .entry-container {
-            width: 100%;
-            max-width: 260px;
-            position: relative;
-            height: 54px;
-        }
-        
-        .entry-wrapper {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-        /* --- Button (initial state) --- */
-        
-        .entry-btn {
+        .left-whisper {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.06);
+            bottom: 40px;
+            left: 40px;
+            font-weight: 300;
+            font-size: 11px;
+            letter-spacing: 2px;
             color: #fafafa;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            opacity: 0.06;
+        }
+        /* ===== RIGHT PANEL (Form) ===== */
+        
+        .right-panel {
+            flex: 1.5;
+            /* 37.5% width */
+            background: #fafafa;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 32px;
+            position: relative;
+        }
+        
+        .form-container {
+            width: 100%;
+            max-width: 280px;
+            text-align: left;
+        }
+        
+        .form-title {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 500;
+            font-size: clamp(24px, 4vw, 36px);
+            letter-spacing: -0.02em;
+            color: #1a1a1a;
+            line-height: 1.1;
+            margin-bottom: 4px;
+        }
+        
+        .form-sub {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 300;
+            font-size: 13px;
+            color: rgba(26, 26, 26, 0.4);
+            letter-spacing: 0.05em;
+            margin-bottom: 28px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            display: block;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 500;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(26, 26, 26, 0.5);
+            margin-bottom: 4px;
+        }
+        
+        .form-input {
+            width: 100%;
+            background: rgba(26, 26, 26, 0.04);
+            border: 1px solid rgba(26, 26, 26, 0.06);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 300;
+            font-size: 13px;
+            color: #1a1a1a;
+            outline: none;
+            transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        
+        .form-input::placeholder {
+            color: rgba(26, 26, 26, 0.15);
+        }
+        
+        .form-input:focus {
+            border-color: rgba(26, 26, 26, 0.15);
+            background: rgba(26, 26, 26, 0.06);
+            box-shadow: 0 0 30px rgba(26, 26, 26, 0.02);
+        }
+        
+        .signin-btn {
+            width: 100%;
+            background: #1a1a1a;
+            color: #fafafa;
+            border: none;
             border-radius: 9999px;
-            font-size: 12px;
+            padding: 14px 0;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
             font-weight: 400;
-            letter-spacing: 0.15em;
+            font-size: 12px;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
             cursor: pointer;
-            transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-            font-family: 'Inter', sans-serif;
-            z-index: 2;
+            transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+            margin-top: 4px;
         }
         
-        .entry-btn:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.15);
+        .signin-btn:hover {
+            background: #2a2a2a;
             transform: scale(1.02);
         }
         
-        .entry-btn:active {
+        .signin-btn:active {
             transform: scale(0.96);
             transition-duration: 0.2s;
         }
         
-        .entry-btn.hidden {
-            opacity: 0;
-            transform: scale(0.9);
-            pointer-events: none;
-            transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        /* --- Input (morphed state) --- */
-        
-        .entry-input {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 10, 10, 0.3);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 9999px;
-            padding: 0 24px;
-            color: #fafafa;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
+        .lost-link {
+            display: block;
+            text-align: right;
+            margin-top: 12px;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
             font-weight: 300;
-            outline: none;
-            opacity: 0;
-            transform: scale(0.95);
-            pointer-events: none;
-            transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            font-size: 11px;
+            color: rgba(26, 26, 26, 0.3);
+            text-decoration: none;
+            transition: color 0.7s ease;
         }
         
-        .entry-input.visible {
-            opacity: 1;
-            transform: scale(1);
-            pointer-events: auto;
+        .lost-link:hover {
+            color: rgba(26, 26, 26, 0.6);
         }
         
-        .entry-input:focus {
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 60px rgba(255, 255, 255, 0.01);
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 300;
+            font-size: 10px;
+            color: rgba(26, 26, 26, 0.15);
+            letter-spacing: 0.1em;
         }
         
-        .entry-input::placeholder {
-            color: rgba(255, 255, 255, 0.08);
-        }
-        /* ===== FOOTER ===== */
-        
-        .footer {
-            position: fixed;
+        .right-bottom {
+            position: absolute;
             bottom: 28px;
+            right: 28px;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 300;
             font-size: 8px;
-            letter-spacing: 0.3em;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.04);
+            color: rgba(26, 26, 26, 0.08);
         }
         /* ===== RESPONSIVE ===== */
         
-        @media (max-width: 600px) {
-            .glass-nav {
-                padding: 12px 24px;
-                margin-bottom: 30px;
+        @media (max-width: 900px) {
+            .split-screen {
+                flex-direction: column;
             }
-            .logo-link {
-                font-size: 18px;
+            .left-panel {
+                flex: none;
+                height: 40vh;
+                min-height: 200px;
+                width: 100%;
             }
-            .main-text {
-                margin-bottom: 32px;
+            .right-panel {
+                flex: none;
+                height: 60vh;
+                padding: 40px 24px;
+                width: 100%;
             }
-            .headline {
-                font-size: 32px;
+            .form-container {
+                max-width: 300px;
             }
-            .sub-line {
-                font-size: 10px;
-                letter-spacing: 0.2em;
+            .left-content {
+                padding: 30px;
             }
-            .entry-container {
-                max-width: 220px;
-                height: 48px;
-            }
-            .entry-btn {
-                font-size: 10px;
-            }
-            .entry-input {
-                font-size: 13px;
-                padding: 0 18px;
-            }
-            .arabic-whisper {
+            .left-whisper {
+                bottom: 20px;
+                left: 20px;
                 font-size: 9px;
-                top: 16px;
-                left: 16px;
             }
-            .footer {
-                bottom: 16px;
-                font-size: 6px;
+            .right-bottom {
+                bottom: 20px;
+                right: 20px;
+                font-size: 7px;
+            }
+            .left-logo {
+                max-width: 55%;
+                max-height: 80px;
             }
         }
         
         @media (max-width: 480px) {
-            .entry-container {
-                max-width: 200px;
-                height: 44px;
+            .left-panel {
+                height: 30vh;
+                min-height: 150px;
             }
-            .entry-btn {
-                font-size: 9px;
+            .right-panel {
+                height: 70vh;
+                padding: 30px 16px;
             }
-            .entry-input {
-                font-size: 12px;
-                padding: 0 14px;
+            .form-container {
+                max-width: 100%;
+            }
+            .signin-btn {
+                font-size: 10px;
+                padding: 12px 0;
+            }
+            .left-logo {
+                max-width: 50%;
+                max-height: 60px;
             }
         }
     </style>
@@ -306,44 +307,43 @@
 
 <body>
 
-    <!-- ===== VIDEO BACKGROUND ===== -->
-    <video id="bg-video" autoplay loop muted playsinline preload="metadata">
-        <source src="bgloopvideo.mp4" type="video/mp4" />
-    </video>
+    <div class="split-screen">
 
-    <!-- ===== DARK OVERLAY ===== -->
-    <div class="video-overlay"></div>
-
-    <!-- ===== ARABIC WHISPER ===== -->
-    <div class="arabic-whisper">بارڤاسي</div>
-
-    <!-- ===== MAIN APP ===== -->
-    <div class="app">
-
-        <!-- ===== GLASS HEADER ===== -->
-        <nav class="glass-nav">
-            <a href="#" class="logo-link">The House of Barvassi</a>
-        </nav>
-
-        <!-- ===== MAIN TEXT ===== -->
-        <div class="main-text">
-            <div class="headline">
-                Silence. <br />
-                <span>Stone. Shadow.</span>
+        <!-- ===== LEFT PANEL (VIDEO - 62.5%) ===== -->
+        <div class="left-panel">
+            <video id="bg-video" autoplay loop muted playsinline preload="metadata">
+                <source src="bgloopvideo.mp4" type="video/mp4" />
+            </video>
+            <div class="video-overlay"></div>
+            <div class="left-content">
+                <img src="logo.png" alt="Barvassi" class="left-logo" />
             </div>
-            <div class="sub-line">Clé Dixhuit</div>
+            <div class="left-whisper">بارڤاسي</div>
         </div>
 
-        <!-- ===== ENTRY CONTAINER (MORPHING BUTTON) ===== -->
-        <div class="entry-container">
-            <div class="entry-wrapper">
-                <button class="entry-btn" id="entryBtn">Enter</button>
-                <input type="text" class="entry-input" id="entryInput" placeholder="Key" autocomplete="off" />
-            </div>
-        </div>
+        <!-- ===== RIGHT PANEL (FORM - 37.5%) ===== -->
+        <div class="right-panel">
+            <div class="form-container">
+                <div class="form-title">Welcome back.</div>
+                <div class="form-sub">Enter the vault.</div>
 
-        <!-- ===== FOOTER ===== -->
-        <div class="footer">© 2026</div>
+                <div class="form-group">
+                    <label class="form-label">Username or Email Address</label>
+                    <input type="text" class="form-input" placeholder="name@domain.com" autocomplete="off" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="••••••••" autocomplete="off" />
+                </div>
+
+                <button class="signin-btn">Sign In Here</button>
+                <a href="#" class="lost-link">Lost your password?</a>
+
+                <div class="form-footer">Barvassi</div>
+            </div>
+            <div class="right-bottom">© 2026</div>
+        </div>
 
     </div>
 
@@ -363,63 +363,16 @@
             });
         })();
 
-        // ===== MORPHING BUTTON =====
-        const entryBtn = document.getElementById('entryBtn');
-        const entryInput = document.getElementById('entryInput');
-
-        // Click "Enter" → morph into input
-        entryBtn.addEventListener('click', function() {
-            this.classList.add('hidden');
-            entryInput.classList.add('visible');
+        // ===== SIGN IN BUTTON =====
+        const signinBtn = document.querySelector('.signin-btn');
+        signinBtn.addEventListener('click', function() {
+            this.style.transform = 'scale(0.96)';
             setTimeout(() => {
-                entryInput.focus();
-            }, 350);
-        });
-
-        // Escape key → revert to button
-        entryInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                this.classList.remove('visible');
-                entryBtn.classList.remove('hidden');
-                this.value = '';
-            }
-
-            // Enter key → submit the key
-            if (e.key === 'Enter') {
-                const value = this.value.trim();
-                if (value) {
-                    // Subtle success glow
-                    this.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                    this.style.boxShadow = '0 0 40px rgba(255, 255, 255, 0.02)';
-                    setTimeout(() => {
-                        this.style.borderColor = '';
-                        this.style.boxShadow = '';
-                        this.classList.remove('visible');
-                        entryBtn.classList.remove('hidden');
-                        this.value = '';
-                    }, 900);
-                }
-            }
-        });
-
-        // Click outside → revert to button
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.entry-container') && entryInput.classList.contains('visible')) {
-                entryInput.classList.remove('visible');
-                entryBtn.classList.remove('hidden');
-                entryInput.value = '';
-            }
-        });
-
-        // ===== LOGO REFRESH =====
-        document.querySelector('.logo-link').addEventListener('click', function(e) {
-            e.preventDefault();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+                this.style.transform = '';
+            }, 200);
         });
     </script>
+
 </body>
 
 </html>
