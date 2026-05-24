@@ -4,12 +4,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Barvassi · Clé Dixhuit</title>
-    <meta name="description" content="Clé Dixhuit — A private vault. Silence. Stone. Shadow." />
+    <title>The House of Barvassi · Clé Dixhuit</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
     <style>
+        /* ===== RESET & BASE ===== */
+        
         * {
             margin: 0;
             padding: 0;
@@ -29,6 +31,7 @@
             overflow-x: hidden;
             line-height: 1.5;
         }
+        /* ===== VIDEO BACKGROUND ===== */
         
         #bg-video {
             position: fixed;
@@ -41,6 +44,7 @@
             z-index: 0;
             pointer-events: none;
         }
+        /* ===== DARK OVERLAY ===== */
         
         .video-overlay {
             position: fixed;
@@ -52,6 +56,7 @@
             z-index: 1;
             pointer-events: none;
         }
+        /* ===== ARABIC WHISPER ===== */
         
         .arabic-whisper {
             position: fixed;
@@ -64,7 +69,9 @@
             opacity: 0.08;
             pointer-events: none;
             z-index: 3;
+            font-family: 'SF Pro Display', sans-serif;
         }
+        /* ===== MAIN APP ===== */
         
         .app {
             position: relative;
@@ -77,6 +84,7 @@
             justify-content: center;
             align-items: center;
         }
+        /* ===== GLASS HEADER ===== */
         
         .glass-nav {
             margin: 30px auto 0;
@@ -84,6 +92,7 @@
             max-width: 960px;
             background: rgba(10, 10, 10, 0.25);
             backdrop-filter: blur(20px) saturate(130%);
+            -webkit-backdrop-filter: blur(20px) saturate(130%);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 9999px;
             padding: 14px 32px;
@@ -97,66 +106,38 @@
             border-color: rgba(255, 255, 255, 0.12);
             background: rgba(10, 10, 10, 0.35);
         }
+        /* ===== THE ULTRA-LUXURY LOGO ===== */
         
-        .logo a {
-            font-weight: 700;
-            font-size: 20px;
-            letter-spacing: 0.4em;
-            text-transform: uppercase;
-            color: #fafafa;
-            opacity: 0.95;
+        .logo-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-decoration: none;
             transition: opacity 0.7s ease;
-            cursor: pointer;
+            line-height: 0.9;
         }
         
-        .logo a:hover {
+        .logo-link:hover {
             opacity: 0.7;
         }
         
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-        }
-        
-        .nav-link {
-            font-size: 12px;
+        .sub-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 10px;
             font-weight: 400;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.5);
-            text-decoration: none;
-            transition: color 0.7s ease;
-            cursor: pointer;
-            position: relative;
+            letter-spacing: 0.25em;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: none;
+            margin-bottom: 2px;
         }
         
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: #fafafa;
-            transition: width 0.8s ease;
-        }
-        
-        .nav-link:hover {
+        .main-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 400;
+            letter-spacing: 0.04em;
             color: #fafafa;
-        }
-        
-        .nav-link:hover::after {
-            width: 100%;
-        }
-        
-        .nav-link.active {
-            color: #fafafa;
-        }
-        
-        .nav-link.active::after {
-            width: 100%;
+            text-transform: capitalize;
         }
         
         .nav-right {
@@ -187,6 +168,7 @@
         .nav-cta:active {
             transform: scale(0.96);
         }
+        /* ===== HERO ===== */
         
         .hero {
             flex: 1;
@@ -198,6 +180,7 @@
             padding: 60px 20px 40px;
             margin-top: 20px;
             animation: fadeUp 1.6s ease both;
+            width: 100%;
         }
         
         @keyframes fadeUp {
@@ -255,6 +238,7 @@
             max-width: 520px;
             line-height: 1.6;
         }
+        /* ===== ENTRY PILL ===== */
         
         .entry-container {
             position: relative;
@@ -267,6 +251,7 @@
             width: 100%;
             background: rgba(10, 10, 10, 0.4);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 9999px;
             padding: 16px 24px;
@@ -328,144 +313,18 @@
         .entry-btn:active {
             transform: scale(0.95);
         }
+        /* ===== FOOTER ===== */
         
         .footer {
             margin-top: 50px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .footer-line {
             font-size: 10px;
             letter-spacing: 0.15em;
             text-transform: uppercase;
             color: rgba(255, 255, 255, 0.1);
             text-align: center;
+            padding-bottom: 20px;
         }
-        
-        .footer-link {
-            font-size: 10px;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.1);
-            text-decoration: none;
-            cursor: pointer;
-            transition: color 0.7s ease;
-            border-bottom: 1px solid transparent;
-            padding-bottom: 2px;
-        }
-        
-        .footer-link:hover {
-            color: rgba(255, 255, 255, 0.3);
-            border-bottom-color: rgba(255, 255, 255, 0.15);
-        }
-        /* ===== TERMS MODAL ===== */
-        
-        .terms-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.92);
-            backdrop-filter: blur(8px);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        
-        .terms-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        .terms-modal {
-            max-width: 600px;
-            width: 90%;
-            padding: 40px;
-            background: #0a0a0a;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            text-align: left;
-            transform: translateY(20px);
-            transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-            position: relative;
-        }
-        
-        .terms-overlay.active .terms-modal {
-            transform: translateY(0);
-        }
-        
-        .terms-modal h2 {
-            font-weight: 500;
-            font-size: 20px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-            color: #fafafa;
-        }
-        
-        .terms-modal p {
-            font-weight: 300;
-            font-size: 14px;
-            line-height: 1.8;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 12px;
-        }
-        
-        .terms-close {
-            position: absolute;
-            top: 16px;
-            right: 20px;
-            background: transparent;
-            border: none;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 20px;
-            cursor: pointer;
-            transition: color 0.7s ease;
-            font-family: inherit;
-            padding: 4px 8px;
-        }
-        
-        .terms-close:hover {
-            color: #fafafa;
-        }
-        
-        @view-transition {
-            navigation: auto;
-        }
-        
-         ::view-transition-old(root) {
-            animation: fade-out 0.7s ease both;
-        }
-        
-         ::view-transition-new(root) {
-            animation: fade-in 0.7s ease both;
-        }
-        
-        @keyframes fade-out {
-            from {
-                opacity: 1;
-            }
-            to {
-                opacity: 0;
-            }
-        }
-        
-        @keyframes fade-in {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
+        /* ===== RESPONSIVE ===== */
         
         @media (max-width: 768px) {
             .glass-nav {
@@ -476,14 +335,11 @@
                 padding: 18px 24px;
                 max-width: 100%;
             }
-            .logo a {
-                font-size: 18px;
-                text-align: center;
+            .sub-logo {
+                font-size: 8px;
             }
-            .nav-links {
-                justify-content: center;
-                flex-wrap: wrap;
-                gap: 14px;
+            .main-logo {
+                font-size: 18px;
             }
             .nav-right {
                 justify-content: center;
@@ -511,10 +367,6 @@
                 padding: 14px 16px;
                 border-radius: 20px;
                 gap: 12px;
-            }
-            .nav-link {
-                font-size: 10px;
-                letter-spacing: 0.05em;
             }
             .nav-cta {
                 font-size: 10px;
@@ -554,27 +406,32 @@
 
 <body>
 
+    <!-- ===== VIDEO BACKGROUND ===== -->
     <video id="bg-video" autoplay loop muted playsinline preload="auto">
         <source src="bgloopvideo.mp4" type="video/mp4" />
     </video>
+
+    <!-- ===== DARK OVERLAY ===== -->
     <div class="video-overlay"></div>
+
+    <!-- ===== ARABIC WHISPER ===== -->
     <div class="arabic-whisper">بارڤاسي</div>
 
+    <!-- ===== MAIN APP ===== -->
     <div class="app">
-        <nav class="glass-nav">
-            <div class="logo"><a href="index.html">B</a></div>
-            <div class="nav-links">
-                <a class="nav-link active" href="index.html">Home</a>
-                <a class="nav-link" href="vault.html">Vault</a>
-                <a class="nav-link" href="journal.html">Journal</a>
-                <a class="nav-link" href="xviii.html">XVIII</a>
-                <a class="nav-link" href="about.html">About</a>
-            </div>
+
+        <!-- ===== GLASS HEADER ===== -->
+        <nav class="glass-nav" role="navigation" aria-label="Main navigation">
+            <a href="#" class="logo-link">
+                <span class="sub-logo">The House of</span>
+                <span class="main-logo">Barvassi</span>
+            </a>
             <div class="nav-right">
-                <button class="nav-cta">Enter Vault</button>
+                <button class="nav-cta" aria-label="Enter the vault">Enter Vault</button>
             </div>
         </nav>
 
+        <!-- ===== HERO ===== -->
         <section class="hero">
             <div class="tagline">Clé Dixhuit</div>
             <h1 class="headline">
@@ -585,51 +442,39 @@
                 The private vault. Request entry by invitation only.
             </p>
 
+            <!-- ===== ENTRY PILL ===== -->
             <div class="entry-container">
                 <div class="entry-pill">
-                    <input type="email" class="entry-input" placeholder="Passphrase or Key" />
-                    <button class="entry-btn">Enter</button>
+                    <input type="email" class="entry-input" placeholder="Passphrase or Key" aria-label="Enter your passphrase or key" />
+                    <button class="entry-btn" aria-label="Unlock vault">Enter</button>
                 </div>
             </div>
 
+            <!-- ===== FOOTER ===== -->
             <div class="footer">
-                <div class="footer-line">© 2026 Barvassi · A Private World</div>
-                <a class="footer-link" id="termsLink">Terms of Service &amp; Conditions</a>
+                © 2026 The House of Barvassi
             </div>
         </section>
+
     </div>
 
-    <!-- TERMS MODAL -->
-    <div class="terms-overlay" id="termsOverlay">
-        <div class="terms-modal">
-            <button class="terms-close" id="termsClose">✕</button>
-            <h2>Terms of Service</h2>
-            <p>
-                By accessing Clé Dixhuit, you acknowledge that you have read, understood, and agree to be bound by these terms. The vault is a private space, invitation only. Any unauthorized access is strictly prohibited.
-            </p>
-            <p>
-                All content within Barvassi is the sole property of the House of Barvassi. No reproduction, distribution, or modification is permitted without explicit written consent. Silence is expected. Respect the vault.
-            </p>
-            <p>
-                — The House of Barvassi, Aleppo.
-            </p>
-        </div>
-    </div>
-
+    <!-- ===== INTERACTIONS ===== -->
     <script>
-        // ===== VIDEO =====
+        // ===== VIDEO PLAYBACK =====
         (function() {
             const video = document.getElementById('bg-video');
             video.play().catch(() => {
-                const start = () => {
+                const startVideo = () => {
                     video.play().catch(() => {});
-                    document.removeEventListener('click', start);
+                    document.removeEventListener('click', startVideo);
+                    document.removeEventListener('touchstart', startVideo);
                 };
-                document.addEventListener('click', start);
+                document.addEventListener('click', startVideo);
+                document.addEventListener('touchstart', startVideo);
             });
         })();
 
-        // ===== ENTRY =====
+        // ===== ENTRY BUTTON =====
         const entryBtn = document.querySelector('.entry-btn');
         const entryInput = document.querySelector('.entry-input');
 
@@ -640,13 +485,16 @@
                 setTimeout(() => entryInput.style.borderBottom = '', 700);
                 return;
             }
+
             entryBtn.style.transform = 'scale(0.95)';
             setTimeout(() => {
                 entryBtn.style.transform = '';
                 entryInput.value = '';
             }, 300);
         }
+
         entryBtn.addEventListener('click', handleEntry);
+
         entryInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -654,6 +502,7 @@
             }
         });
 
+        // ===== ENTER VAULT BUTTON (Scroll to entry) =====
         document.querySelector('.nav-cta').addEventListener('click', function() {
             entryInput.focus();
             entryInput.scrollIntoView({
@@ -661,50 +510,6 @@
                 block: 'center'
             });
         });
-
-        // ===== TERMS MODAL =====
-        const termsLink = document.getElementById('termsLink');
-        const termsOverlay = document.getElementById('termsOverlay');
-        const termsClose = document.getElementById('termsClose');
-
-        function openTerms(e) {
-            e.preventDefault();
-            termsOverlay.classList.add('active');
-        }
-
-        function closeTerms() {
-            termsOverlay.classList.remove('active');
-        }
-
-        termsLink.addEventListener('click', openTerms);
-        termsClose.addEventListener('click', closeTerms);
-        termsOverlay.addEventListener('click', function(e) {
-            if (e.target === termsOverlay) closeTerms();
-        });
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && termsOverlay.classList.contains('active')) closeTerms();
-        });
-
-        // ===== FALLBACK FOR OLD BROWSERS =====
-        if (!document.startViewTransition) {
-            document.body.style.opacity = '0';
-            document.body.style.transition = 'opacity 0.7s ease';
-            window.addEventListener('load', function() {
-                setTimeout(() => {
-                    document.body.style.opacity = '1';
-                }, 50);
-            });
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const target = this.getAttribute('href');
-                    document.body.style.opacity = '0';
-                    setTimeout(() => {
-                        window.location.href = target;
-                    }, 700);
-                });
-            });
-        }
     </script>
 </body>
 
