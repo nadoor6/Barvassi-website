@@ -4,17 +4,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Barvassi · Clé Dixhuit</title>
-    <!-- FAVICON HERE -->
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-title" content="Barvassi" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <title>Barvassi · Test Entry</title>
+    <link rel="icon" type="image/png" href="logo.png" />
     <style>
-        /* ===== RESET & BASE ===== */
-        
         * {
             margin: 0;
             padding: 0;
@@ -30,26 +22,18 @@
             -moz-osx-font-smoothing: grayscale;
             overflow: hidden;
         }
-        /* ===== SPLIT SCREEN (2.5/4 : 1.5/4) ===== */
         
         .split-screen {
             display: flex;
             height: 100vh;
             width: 100vw;
         }
-        /* ===== LEFT PANEL (Abstract Image) ===== */
         
         .left-panel {
             flex: 2.5;
-            /* 62.5% width */
             position: relative;
             overflow: hidden;
             background: #0a0a0a;
-            /* Fallback */
-        }
-        /* NEW: Background Image Setup */
-        
-        .left-panel {
             background-image: url('abstract-dark-8k-ua.jpg');
             background-size: cover;
             background-position: center;
@@ -66,7 +50,6 @@
             z-index: 1;
             pointer-events: none;
         }
-        /* ===== LEFT PANEL CONTENT ===== */
         
         .left-content {
             position: relative;
@@ -101,11 +84,9 @@
             color: #fafafa;
             opacity: 0.06;
         }
-        /* ===== RIGHT PANEL (Form) ===== */
         
         .right-panel {
             flex: 1.5;
-            /* 37.5% width */
             background: #fafafa;
             display: flex;
             flex-direction: column;
@@ -192,8 +173,13 @@
             letter-spacing: 0.1em;
             text-transform: uppercase;
             cursor: pointer;
-            transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: all 0.5s ease;
             margin-top: 4px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 48px;
         }
         
         .signin-btn:hover {
@@ -204,6 +190,49 @@
         .signin-btn:active {
             transform: scale(0.96);
             transition-duration: 0.2s;
+        }
+        
+        .signin-btn.loading {
+            pointer-events: none;
+            background: #1a1a1a;
+            transform: scale(1);
+        }
+        
+        .signin-btn .btn-text {
+            transition: opacity 0.4s ease;
+        }
+        
+        .signin-btn.loading .btn-text {
+            opacity: 0;
+        }
+        
+        .signin-btn .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            opacity: 0;
+            transition: all 0.4s ease;
+            width: 22px;
+            height: 22px;
+        }
+        
+        .signin-btn.loading .spinner {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .spinner svg {
+            animation: spin 0.9s linear infinite;
+        }
+        
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
         }
         
         .lost-link {
@@ -243,7 +272,20 @@
             text-transform: uppercase;
             color: rgba(26, 26, 26, 0.08);
         }
-        /* ===== RESPONSIVE ===== */
+        
+        .error-msg {
+            text-align: center;
+            font-size: 11px;
+            color: rgba(180, 40, 40, 0.7);
+            margin-top: 10px;
+            height: 18px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .error-msg.visible {
+            opacity: 1;
+        }
         
         @media (max-width: 900px) {
             .split-screen {
@@ -298,6 +340,11 @@
             .signin-btn {
                 font-size: 10px;
                 padding: 12px 0;
+                height: 44px;
+            }
+            .signin-btn .spinner {
+                width: 18px;
+                height: 18px;
             }
             .left-logo {
                 max-width: 50%;
@@ -310,10 +357,8 @@
 <body>
 
     <div class="split-screen">
-
-        <!-- ===== LEFT PANEL (IMAGE - 62.5%) ===== -->
+        <!-- ===== LEFT PANEL ===== -->
         <div class="left-panel">
-            <!-- VIDEO REMOVED - BACKGROUND IMAGE APPLIED VIA CSS -->
             <div class="video-overlay"></div>
             <div class="left-content">
                 <img src="logo.png" alt="Barvassi" class="left-logo" />
@@ -321,7 +366,7 @@
             <div class="left-whisper">بارڤاسي</div>
         </div>
 
-        <!-- ===== RIGHT PANEL (FORM - 37.5%) ===== -->
+        <!-- ===== RIGHT PANEL ===== -->
         <div class="right-panel">
             <div class="form-container">
                 <div class="form-title">Welcome back.</div>
@@ -329,37 +374,109 @@
 
                 <div class="form-group">
                     <label class="form-label">Username or Email Address</label>
-                    <input type="text" class="form-input" placeholder="name@domain.com" autocomplete="off" />
+                    <input type="text" class="form-input" id="test-username" placeholder="name@domain.com" autocomplete="off" />
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Password</label>
-                    <input type="password" class="form-input" placeholder="••••••••" autocomplete="off" />
+                    <input type="password" class="form-input" id="test-password" placeholder="••••••••" autocomplete="off" />
                 </div>
 
-                <button class="signin-btn">Sign In Here</button>
+                <button class="signin-btn" id="test-signin-btn">
+                    <span class="btn-text">Sign In Here</span>
+                    <div class="spinner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" stroke-opacity="0.2" />
+                            <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="1" />
+                        </svg>
+                    </div>
+                </button>
+
+                <div class="error-msg" id="test-error-msg">Invalid credentials. Try again.</div>
+
                 <a href="#" class="lost-link">Lost your password?</a>
 
-                <div class="form-footer">Barvassi</div>
+                <div class="form-footer">Barvassi · Test Mode</div>
             </div>
             <div class="right-bottom">© 2026</div>
         </div>
-
     </div>
 
-    <!-- ===== INTERACTIONS ===== -->
     <script>
-        // (Video logic removed as there is no video)
-        // ===== SIGN IN BUTTON =====
-        const signinBtn = document.querySelector('.signin-btn');
-        signinBtn.addEventListener('click', function() {
-            this.style.transform = 'scale(0.96)';
+        // ===== SIGN IN BUTTON + LOADING STATE =====
+        const signinBtn = document.getElementById('test-signin-btn');
+        const usernameInput = document.getElementById('test-username');
+        const passwordInput = document.getElementById('test-password');
+        const errorMsg = document.getElementById('test-error-msg');
+
+        const TEST_CREDENTIALS = {
+            username: 'barvassi',
+            email: 'barvassi@domain.com',
+            password: 'XVIII'
+        };
+
+        let isProcessing = false;
+
+        signinBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (isProcessing) return;
+
+            // Hide any previous error
+            errorMsg.classList.remove('visible');
+
+            // Trigger loading state
+            isProcessing = true;
+            this.classList.add('loading');
+
+            // Wait 3 seconds
             setTimeout(() => {
-                this.style.transform = '';
-            }, 200);
+                const enteredUser = usernameInput.value.trim().toLowerCase();
+                const enteredPass = passwordInput.value.trim();
+
+                const isValid = (
+                    (enteredUser === TEST_CREDENTIALS.username.toLowerCase() || enteredUser === TEST_CREDENTIALS.email.toLowerCase()) &&
+                    enteredPass === TEST_CREDENTIALS.password
+                );
+
+                // Remove loading state
+                this.classList.remove('loading');
+                isProcessing = false;
+
+                if (isValid) {
+                    // Redirect to dashboard
+                    window.location.href = 'test-dashboard.html';
+                } else {
+                    errorMsg.classList.add('visible');
+                    // Subtle shake hint on button
+                    this.style.border = '1px solid rgba(180, 40, 40, 0.2)';
+                    setTimeout(() => {
+                        this.style.border = '';
+                    }, 800);
+                }
+            }, 3000);
+        });
+
+        // Enter key support
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                signinBtn.click();
+            }
+        });
+
+        // Clear error on typing
+        usernameInput.addEventListener('input', function() {
+            errorMsg.classList.remove('visible');
+        });
+        passwordInput.addEventListener('input', function() {
+            errorMsg.classList.remove('visible');
+        });
+
+        // Lost password link placeholder
+        document.querySelector('.lost-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('A key will be sent to the registered address.');
         });
     </script>
-
 </body>
 
 </html>
