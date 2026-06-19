@@ -125,21 +125,42 @@
             padding: 80px 20px 40px;
             position: relative;
         }
+        /* THE LOGO */
+        
+        .hero-logo {
+            max-width: 180px;
+            /* CHANGE THIS TO RESIZE THE LOGO */
+            height: auto;
+            display: block;
+            margin: 0 auto 32px auto;
+            object-fit: contain;
+            opacity: 0.9;
+        }
         
         .hero-title {
             font-weight: 700;
-            font-size: clamp(3rem, 8vw, 6rem);
             letter-spacing: -0.02em;
             line-height: 1.1;
             color: #f2f2f2;
             max-width: 800px;
             margin: 0 auto 16px;
         }
+        /* The first line (We do not speak.) - LESS OPACITY, SMALLER */
         
-        .hero-title span {
-            font-weight: 300;
-            color: rgba(255, 255, 255, 0.2);
+        .hero-title .faint-line {
             display: block;
+            font-weight: 300;
+            opacity: 0.4;
+            font-size: clamp(2rem, 5vw, 4rem);
+            margin-bottom: 8px;
+        }
+        /* The second line (We act.) - MORE OPACITY, BIGGER */
+        
+        .hero-title .bold-line {
+            display: block;
+            font-weight: 700;
+            opacity: 1;
+            font-size: clamp(3.5rem, 9vw, 7rem);
         }
         
         .hero-sub {
@@ -525,9 +546,13 @@
         <!-- ===== HERO ===== -->
         <section class="hero-wrapper">
 
+            <!-- REAL PNG LOGO HERE -->
+            <img src="logo.png" alt="Barvassi" class="hero-logo" />
+
+            <!-- SPLIT HEADLINE -->
             <h1 class="hero-title">
-                We do not speak. <br />
-                <span>We act.</span>
+                <span class="faint-line">We do not speak.</span>
+                <span class="bold-line">We act.</span>
             </h1>
 
             <p class="hero-sub">
@@ -535,7 +560,6 @@
             </p>
 
             <div class="hero-actions">
-                <!-- BOTH BUTTONS ARE button2 -->
                 <button class="btn2" id="enterChamberBtn">
                     <span class="btn-text">Enter the Chamber</span>
                     <div class="spinner">
