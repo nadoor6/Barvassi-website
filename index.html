@@ -4,9 +4,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Barvassi · Test Entry</title>
-    <link rel="icon" type="image/png" href="logo.png" />
+    <title>Barvassi · The House of the Silent Hand</title>
+    <!-- SF Pro Display via CDN -->
+    <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
     <style>
+        /* ----- Global Reset & Base ----- */
+        
         * {
             margin: 0;
             padding: 0;
@@ -14,199 +17,123 @@
         }
         
         body {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-            min-height: 100vh;
-            background: #0a0a0a;
-            color: #1a1a1a;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0c0c0c;
+            color: #f2f2f2;
+            cursor: crosshair;
+            scroll-behavior: smooth;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            overflow: hidden;
         }
         
-        .split-screen {
-            display: flex;
-            height: 100vh;
-            width: 100vw;
+        a {
+            color: inherit;
+            text-decoration: none;
         }
         
-        .left-panel {
-            flex: 2.5;
-            position: relative;
-            overflow: hidden;
-            background: #0a0a0a;
-            background-image: url('abstract-dark-8k-ua.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
         }
+        /* ----- Chambers ----- */
         
-        .video-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 10, 10, 0.6);
-            z-index: 1;
-            pointer-events: none;
-        }
-        
-        .left-content {
-            position: relative;
-            z-index: 2;
+        .chamber {
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            padding: 60px 20px;
+            border-bottom: 1px solid rgba(242, 242, 242, 0.05);
+        }
+        
+        .chamber:last-child {
+            border-bottom: none;
+        }
+        /* ----- Chamber 1: The Wreath (Hero) ----- */
+        
+        #hero {
             align-items: center;
-            height: 100%;
-            padding: 60px;
             text-align: center;
-            color: #fafafa;
         }
         
-        .left-logo {
-            max-width: 45%;
-            max-height: 120px;
-            width: auto;
+        .hero-logo {
+            width: 200px;
             height: auto;
-            object-fit: contain;
-            opacity: 0.9;
-            filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.3));
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 8px rgba(242, 242, 242, 0.1));
         }
         
-        .left-whisper {
-            position: absolute;
-            bottom: 40px;
-            left: 40px;
-            font-weight: 300;
-            font-size: 11px;
-            letter-spacing: 2px;
-            color: #fafafa;
-            opacity: 0.06;
+        .hero-line {
+            width: 50px;
+            height: 1px;
+            background: #f2f2f2;
+            margin: 0 auto 16px;
         }
         
-        .right-panel {
-            flex: 1.5;
-            background: #fafafa;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px 32px;
-            position: relative;
-        }
-        
-        .form-container {
-            width: 100%;
-            max-width: 280px;
-            text-align: left;
-        }
-        
-        .form-title {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-            font-weight: 500;
-            font-size: clamp(24px, 4vw, 36px);
-            letter-spacing: -0.02em;
-            color: #1a1a1a;
-            line-height: 1.1;
-            margin-bottom: 4px;
-        }
-        
-        .form-sub {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-            font-weight: 300;
-            font-size: 13px;
-            color: rgba(26, 26, 26, 0.4);
-            letter-spacing: 0.05em;
-            margin-bottom: 28px;
-        }
-        
-        .form-group {
-            margin-bottom: 16px;
-        }
-        
-        .form-label {
-            display: block;
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-            font-weight: 500;
-            font-size: 10px;
+        .hero-arabic {
+            font-weight: 700;
+            font-size: 2.5rem;
             letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: rgba(26, 26, 26, 0.5);
-            margin-bottom: 4px;
+            margin-bottom: 24px;
         }
         
-        .form-input {
-            width: 100%;
-            background: rgba(26, 26, 26, 0.04);
-            border: 1px solid rgba(26, 26, 26, 0.06);
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        .hero-tagline {
             font-weight: 300;
-            font-size: 13px;
-            color: #1a1a1a;
-            outline: none;
-            transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+            font-size: 1.2rem;
+            letter-spacing: 0.3em;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            opacity: 0.8;
         }
+        /* ----- button1 (locked in memory) ----- */
         
-        .form-input::placeholder {
-            color: rgba(26, 26, 26, 0.15);
-        }
-        
-        .form-input:focus {
-            border-color: rgba(26, 26, 26, 0.15);
-            background: rgba(26, 26, 26, 0.06);
-            box-shadow: 0 0 30px rgba(26, 26, 26, 0.02);
-        }
-        
-        .signin-btn {
-            width: 100%;
+        .btn1 {
             background: #1a1a1a;
-            color: #fafafa;
+            color: #f2f2f2;
             border: none;
-            border-radius: 9999px;
-            padding: 14px 0;
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            border-radius: 50px;
+            padding: 14px 40px;
+            font-family: inherit;
             font-weight: 400;
-            font-size: 12px;
-            letter-spacing: 0.1em;
+            font-size: 13px;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.5s ease;
-            margin-top: 4px;
             position: relative;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            height: 48px;
+            min-height: 50px;
+            min-width: 160px;
         }
         
-        .signin-btn:hover {
+        .btn1:hover {
             background: #2a2a2a;
             transform: scale(1.02);
         }
         
-        .signin-btn:active {
+        .btn1:active {
             transform: scale(0.96);
             transition-duration: 0.2s;
         }
         
-        .signin-btn.loading {
+        .btn1.loading {
             pointer-events: none;
             background: #1a1a1a;
             transform: scale(1);
         }
         
-        .signin-btn .btn-text {
+        .btn1 .btn-text {
             transition: opacity 0.4s ease;
         }
         
-        .signin-btn.loading .btn-text {
+        .btn1.loading .btn-text {
             opacity: 0;
         }
         
-        .signin-btn .spinner {
+        .btn1 .spinner {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -217,7 +144,7 @@
             height: 22px;
         }
         
-        .signin-btn.loading .spinner {
+        .btn1.loading .spinner {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
         }
@@ -234,121 +161,249 @@
                 transform: rotate(360deg);
             }
         }
+        /* ----- Chamber 2: The Patron ----- */
         
-        .lost-link {
-            display: block;
-            text-align: right;
-            margin-top: 12px;
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        #patron {
+            flex-direction: row;
+            align-items: center;
+            gap: 60px;
+        }
+        
+        .patron-left {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            min-height: 300px;
+        }
+        
+        .patron-line {
+            width: 1px;
+            height: 100px;
+            background: #f2f2f2;
+            opacity: 0.4;
+        }
+        
+        .patron-right {
+            flex: 1;
+            padding-left: 40px;
+        }
+        
+        .patron-right p {
             font-weight: 300;
-            font-size: 11px;
-            color: rgba(26, 26, 26, 0.3);
-            text-decoration: none;
-            transition: color 0.7s ease;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            opacity: 0.85;
         }
         
-        .lost-link:hover {
-            color: rgba(26, 26, 26, 0.6);
-        }
-        
-        .form-footer {
-            text-align: center;
+        .patron-right .signature {
+            font-family: 'Brush Script MT', cursive;
+            /* fallback for signature */
+            font-size: 1.8rem;
+            font-weight: 400;
+            opacity: 0.7;
             margin-top: 20px;
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .patron-link {
+            display: inline-block;
+            margin-top: 20px;
             font-weight: 300;
-            font-size: 10px;
-            color: rgba(26, 26, 26, 0.15);
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            border-bottom: 1px solid rgba(242, 242, 242, 0.2);
+            padding-bottom: 2px;
+            transition: border-color 0.3s;
+            cursor: pointer;
+        }
+        
+        .patron-link:hover {
+            border-color: #f2f2f2;
+        }
+        /* ----- Chamber 3: The Instruments ----- */
+        
+        #instruments {
+            align-items: center;
+            text-align: center;
+        }
+        
+        .instruments-grid {
+            display: flex;
+            gap: 40px;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .instrument-card {
+            flex: 1;
+            background: #0c0c0c;
+            border: 1px solid rgba(242, 242, 242, 0.08);
+            padding: 40px 30px;
+            border-radius: 0;
+            text-align: left;
+            position: relative;
+        }
+        
+        .instrument-card h3 {
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+        
+        .instrument-card p {
+            font-weight: 300;
+            font-size: 1rem;
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+        
+        .instrument-card .badge {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            background: rgba(242, 242, 242, 0.05);
+            padding: 4px 12px;
+            display: inline-block;
+            border-radius: 0;
+            color: #f2f2f2;
+        }
+        
+        .instrument-card .counter {
+            margin-top: 16px;
+            font-weight: 300;
+            font-size: 0.95rem;
+            opacity: 0.6;
+        }
+        
+        .instrument-divider {
+            width: 1px;
+            background: rgba(242, 242, 242, 0.15);
+            flex-shrink: 0;
+        }
+        /* ----- Chamber 4: The Ledger ----- */
+        
+        #ledger {
+            align-items: center;
+            text-align: center;
+        }
+        
+        .ledger-table {
+            width: 100%;
+            max-width: 600px;
+            border-collapse: collapse;
+            margin: 0 auto 40px;
+        }
+        
+        .ledger-table td {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(242, 242, 242, 0.08);
+            font-weight: 300;
+            font-size: 1rem;
+            text-align: left;
+        }
+        
+        .ledger-table td:last-child {
+            text-align: right;
+        }
+        
+        .ciphers-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto 40px;
+            opacity: 0.5;
+            font-weight: 300;
+            font-size: 0.85rem;
             letter-spacing: 0.1em;
         }
         
-        .right-bottom {
-            position: absolute;
-            bottom: 28px;
-            right: 28px;
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        .ledger-footer {
             font-weight: 300;
-            font-size: 8px;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: rgba(26, 26, 26, 0.08);
+            font-size: 0.9rem;
+            opacity: 0.4;
+            letter-spacing: 0.1em;
         }
+        /* ----- Values Grid (optional, placed after Patron or before Instruments) ----- */
         
-        .error-msg {
+        #values {
+            padding: 40px 20px;
             text-align: center;
-            font-size: 11px;
-            color: rgba(180, 40, 40, 0.7);
-            margin-top: 10px;
-            height: 18px;
-            opacity: 0;
-            transition: opacity 0.5s ease;
         }
         
-        .error-msg.visible {
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .value-item {
+            font-weight: 300;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0.7;
+        }
+        
+        .value-item strong {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 4px;
             opacity: 1;
         }
+        /* ----- Global Footer ----- */
         
-        @media (max-width: 900px) {
-            .split-screen {
+        .site-footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(242, 242, 242, 0.05);
+            font-weight: 300;
+            font-size: 0.8rem;
+            opacity: 0.3;
+            letter-spacing: 0.1em;
+        }
+        /* ----- Responsive ----- */
+        
+        @media (max-width: 768px) {
+            #patron {
                 flex-direction: column;
+                gap: 30px;
             }
-            .left-panel {
-                flex: none;
-                height: 40vh;
-                min-height: 200px;
-                width: 100%;
+            .patron-left {
+                min-height: 100px;
             }
-            .right-panel {
-                flex: none;
-                height: 60vh;
-                padding: 40px 24px;
-                width: 100%;
+            .patron-right {
+                padding-left: 0;
+                text-align: center;
             }
-            .form-container {
-                max-width: 300px;
+            .instruments-grid {
+                flex-direction: column;
+                gap: 20px;
             }
-            .left-content {
-                padding: 30px;
+            .instrument-divider {
+                display: none;
             }
-            .left-whisper {
-                bottom: 20px;
-                left: 20px;
-                font-size: 9px;
+            .values-grid {
+                grid-template-columns: 1fr 1fr;
             }
-            .right-bottom {
-                bottom: 20px;
-                right: 20px;
-                font-size: 7px;
+            .hero-logo {
+                width: 150px;
             }
-            .left-logo {
-                max-width: 55%;
-                max-height: 80px;
+            .hero-arabic {
+                font-size: 2rem;
             }
         }
         
         @media (max-width: 480px) {
-            .left-panel {
-                height: 30vh;
-                min-height: 150px;
-            }
-            .right-panel {
-                height: 70vh;
-                padding: 30px 16px;
-            }
-            .form-container {
-                max-width: 100%;
-            }
-            .signin-btn {
-                font-size: 10px;
-                padding: 12px 0;
-                height: 44px;
-            }
-            .signin-btn .spinner {
-                width: 18px;
-                height: 18px;
-            }
-            .left-logo {
-                max-width: 50%;
-                max-height: 60px;
+            .values-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -356,125 +411,123 @@
 
 <body>
 
-    <div class="split-screen">
-        <!-- ===== LEFT PANEL ===== -->
-        <div class="left-panel">
-            <div class="video-overlay"></div>
-            <div class="left-content">
-                <img src="logo.png" alt="Barvassi" class="left-logo" />
-            </div>
-            <div class="left-whisper">بارڤاسي</div>
+    <!-- ===== CHAMBER 1: THE WREATH ===== -->
+    <section id="hero" class="chamber">
+        <img src="logo.png" alt="Barvassi Wreath" class="hero-logo" />
+        <div class="hero-line"></div>
+        <div class="hero-arabic">بارڤاسي</div>
+        <div class="hero-tagline">
+            The House of the Silent Hand.<br /> Le Conseil du Levant.
         </div>
-
-        <!-- ===== RIGHT PANEL ===== -->
-        <div class="right-panel">
-            <div class="form-container">
-                <div class="form-title">Welcome back.</div>
-                <div class="form-sub">Enter the vault.</div>
-
-                <div class="form-group">
-                    <label class="form-label">Username or Email Address</label>
-                    <input type="text" class="form-input" id="test-username" placeholder="name@domain.com" autocomplete="off" />
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-input" id="test-password" placeholder="••••••••" autocomplete="off" />
-                </div>
-
-                <button class="signin-btn" id="test-signin-btn">
-                    <span class="btn-text">Sign In Here</span>
-                    <div class="spinner">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10" stroke-opacity="0.2" />
-                            <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="1" />
-                        </svg>
-                    </div>
-                </button>
-
-                <div class="error-msg" id="test-error-msg">Invalid credentials. Try again.</div>
-
-                <a href="#" class="lost-link">Lost your password?</a>
-
-                <div class="form-footer">Barvassi · Test Mode</div>
+        <button class="btn1" id="enterChamberBtn">
+            <span class="btn-text">Enter the Chamber</span>
+            <div class="spinner">
+                <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" stroke-opacity="0.2" />
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="1" />
+                </svg>
             </div>
-            <div class="right-bottom">© 2026</div>
+        </button>
+    </section>
+
+    <!-- ===== CHAMBER 2: THE PATRON ===== -->
+    <section id="patron" class="chamber">
+        <div class="patron-left">
+            <div class="patron-line"></div>
         </div>
-    </div>
+        <div class="patron-right">
+            <p>Diplomate.</p>
+            <p>Patron of the Levant Council.</p>
+            <p>Chairman of Barvassi.</p>
+            <p>Aleppo. Lyon. 45°N:4°E:XVIII.</p>
+            <p>He does not give interviews.</p>
+            <p>He does not attend parties.</p>
+            <p>He builds.</p>
+            <div class="signature">— Diplomate</div>
+            <a href="/chamber" class="patron-link">To reach the Patron, you must know the door.</a>
+        </div>
+    </section>
+
+    <!-- ===== VALUES GRID (inserted between Patron and Instruments) ===== -->
+    <section id="values">
+        <div class="values-grid">
+            <div class="value-item"><strong>Silence</strong>We do not announce, we act.</div>
+            <div class="value-item"><strong>Transparency</strong>Every lira and every step is documented.</div>
+            <div class="value-item"><strong>Dignity</strong>We repair without condescension.</div>
+            <div class="value-item"><strong>Persistence</strong>Mission after mission, until it becomes habit.</div>
+        </div>
+    </section>
+
+    <!-- ===== CHAMBER 3: THE INSTRUMENTS ===== -->
+    <section id="instruments" class="chamber">
+        <div class="instruments-grid">
+            <div class="instrument-card">
+                <h3>The Levant Council</h3>
+                <p>Political architecture for Syria &amp; Lebanon. Closed session.</p>
+                <span class="badge">[CLASSIFIED]</span>
+            </div>
+            <div class="instrument-divider"></div>
+            <div class="instrument-card">
+                <h3>The Silent Hand</h3>
+                <p>Civic repair. No words. Only work.</p>
+                <span class="badge">[ACTIVE]</span>
+                <div class="counter">Missions Completed: 12</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CHAMBER 4: THE LEDGER ===== -->
+    <section id="ledger" class="chamber">
+        <table class="ledger-table">
+            <tr>
+                <td>Total Received</td>
+                <td>$4,250</td>
+            </tr>
+            <tr>
+                <td>Total Spent</td>
+                <td>$3,980</td>
+            </tr>
+            <tr>
+                <td>Last Mission</td>
+                <td>Repair of Municipal Water Pump #4 — Aleppo, 19.06.26</td>
+            </tr>
+        </table>
+        <div class="ciphers-list">
+            <span>P-045</span><span>P-102</span><span>P-067</span><span>P-189</span>
+            <span>P-221</span><span>P-033</span><span>P-078</span><span>P-144</span>
+            <span>P-255</span><span>P-009</span><span>P-112</span><span>P-170</span>
+            <span>P-056</span><span>P-199</span><span>P-031</span><span>P-088</span>
+            <span>P-210</span><span>P-042</span><span>P-123</span><span>P-076</span>
+            <span>P-301</span><span>P-050</span><span>P-134</span><span>P-177</span>
+            <span>P-020</span><span>P-090</span><span>P-165</span><span>P-245</span>
+            <span>P-011</span><span>P-068</span>
+        </div>
+        <div class="ledger-footer">بارڤاسي. For the land, in silence.</div>
+    </section>
+
+    <!-- ===== SITE FOOTER ===== -->
+    <footer class="site-footer">
+        © 2026 The House of Barvassi. All rights reserved.
+    </footer>
 
     <script>
-        // ===== SIGN IN BUTTON + LOADING STATE =====
-        const signinBtn = document.getElementById('test-signin-btn');
-        const usernameInput = document.getElementById('test-username');
-        const passwordInput = document.getElementById('test-password');
-        const errorMsg = document.getElementById('test-error-msg');
-
-        const TEST_CREDENTIALS = {
-            username: 'barvassi',
-            email: 'barvassi@domain.com',
-            password: 'XVIII'
-        };
-
-        let isProcessing = false;
-
-        signinBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (isProcessing) return;
-
-            // Hide any previous error
-            errorMsg.classList.remove('visible');
-
-            // Trigger loading state
-            isProcessing = true;
+        // ----- SCROLL TO NEXT CHAMBER (button1) -----
+        document.getElementById('enterChamberBtn').addEventListener('click', function() {
+            // Trigger loading state (optional, but we'll keep it simple)
             this.classList.add('loading');
-
-            // Wait 3 seconds
             setTimeout(() => {
-                const enteredUser = usernameInput.value.trim().toLowerCase();
-                const enteredPass = passwordInput.value.trim();
-
-                const isValid = (
-                    (enteredUser === TEST_CREDENTIALS.username.toLowerCase() || enteredUser === TEST_CREDENTIALS.email.toLowerCase()) &&
-                    enteredPass === TEST_CREDENTIALS.password
-                );
-
-                // Remove loading state
                 this.classList.remove('loading');
-                isProcessing = false;
-
-                if (isValid) {
-                    // Redirect to dashboard
-                    window.location.href = 'test-dashboard.html';
-                } else {
-                    errorMsg.classList.add('visible');
-                    // Subtle shake hint on button
-                    this.style.border = '1px solid rgba(180, 40, 40, 0.2)';
-                    setTimeout(() => {
-                        this.style.border = '';
-                    }, 800);
-                }
-            }, 3000);
+                // Scroll to the Patron section
+                document.getElementById('patron').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }, 800); // short delay to show the spinner
         });
 
-        // Enter key support
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                signinBtn.click();
-            }
-        });
-
-        // Clear error on typing
-        usernameInput.addEventListener('input', function() {
-            errorMsg.classList.remove('visible');
-        });
-        passwordInput.addEventListener('input', function() {
-            errorMsg.classList.remove('visible');
-        });
-
-        // Lost password link placeholder
-        document.querySelector('.lost-link').addEventListener('click', function(e) {
+        // ----- PATRON LINK (placeholder) -----
+        document.querySelector('.patron-link').addEventListener('click', function(e) {
             e.preventDefault();
-            alert('A key will be sent to the registered address.');
+            alert('The door to the Patron is not yet open.');
         });
     </script>
 </body>

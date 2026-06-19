@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Barvassi · The Levant Desk</title>
+    <meta name="robots" content="noindex" />
+    <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0c0c0c;
+            color: #f2f2f2;
+            cursor: crosshair;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .desk-content {
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .blink-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: #f2f2f2;
+            animation: blink 1s step-end infinite;
+            vertical-align: text-bottom;
+        }
+        
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+        
+        .desk-title {
+            font-weight: 300;
+            font-size: 1.2rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 30px;
+        }
+        
+        .desk-text {
+            font-weight: 300;
+            font-size: 1rem;
+            line-height: 1.8;
+            opacity: 0.7;
+            margin-bottom: 30px;
+        }
+        
+        .btn1 {
+            background: #1a1a1a;
+            color: #f2f2f2;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 40px;
+            font-family: inherit;
+            font-weight: 400;
+            font-size: 13px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            min-width: 160px;
+        }
+        
+        .btn1:hover {
+            background: #2a2a2a;
+            transform: scale(1.02);
+        }
+        
+        .btn1:active {
+            transform: scale(0.96);
+            transition-duration: 0.2s;
+        }
+        
+        .btn1.loading {
+            pointer-events: none;
+            background: #1a1a1a;
+            transform: scale(1);
+        }
+        
+        .btn1 .btn-text {
+            transition: opacity 0.4s ease;
+        }
+        
+        .btn1.loading .btn-text {
+            opacity: 0;
+        }
+        
+        .btn1 .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            opacity: 0;
+            transition: all 0.4s ease;
+            width: 22px;
+            height: 22px;
+        }
+        
+        .btn1.loading .spinner {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .spinner svg {
+            animation: spin 0.9s linear infinite;
+        }
+        
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .form-wrapper {
+            display: none;
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .form-wrapper.visible {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 300;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            opacity: 0.6;
+        }
+        
+        .form-group input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: inherit;
+            font-weight: 300;
+            color: #f2f2f2;
+            outline: none;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .payment-note {
+            font-weight: 300;
+            font-size: 0.8rem;
+            opacity: 0.5;
+            margin-top: 8px;
+        }
+        
+        .success-msg {
+            display: none;
+            font-weight: 300;
+            font-size: 1rem;
+            opacity: 0.7;
+            margin-top: 20px;
+        }
+        
+        .success-msg.visible {
+            display: block;
+        }
+        
+        .download-link {
+            display: none;
+            margin-top: 20px;
+            font-weight: 400;
+            color: #f2f2f2;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 2px;
+            text-decoration: none;
+        }
+        
+        .download-link.visible {
+            display: inline-block;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            font-weight: 300;
+            font-size: 0.7rem;
+            opacity: 0.2;
+            letter-spacing: 0.1em;
+        }
+        
+        @media (max-width: 480px) {
+            .desk-title {
+                font-size: 1rem;
+            }
+            .desk-text {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="desk-content">
+        <!-- blinking cursor and heading -->
+        <div class="desk-title">
+            Enter your subscription cipher to access the brief. <span class="blink-cursor"></span>
+        </div>
+        <div class="desk-text">
+            Don't have one? A single issue can be procured for $49.
+        </div>
+
+        <!-- button1 -->
+        <button class="btn1" id="acquireBtn">
+            <span class="btn-text">Acquire Brief</span>
+            <div class="spinner">
+                <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" stroke-opacity="0.2" />
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="1" />
+                </svg>
+            </div>
+        </button>
+
+        <!-- form (hidden) -->
+        <div class="form-wrapper" id="formWrapper">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="emailField" placeholder="you@domain.com" />
+            </div>
+            <div class="form-group">
+                <label>Payment</label>
+                <input type="text" value="Payment will be integrated via Stripe/USDT." disabled style="opacity:0.5; font-style:italic;" />
+            </div>
+            <button class="btn1" id="payBtn" style="width:100%; margin-top:8px;">
+                <span class="btn-text">Confirm</span>
+                <div class="spinner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" stroke-opacity="0.2" />
+                        <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="1" />
+                    </svg>
+                </div>
+            </button>
+        </div>
+
+        <!-- success & download -->
+        <div class="success-msg" id="successMsg">Thank you, check your inbox.</div>
+        <a href="brief-01.pdf" class="download-link" id="downloadLink">Download Brief</a>
+
+        <div class="footer">© 2026 The House of Barvassi</div>
+    </div>
+
+    <script>
+        // ----- ACQUIRE BUTTON (button1) -----
+        const acquireBtn = document.getElementById('acquireBtn');
+        const formWrapper = document.getElementById('formWrapper');
+
+        acquireBtn.addEventListener('click', function() {
+            // simulate loading and then show form
+            this.classList.add('loading');
+            setTimeout(() => {
+                this.classList.remove('loading');
+                this.style.display = 'none';
+                formWrapper.classList.add('visible');
+            }, 1200);
+        });
+
+        // ----- PAY BUTTON (button1) -----
+        const payBtn = document.getElementById('payBtn');
+        const successMsg = document.getElementById('successMsg');
+        const downloadLink = document.getElementById('downloadLink');
+
+        payBtn.addEventListener('click', function() {
+            const email = document.getElementById('emailField').value.trim();
+            if (!email) {
+                document.getElementById('emailField').style.borderColor = 'rgba(255,80,80,0.4)';
+                setTimeout(() => {
+                    document.getElementById('emailField').style.borderColor = '';
+                }, 800);
+                return;
+            }
+            this.classList.add('loading');
+            setTimeout(() => {
+                this.classList.remove('loading');
+                // hide form, show success and download
+                formWrapper.classList.remove('visible');
+                successMsg.classList.add('visible');
+                downloadLink.classList.add('visible');
+                // add ?unlocked=true to URL (optional, for demonstration)
+                const url = new URL(window.location.href);
+                url.searchParams.set('unlocked', 'true');
+                window.history.replaceState({}, '', url);
+            }, 2000);
+        });
+
+        // ----- Check for ?unlocked=true on load -----
+        window.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('unlocked') === 'true') {
+                // skip the acquire flow and show download directly
+                acquireBtn.style.display = 'none';
+                formWrapper.classList.remove('visible');
+                successMsg.classList.add('visible');
+                downloadLink.classList.add('visible');
+            }
+        });
+    </script>
+</body>
+
+</html>
