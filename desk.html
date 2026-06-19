@@ -12,6 +12,11 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            /* LOCK SELECTION ON ALL ELEMENTS BY DEFAULT */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         
         body {
@@ -25,6 +30,18 @@
             justify-content: center;
             padding: 20px;
             text-align: center;
+            /* LOCK CURSOR TO ARROW */
+            cursor: default;
+        }
+        /* ALLOW SELECTION AND TEXT CURSOR ONLY INSIDE INPUT FIELDS */
+        
+        input,
+        textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+            cursor: text;
         }
         
         .desk-content {
@@ -62,16 +79,16 @@
             margin-bottom: 30px;
         }
         
-        .btn1 {
-            background: #1a1a1a;
+        .btn2 {
+            background: transparent;
             color: #f2f2f2;
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 50px;
             padding: 14px 40px;
             font-family: 'SF Pro Display', sans-serif;
-            font-weight: 400;
+            font-weight: 300;
             font-size: 13px;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.5s ease;
@@ -83,31 +100,33 @@
             min-width: 160px;
         }
         
-        .btn1:hover {
-            background: #2a2a2a;
+        .btn2:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.02);
             transform: scale(1.02);
         }
         
-        .btn1:active {
+        .btn2:active {
             transform: scale(0.96);
             transition-duration: 0.2s;
         }
         
-        .btn1.loading {
+        .btn2.loading {
             pointer-events: none;
-            background: #1a1a1a;
             transform: scale(1);
+            border-color: rgba(255, 255, 255, 0.15);
+            background: transparent;
         }
         
-        .btn1 .btn-text {
+        .btn2 .btn-text {
             transition: opacity 0.4s ease;
         }
         
-        .btn1.loading .btn-text {
+        .btn2.loading .btn-text {
             opacity: 0;
         }
         
-        .btn1 .spinner {
+        .btn2 .spinner {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -118,7 +137,7 @@
             height: 22px;
         }
         
-        .btn1.loading .spinner {
+        .btn2.loading .spinner {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
         }
@@ -236,7 +255,7 @@
             Don't have one? A single issue can be procured for $49.
         </div>
 
-        <button class="btn1" id="acquireBtn">
+        <button class="btn2" id="acquireBtn">
             <span class="btn-text">Acquire Brief</span>
             <div class="spinner">
                 <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -255,7 +274,7 @@
                 <label>Payment</label>
                 <input type="text" value="Payment will be integrated via Stripe/USDT." disabled style="opacity:0.5; font-style:italic;" />
             </div>
-            <button class="btn1" id="payBtn" style="width:100%; margin-top:8px;">
+            <button class="btn2" id="payBtn" style="width:100%; margin-top:8px;">
                 <span class="btn-text">Confirm</span>
                 <div class="spinner">
                     <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">

@@ -5,7 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Barvassi · The House of the Silent Hand</title>
-    <!-- SF Pro Display only -->
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
     <style>
         /* ----- GLOBAL RESET ----- */
@@ -14,6 +13,10 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         
         body {
@@ -23,11 +26,13 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             overflow-x: hidden;
+            cursor: default;
         }
         
         a {
             color: inherit;
             text-decoration: none;
+            cursor: default;
         }
         /* ----- ANIMATED BACKGROUND ----- */
         
@@ -125,42 +130,14 @@
             padding: 80px 20px 40px;
             position: relative;
         }
-        /* THE LOGO */
         
         .hero-logo {
             max-width: 180px;
-            /* CHANGE THIS TO RESIZE THE LOGO */
             height: auto;
             display: block;
             margin: 0 auto 32px auto;
             object-fit: contain;
             opacity: 0.9;
-        }
-        
-        .hero-title {
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
-            color: #f2f2f2;
-            max-width: 800px;
-            margin: 0 auto 16px;
-        }
-        /* The first line (We do not speak.) - LESS OPACITY, SMALLER */
-        
-        .hero-title .faint-line {
-            display: block;
-            font-weight: 300;
-            opacity: 0.4;
-            font-size: clamp(2rem, 5vw, 4rem);
-            margin-bottom: 8px;
-        }
-        /* The second line (We act.) - MORE OPACITY, BIGGER */
-        
-        .hero-title .bold-line {
-            display: block;
-            font-weight: 700;
-            opacity: 1;
-            font-size: clamp(3.5rem, 9vw, 7rem);
         }
         
         .hero-sub {
@@ -172,14 +149,13 @@
             max-width: 600px;
             line-height: 1.6;
         }
-        /* ----- THE TWO BUTTONS (Both are button2) ----- */
+        /* ----- THE SINGLE BUTTON ----- */
         
         .hero-actions {
             display: flex;
             align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
             justify-content: center;
+            flex-wrap: wrap;
         }
         
         .btn2 {
@@ -256,66 +232,6 @@
             to {
                 transform: rotate(360deg);
             }
-        }
-        /* ----- SCROLL INDICATOR ----- */
-        
-        .scroll-indicator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 80px;
-            width: 100%;
-            max-width: 400px;
-            opacity: 0.3;
-        }
-        
-        .scroll-line {
-            flex: 1;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.2);
-            position: relative;
-        }
-        
-        .scroll-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #f2f2f2;
-            flex-shrink: 0;
-        }
-        
-        .scroll-text {
-            font-weight: 300;
-            font-size: 10px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: #f2f2f2;
-        }
-        /* ----- VALUES GRID ----- */
-        
-        .values-bar {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            max-width: 800px;
-            margin: 40px auto 0;
-            width: 100%;
-            border-top: 1px solid rgba(255, 255, 255, 0.02);
-            padding-top: 40px;
-        }
-        
-        .value-item {
-            font-weight: 400;
-            font-size: 14px;
-            letter-spacing: 0.05em;
-            color: rgba(255, 255, 255, 0.2);
-            transition: color 0.7s ease;
-            text-align: center;
-        }
-        
-        .value-item:hover {
-            color: rgba(255, 255, 255, 0.5);
         }
         /* ----- LEGACY CHAMBERS ----- */
         
@@ -438,51 +354,6 @@
             flex-shrink: 0;
         }
         
-        #ledger {
-            align-items: center;
-            text-align: center;
-        }
-        
-        .ledger-table {
-            width: 100%;
-            max-width: 600px;
-            border-collapse: collapse;
-            margin: 0 auto 40px;
-        }
-        
-        .ledger-table td {
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(242, 242, 242, 0.08);
-            font-weight: 300;
-            font-size: 1rem;
-            letter-spacing: 0.02em;
-            text-align: left;
-        }
-        
-        .ledger-table td:last-child {
-            text-align: right;
-        }
-        
-        .ciphers-list {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 12px;
-            max-width: 500px;
-            margin: 0 auto 40px;
-            opacity: 0.5;
-            font-weight: 300;
-            font-size: 0.85rem;
-            letter-spacing: 0.05em;
-        }
-        
-        .ledger-footer {
-            font-weight: 300;
-            font-size: 0.9rem;
-            opacity: 0.4;
-            letter-spacing: 0.05em;
-        }
-        
         .site-footer {
             text-align: center;
             padding: 40px 20px;
@@ -495,10 +366,6 @@
         /* ----- RESPONSIVE ----- */
         
         @media (max-width: 768px) {
-            .hero-actions {
-                flex-direction: column;
-                width: 100%;
-            }
             .btn2 {
                 width: 100%;
                 max-width: 320px;
@@ -518,16 +385,6 @@
             .instrument-divider {
                 display: none;
             }
-            .values-bar {
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .values-bar {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
@@ -545,15 +402,7 @@
 
         <!-- ===== HERO ===== -->
         <section class="hero-wrapper">
-
-            <!-- REAL PNG LOGO HERE -->
             <img src="logo.png" alt="Barvassi" class="hero-logo" />
-
-            <!-- SPLIT HEADLINE -->
-            <h1 class="hero-title">
-                <span class="faint-line">We do not speak.</span>
-                <span class="bold-line">We act.</span>
-            </h1>
 
             <p class="hero-sub">
                 The private vault. Request entry by invitation only.
@@ -569,32 +418,6 @@
                         </svg>
                     </div>
                 </button>
-
-                <button class="btn2" id="viewLedgerBtn">
-                    <span class="btn-text">View Ledger</span>
-                    <div class="spinner">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10" stroke-opacity="0.2" />
-                            <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="1" />
-                        </svg>
-                    </div>
-                </button>
-            </div>
-
-            <!-- Scroll Line -->
-            <div class="scroll-indicator">
-                <div class="scroll-line"></div>
-                <span class="scroll-dot"></span>
-                <div class="scroll-line"></div>
-                <span class="scroll-text">Scroll</span>
-            </div>
-
-            <!-- Bottom 4 Values -->
-            <div class="values-bar">
-                <span class="value-item">Silence</span>
-                <span class="value-item">Transparency</span>
-                <span class="value-item">Dignity</span>
-                <span class="value-item">Persistence</span>
             </div>
         </section>
 
@@ -632,29 +455,6 @@
             </div>
         </section>
 
-        <!-- ===== CHAMBER 4: THE LEDGER ===== -->
-        <section id="ledger" class="chamber">
-            <table class="ledger-table">
-                <tr>
-                    <td>Total Received</td>
-                    <td>$4,250</td>
-                </tr>
-                <tr>
-                    <td>Total Spent</td>
-                    <td>$3,980</td>
-                </tr>
-                <tr>
-                    <td>Last Mission</td>
-                    <td>Repair of Municipal Water Pump #4 — Aleppo, 19.06.26</td>
-                </tr>
-            </table>
-            <div class="ciphers-list">
-                <span>P-045</span><span>P-102</span><span>P-067</span><span>P-189</span>
-                <span>P-221</span><span>P-033</span><span>P-078</span><span>P-144</span>
-            </div>
-            <div class="ledger-footer">For the land, in silence.</div>
-        </section>
-
         <!-- ===== SITE FOOTER ===== -->
         <footer class="site-footer">
             © 2026 The House of Barvassi. All rights reserved.
@@ -663,22 +463,11 @@
     </div>
 
     <script>
-        // ===== HERO BUTTON ACTIONS =====
         document.getElementById('enterChamberBtn').addEventListener('click', function() {
             this.classList.add('loading');
             setTimeout(() => {
                 this.classList.remove('loading');
                 document.getElementById('patron').scrollIntoView({
-                    behavior: 'smooth'
-                });
-            }, 600);
-        });
-
-        document.getElementById('viewLedgerBtn').addEventListener('click', function() {
-            this.classList.add('loading');
-            setTimeout(() => {
-                this.classList.remove('loading');
-                document.getElementById('ledger').scrollIntoView({
                     behavior: 'smooth'
                 });
             }, 600);
