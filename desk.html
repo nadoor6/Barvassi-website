@@ -15,10 +15,9 @@
         }
         
         body {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'SF Pro Display', sans-serif;
             background: #0c0c0c;
             color: #f2f2f2;
-            cursor: crosshair;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -69,7 +68,7 @@
             border: none;
             border-radius: 50px;
             padding: 14px 40px;
-            font-family: inherit;
+            font-family: 'SF Pro Display', sans-serif;
             font-weight: 400;
             font-size: 13px;
             letter-spacing: 0.12em;
@@ -165,7 +164,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             padding: 12px 16px;
-            font-family: inherit;
+            font-family: 'SF Pro Display', sans-serif;
             font-weight: 300;
             color: #f2f2f2;
             outline: none;
@@ -230,7 +229,6 @@
 
 <body>
     <div class="desk-content">
-        <!-- blinking cursor and heading -->
         <div class="desk-title">
             Enter your subscription cipher to access the brief. <span class="blink-cursor"></span>
         </div>
@@ -238,7 +236,6 @@
             Don't have one? A single issue can be procured for $49.
         </div>
 
-        <!-- button1 -->
         <button class="btn1" id="acquireBtn">
             <span class="btn-text">Acquire Brief</span>
             <div class="spinner">
@@ -249,7 +246,6 @@
             </div>
         </button>
 
-        <!-- form (hidden) -->
         <div class="form-wrapper" id="formWrapper">
             <div class="form-group">
                 <label>Email</label>
@@ -270,7 +266,6 @@
             </button>
         </div>
 
-        <!-- success & download -->
         <div class="success-msg" id="successMsg">Thank you, check your inbox.</div>
         <a href="brief-01.pdf" class="download-link" id="downloadLink">Download Brief</a>
 
@@ -278,12 +273,10 @@
     </div>
 
     <script>
-        // ----- ACQUIRE BUTTON (button1) -----
         const acquireBtn = document.getElementById('acquireBtn');
         const formWrapper = document.getElementById('formWrapper');
 
         acquireBtn.addEventListener('click', function() {
-            // simulate loading and then show form
             this.classList.add('loading');
             setTimeout(() => {
                 this.classList.remove('loading');
@@ -292,7 +285,6 @@
             }, 1200);
         });
 
-        // ----- PAY BUTTON (button1) -----
         const payBtn = document.getElementById('payBtn');
         const successMsg = document.getElementById('successMsg');
         const downloadLink = document.getElementById('downloadLink');
@@ -309,22 +301,18 @@
             this.classList.add('loading');
             setTimeout(() => {
                 this.classList.remove('loading');
-                // hide form, show success and download
                 formWrapper.classList.remove('visible');
                 successMsg.classList.add('visible');
                 downloadLink.classList.add('visible');
-                // add ?unlocked=true to URL (optional, for demonstration)
                 const url = new URL(window.location.href);
                 url.searchParams.set('unlocked', 'true');
                 window.history.replaceState({}, '', url);
             }, 2000);
         });
 
-        // ----- Check for ?unlocked=true on load -----
         window.addEventListener('DOMContentLoaded', function() {
             const params = new URLSearchParams(window.location.search);
             if (params.get('unlocked') === 'true') {
-                // skip the acquire flow and show download directly
                 acquireBtn.style.display = 'none';
                 formWrapper.classList.remove('visible');
                 successMsg.classList.add('visible');

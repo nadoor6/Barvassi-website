@@ -17,13 +17,14 @@
         }
         
         body {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            /* Strictly SF Pro. If CDN fails, it falls back to a generic sans-serif. */
+            font-family: 'SF Pro Display', sans-serif;
             background: #0c0c0c;
             color: #f2f2f2;
-            cursor: crosshair;
             scroll-behavior: smooth;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            /* Default cursor restored - removed 'crosshair' */
         }
         
         a {
@@ -94,7 +95,7 @@
             border: none;
             border-radius: 50px;
             padding: 14px 40px;
-            font-family: inherit;
+            font-family: 'SF Pro Display', sans-serif;
             font-weight: 400;
             font-size: 13px;
             letter-spacing: 0.12em;
@@ -330,7 +331,7 @@
             opacity: 0.4;
             letter-spacing: 0.1em;
         }
-        /* ----- Values Grid (optional, placed after Patron or before Instruments) ----- */
+        /* ----- Values Grid ----- */
         
         #values {
             padding: 40px 20px;
@@ -448,7 +449,7 @@
         </div>
     </section>
 
-    <!-- ===== VALUES GRID (inserted between Patron and Instruments) ===== -->
+    <!-- ===== VALUES GRID ===== -->
     <section id="values">
         <div class="values-grid">
             <div class="value-item"><strong>Silence</strong>We do not announce, we act.</div>
@@ -511,20 +512,16 @@
     </footer>
 
     <script>
-        // ----- SCROLL TO NEXT CHAMBER (button1) -----
         document.getElementById('enterChamberBtn').addEventListener('click', function() {
-            // Trigger loading state (optional, but we'll keep it simple)
             this.classList.add('loading');
             setTimeout(() => {
                 this.classList.remove('loading');
-                // Scroll to the Patron section
                 document.getElementById('patron').scrollIntoView({
                     behavior: 'smooth'
                 });
-            }, 800); // short delay to show the spinner
+            }, 800);
         });
 
-        // ----- PATRON LINK (placeholder) -----
         document.querySelector('.patron-link').addEventListener('click', function(e) {
             e.preventDefault();
             alert('The door to the Patron is not yet open.');
