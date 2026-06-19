@@ -5,10 +5,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Barvassi · The House of the Silent Hand</title>
-    <!-- SF Pro Display via CDN -->
+    <!-- SF Pro Display only -->
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
     <style>
-        /* ----- Global Reset & Base ----- */
+        /* ----- GLOBAL RESET ----- */
         
         * {
             margin: 0;
@@ -17,84 +17,252 @@
         }
         
         body {
-            /* Strictly SF Pro. If CDN fails, it falls back to a generic sans-serif. */
             font-family: 'SF Pro Display', sans-serif;
             background: #0c0c0c;
             color: #f2f2f2;
-            scroll-behavior: smooth;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            /* Default cursor restored - removed 'crosshair' */
+            overflow-x: hidden;
         }
         
         a {
             color: inherit;
             text-decoration: none;
         }
+        /* ----- ANIMATED BACKGROUND (Fluid Smoke CSS) ----- */
+        
+        .liquid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            background: #0c0c0c;
+        }
+        
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            will-change: transform;
+        }
+        
+        .blob-1 {
+            width: 60vw;
+            height: 60vw;
+            background: #f2f2f2;
+            top: -20%;
+            left: -10%;
+            animation: drift1 30s infinite alternate ease-in-out;
+        }
+        
+        .blob-2 {
+            width: 40vw;
+            height: 40vw;
+            background: #f2f2f2;
+            bottom: -20%;
+            right: -10%;
+            animation: drift2 35s infinite alternate-reverse ease-in-out;
+            opacity: 0.10;
+        }
+        
+        .blob-3 {
+            width: 30vw;
+            height: 30vw;
+            background: #888;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: drift3 20s infinite alternate ease-in-out;
+            opacity: 0.05;
+        }
+        
+        @keyframes drift1 {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                transform: translate(40px, -30px) scale(1.1);
+            }
+        }
+        
+        @keyframes drift2 {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                transform: translate(-50px, 40px) scale(1.15);
+            }
+        }
+        
+        @keyframes drift3 {
+            0% {
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.2) rotate(45deg);
+            }
+        }
+        /* ----- CONTAINERS ----- */
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 20px;
         }
-        /* ----- Chambers ----- */
+        /* ----- GLASS HEADER ----- */
         
-        .chamber {
+        .glass-nav {
+            margin: 20px auto 0;
+            width: 100%;
+            max-width: 960px;
+            background: rgba(12, 12, 12, 0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 9999px;
+            padding: 12px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: border-color 0.7s ease, background 0.7s ease;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .glass-nav:hover {
+            border-color: rgba(255, 255, 255, 0.08);
+            background: rgba(12, 12, 12, 0.4);
+        }
+        
+        .nav-brand {
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 0.15em;
+            color: #f2f2f2;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .nav-brand img {
+            height: 28px;
+            width: auto;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+        
+        .nav-link {
+            font-weight: 400;
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            transition: color 0.7s ease;
+            cursor: default;
+        }
+        
+        .nav-link:hover {
+            color: #f2f2f2;
+        }
+        
+        .nav-cta {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            padding: 8px 20px;
+            color: #f2f2f2;
+            font-family: 'SF Pro Display', sans-serif;
+            font-weight: 400;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.7s ease;
+        }
+        
+        .nav-cta:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        /* ----- HERO SECTION ----- */
+        
+        .hero-wrapper {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 60px 20px;
-            border-bottom: 1px solid rgba(242, 242, 242, 0.05);
-        }
-        
-        .chamber:last-child {
-            border-bottom: none;
-        }
-        /* ----- Chamber 1: The Wreath (Hero) ----- */
-        
-        #hero {
             align-items: center;
             text-align: center;
+            padding: 80px 20px 40px;
+            position: relative;
         }
+        /* Top Badge */
         
-        .hero-logo {
-            width: 200px;
-            height: auto;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 8px rgba(242, 242, 242, 0.1));
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 9999px;
+            padding: 6px 16px;
+            font-weight: 300;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+            margin-bottom: 32px;
         }
+        /* Headline */
         
-        .hero-line {
-            width: 50px;
-            height: 1px;
-            background: #f2f2f2;
+        .hero-title {
+            font-weight: 700;
+            font-size: clamp(3rem, 8vw, 6rem);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            color: #f2f2f2;
+            max-width: 800px;
             margin: 0 auto 16px;
         }
         
-        .hero-arabic {
-            font-weight: 700;
-            font-size: 2.5rem;
-            letter-spacing: 0.1em;
-            margin-bottom: 24px;
+        .hero-title span {
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.2);
+            display: block;
         }
         
-        .hero-tagline {
+        .hero-sub {
             font-weight: 300;
-            font-size: 1.2rem;
-            letter-spacing: 0.3em;
-            line-height: 1.6;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.05em;
             margin-bottom: 40px;
-            opacity: 0.8;
+            max-width: 600px;
+            line-height: 1.6;
         }
-        /* ----- button1 (locked in memory) ----- */
+        /* Dual Buttons */
+        
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
         
         .btn1 {
+            /* The Primary Dark Pill */
             background: #1a1a1a;
             color: #f2f2f2;
             border: none;
             border-radius: 50px;
-            padding: 14px 40px;
+            padding: 14px 32px;
             font-family: 'SF Pro Display', sans-serif;
             font-weight: 400;
             font-size: 13px;
@@ -106,8 +274,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-height: 50px;
-            min-width: 160px;
+            min-height: 48px;
+            min-width: 140px;
         }
         
         .btn1:hover {
@@ -162,7 +330,103 @@
                 transform: rotate(360deg);
             }
         }
-        /* ----- Chamber 2: The Patron ----- */
+        
+        .btn2 {
+            /* The Outline Button */
+            background: transparent;
+            color: #f2f2f2;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50px;
+            padding: 14px 32px;
+            font-family: 'SF Pro Display', sans-serif;
+            font-weight: 300;
+            font-size: 13px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            min-width: 140px;
+        }
+        
+        .btn2:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.02);
+            transform: scale(1.02);
+        }
+        /* Scroll Line */
+        
+        .scroll-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 80px;
+            width: 100%;
+            max-width: 400px;
+            opacity: 0.3;
+        }
+        
+        .scroll-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        
+        .scroll-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #f2f2f2;
+            flex-shrink: 0;
+        }
+        
+        .scroll-text {
+            font-weight: 300;
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #f2f2f2;
+        }
+        /* Bottom 4 Values Grid */
+        
+        .values-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 800px;
+            margin: 40px auto 0;
+            width: 100%;
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+            padding-top: 40px;
+        }
+        
+        .value-item {
+            font-weight: 400;
+            font-size: 14px;
+            letter-spacing: 0.15em;
+            color: rgba(255, 255, 255, 0.2);
+            transition: color 0.7s ease;
+            text-align: center;
+        }
+        
+        .value-item:hover {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        /* ----- LEGACY CHAMBERS (Patron, Instruments, Ledger) ----- */
+        
+        .chamber {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px 20px;
+            border-top: 1px solid rgba(242, 242, 242, 0.03);
+        }
         
         #patron {
             flex-direction: row;
@@ -175,7 +439,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
             min-height: 300px;
         }
         
@@ -202,7 +465,6 @@
         
         .patron-right .signature {
             font-family: 'Brush Script MT', cursive;
-            /* fallback for signature */
             font-size: 1.8rem;
             font-weight: 400;
             opacity: 0.7;
@@ -224,7 +486,6 @@
         .patron-link:hover {
             border-color: #f2f2f2;
         }
-        /* ----- Chamber 3: The Instruments ----- */
         
         #instruments {
             align-items: center;
@@ -246,7 +507,6 @@
             padding: 40px 30px;
             border-radius: 0;
             text-align: left;
-            position: relative;
         }
         
         .instrument-card h3 {
@@ -271,7 +531,6 @@
             padding: 4px 12px;
             display: inline-block;
             border-radius: 0;
-            color: #f2f2f2;
         }
         
         .instrument-card .counter {
@@ -286,7 +545,6 @@
             background: rgba(242, 242, 242, 0.15);
             flex-shrink: 0;
         }
-        /* ----- Chamber 4: The Ledger ----- */
         
         #ledger {
             align-items: center;
@@ -331,35 +589,6 @@
             opacity: 0.4;
             letter-spacing: 0.1em;
         }
-        /* ----- Values Grid ----- */
-        
-        #values {
-            padding: 40px 20px;
-            text-align: center;
-        }
-        
-        .values-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 30px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        
-        .value-item {
-            font-weight: 300;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            opacity: 0.7;
-        }
-        
-        .value-item strong {
-            font-weight: 700;
-            display: block;
-            margin-bottom: 4px;
-            opacity: 1;
-        }
-        /* ----- Global Footer ----- */
         
         .site-footer {
             text-align: center;
@@ -373,12 +602,34 @@
         /* ----- Responsive ----- */
         
         @media (max-width: 768px) {
+            .glass-nav {
+                flex-direction: column;
+                align-items: stretch;
+                border-radius: 24px;
+                gap: 14px;
+                padding: 18px 24px;
+                max-width: 100%;
+            }
+            .nav-links {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+            .nav-brand {
+                justify-content: center;
+            }
+            .hero-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            .btn1,
+            .btn2 {
+                width: 100%;
+                max-width: 320px;
+            }
             #patron {
                 flex-direction: column;
                 gap: 30px;
-            }
-            .patron-left {
-                min-height: 100px;
             }
             .patron-right {
                 padding-left: 0;
@@ -391,19 +642,14 @@
             .instrument-divider {
                 display: none;
             }
-            .values-grid {
+            .values-bar {
                 grid-template-columns: 1fr 1fr;
-            }
-            .hero-logo {
-                width: 150px;
-            }
-            .hero-arabic {
-                font-size: 2rem;
+                gap: 20px;
             }
         }
         
         @media (max-width: 480px) {
-            .values-grid {
+            .values-bar {
                 grid-template-columns: 1fr;
             }
         }
@@ -412,114 +658,155 @@
 
 <body>
 
-    <!-- ===== CHAMBER 1: THE WREATH ===== -->
-    <section id="hero" class="chamber">
-        <img src="logo.png" alt="Barvassi Wreath" class="hero-logo" />
-        <div class="hero-line"></div>
-        <div class="hero-arabic">بارڤاسي</div>
-        <div class="hero-tagline">
-            The House of the Silent Hand.<br /> Le Conseil du Levant.
-        </div>
-        <button class="btn1" id="enterChamberBtn">
-            <span class="btn-text">Enter the Chamber</span>
-            <div class="spinner">
-                <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10" stroke-opacity="0.2" />
-                    <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="1" />
-                </svg>
+    <!-- ===== ANIMATED FLUID BACKGROUND ===== -->
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="container">
+
+        <!-- ===== GLASS NAV ===== -->
+        <nav class="glass-nav">
+            <a href="/" class="nav-brand">
+                <img src="logo.png" alt="Barvassi" /> Barvassi
+            </a>
+            <div class="nav-links">
+                <span class="nav-link">Council</span>
+                <span class="nav-link">The Hand</span>
+                <span class="nav-link">Ledger</span>
             </div>
-        </button>
-    </section>
+            <button class="nav-cta">Enter Vault</button>
+        </nav>
 
-    <!-- ===== CHAMBER 2: THE PATRON ===== -->
-    <section id="patron" class="chamber">
-        <div class="patron-left">
-            <div class="patron-line"></div>
-        </div>
-        <div class="patron-right">
-            <p>Diplomate.</p>
-            <p>Patron of the Levant Council.</p>
-            <p>Chairman of Barvassi.</p>
-            <p>Aleppo. Lyon. 45°N:4°E:XVIII.</p>
-            <p>He does not give interviews.</p>
-            <p>He does not attend parties.</p>
-            <p>He builds.</p>
-            <div class="signature">— Diplomate</div>
-            <a href="/chamber" class="patron-link">To reach the Patron, you must know the door.</a>
-        </div>
-    </section>
+        <!-- ===== HERO (Reference Image Style) ===== -->
+        <section class="hero-wrapper">
 
-    <!-- ===== VALUES GRID ===== -->
-    <section id="values">
-        <div class="values-grid">
-            <div class="value-item"><strong>Silence</strong>We do not announce, we act.</div>
-            <div class="value-item"><strong>Transparency</strong>Every lira and every step is documented.</div>
-            <div class="value-item"><strong>Dignity</strong>We repair without condescension.</div>
-            <div class="value-item"><strong>Persistence</strong>Mission after mission, until it becomes habit.</div>
-        </div>
-    </section>
+            <div class="hero-badge">The House of the Silent Hand</div>
 
-    <!-- ===== CHAMBER 3: THE INSTRUMENTS ===== -->
-    <section id="instruments" class="chamber">
-        <div class="instruments-grid">
-            <div class="instrument-card">
-                <h3>The Levant Council</h3>
-                <p>Political architecture for Syria &amp; Lebanon. Closed session.</p>
-                <span class="badge">[CLASSIFIED]</span>
+            <h1 class="hero-title">
+                Silence. <br />
+                <span>Stone. Shadow.</span>
+            </h1>
+
+            <p class="hero-sub">
+                The private vault. Request entry by invitation only.
+            </p>
+
+            <div class="hero-actions">
+                <button class="btn1" id="enterChamberBtn">
+                    <span class="btn-text">Enter the Chamber</span>
+                    <div class="spinner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" stroke-opacity="0.2" />
+                            <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="1" />
+                        </svg>
+                    </div>
+                </button>
+                <button class="btn2" id="viewLedgerBtn">View Ledger</button>
             </div>
-            <div class="instrument-divider"></div>
-            <div class="instrument-card">
-                <h3>The Silent Hand</h3>
-                <p>Civic repair. No words. Only work.</p>
-                <span class="badge">[ACTIVE]</span>
-                <div class="counter">Missions Completed: 12</div>
+
+            <!-- Scroll Line -->
+            <div class="scroll-indicator">
+                <div class="scroll-line"></div>
+                <span class="scroll-dot"></span>
+                <div class="scroll-line"></div>
+                <span class="scroll-text">Scroll</span>
             </div>
-        </div>
-    </section>
 
-    <!-- ===== CHAMBER 4: THE LEDGER ===== -->
-    <section id="ledger" class="chamber">
-        <table class="ledger-table">
-            <tr>
-                <td>Total Received</td>
-                <td>$4,250</td>
-            </tr>
-            <tr>
-                <td>Total Spent</td>
-                <td>$3,980</td>
-            </tr>
-            <tr>
-                <td>Last Mission</td>
-                <td>Repair of Municipal Water Pump #4 — Aleppo, 19.06.26</td>
-            </tr>
-        </table>
-        <div class="ciphers-list">
-            <span>P-045</span><span>P-102</span><span>P-067</span><span>P-189</span>
-            <span>P-221</span><span>P-033</span><span>P-078</span><span>P-144</span>
-            <span>P-255</span><span>P-009</span><span>P-112</span><span>P-170</span>
-            <span>P-056</span><span>P-199</span><span>P-031</span><span>P-088</span>
-            <span>P-210</span><span>P-042</span><span>P-123</span><span>P-076</span>
-            <span>P-301</span><span>P-050</span><span>P-134</span><span>P-177</span>
-            <span>P-020</span><span>P-090</span><span>P-165</span><span>P-245</span>
-            <span>P-011</span><span>P-068</span>
-        </div>
-        <div class="ledger-footer">بارڤاسي. For the land, in silence.</div>
-    </section>
+            <!-- Bottom 4 Values -->
+            <div class="values-bar">
+                <span class="value-item">Silence</span>
+                <span class="value-item">Transparency</span>
+                <span class="value-item">Dignity</span>
+                <span class="value-item">Persistence</span>
+            </div>
+        </section>
 
-    <!-- ===== SITE FOOTER ===== -->
-    <footer class="site-footer">
-        © 2026 The House of Barvassi. All rights reserved.
-    </footer>
+        <!-- ===== CHAMBER 2: THE PATRON ===== -->
+        <section id="patron" class="chamber">
+            <div class="patron-left">
+                <div class="patron-line"></div>
+            </div>
+            <div class="patron-right">
+                <p>Diplomate.</p>
+                <p>Patron of the Levant Council.</p>
+                <p>Chairman of Barvassi.</p>
+                <p>Aleppo. Lyon. 45°N:4°E:XVIII.</p>
+                <p>He does not give interviews.</p>
+                <p>He does not attend parties.</p>
+                <p>He builds.</p>
+                <div class="signature">— Diplomate</div>
+                <a href="/chamber" class="patron-link">To reach the Patron, you must know the door.</a>
+            </div>
+        </section>
+
+        <!-- ===== CHAMBER 3: THE INSTRUMENTS ===== -->
+        <section id="instruments" class="chamber">
+            <div class="instruments-grid">
+                <div class="instrument-card">
+                    <h3>The Levant Council</h3>
+                    <p>Political architecture for Syria &amp; Lebanon. Closed session.</p>
+                    <span class="badge">[CLASSIFIED]</span>
+                </div>
+                <div class="instrument-divider"></div>
+                <div class="instrument-card">
+                    <h3>The Silent Hand</h3>
+                    <p>Civic repair. No words. Only work.</p>
+                    <span class="badge">[ACTIVE]</span>
+                    <div class="counter">Missions Completed: 12</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CHAMBER 4: THE LEDGER ===== -->
+        <section id="ledger" class="chamber">
+            <table class="ledger-table">
+                <tr>
+                    <td>Total Received</td>
+                    <td>$4,250</td>
+                </tr>
+                <tr>
+                    <td>Total Spent</td>
+                    <td>$3,980</td>
+                </tr>
+                <tr>
+                    <td>Last Mission</td>
+                    <td>Repair of Municipal Water Pump #4 — Aleppo, 19.06.26</td>
+                </tr>
+            </table>
+            <div class="ciphers-list">
+                <span>P-045</span><span>P-102</span><span>P-067</span><span>P-189</span>
+                <span>P-221</span><span>P-033</span><span>P-078</span><span>P-144</span>
+            </div>
+            <div class="ledger-footer">بارڤاسي. For the land, in silence.</div>
+        </section>
+
+        <!-- ===== SITE FOOTER ===== -->
+        <footer class="site-footer">
+            © 2026 The House of Barvassi. All rights reserved.
+        </footer>
+
+    </div>
 
     <script>
+        // ===== HERO BUTTON ACTIONS =====
         document.getElementById('enterChamberBtn').addEventListener('click', function() {
+            // Minimal loading demonstration (optional)
             this.classList.add('loading');
             setTimeout(() => {
                 this.classList.remove('loading');
                 document.getElementById('patron').scrollIntoView({
                     behavior: 'smooth'
                 });
-            }, 800);
+            }, 600);
+        });
+
+        document.getElementById('viewLedgerBtn').addEventListener('click', function() {
+            document.getElementById('ledger').scrollIntoView({
+                behavior: 'smooth'
+            });
         });
 
         document.querySelector('.patron-link').addEventListener('click', function(e) {
