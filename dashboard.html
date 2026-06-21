@@ -9,7 +9,7 @@
 
     <!-- ===== EMBEDDED KEYS DIRECTLY HERE ===== -->
     <script>
-        // Your Supabase credentials (hardcoded for this file to test)
+        // Your Supabase credentials
         const SUPABASE_URL = "https://inycllornehmohderdfz.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_Bnkek18bbEnBgnis-nUVKw_QABqaYKj";
         console.log("✅ Keys loaded!");
@@ -466,6 +466,8 @@
                     <div class="dropdown-info">
                         <div class="name" id="dropName">Loading…</div>
                         <div class="email" id="dropEmail">—</div>
+                        <span class="badge"></span>
+                        <!-- Badge will be filled by JS -->
                     </div>
                 </div>
 
@@ -518,7 +520,6 @@
     <script>
         console.log("✅ Complex Dashboard Script Loaded");
 
-        // Using keys defined at the top of the HTML
         let supabaseClient = null;
         try {
             if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
@@ -789,11 +790,13 @@
                 alert('Failed to upload avatar: ' + uploadError.message);
                 return;
             }
+
+            // ✅ FIX: Replaced nested destructuring with standard assignment to avoid parsing errors
             const {
-                data: {
-                    publicUrl
-                }
+                data
             } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
+            const publicUrl = data.publicUrl;
+
             const {
                 error: updateError
             } = await supabaseClient.from('clients').update({
