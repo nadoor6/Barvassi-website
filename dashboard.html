@@ -19,74 +19,188 @@
             font-family: 'SF Pro Display', -apple-system, sans-serif;
             background: #0c0c0c;
             color: #f2f2f2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
-            padding: 20px;
+            overflow-x: hidden;
         }
         
-        .container {
-            max-width: 600px;
-            width: 100%;
-            text-align: center;
-            animation: fadeUp 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 32px;
         }
+        /* ---- TOP BAR ---- */
         
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .logo {
-            max-width: 100px;
-            height: auto;
-            margin-bottom: 20px;
-            opacity: 0.8;
-        }
-        
-        .logo-fallback {
-            display: none;
-            font-family: 'SF Pro Display', sans-serif;
-            font-size: 28px;
-            font-weight: 400;
-            color: #f2f2f2;
-            opacity: 0.8;
-            letter-spacing: 0.15em;
-            margin-bottom: 20px;
-        }
-        
-        .profile-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            padding: 32px;
-            margin-top: 10px;
-        }
-        
-        .profile-header {
+        .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         }
         
-        .user-name {
+        .brand {
             font-weight: 500;
-            font-size: 24px;
+            font-size: 20px;
+            letter-spacing: 0.1em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
-        .user-name .badge {
-            font-size: 18px;
-            margin-left: 8px;
+        .brand img {
+            height: 28px;
+            width: auto;
+        }
+        
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .avatar-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.3s;
+            position: relative;
+        }
+        
+        .avatar-btn:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .avatar-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .avatar-btn .initials {
+            font-weight: 400;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        /* ---- PROFILE DROPDOWN (glass) ---- */
+        
+        .dropdown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        .dropdown-overlay.open {
+            pointer-events: auto;
+        }
+        
+        .dropdown {
+            position: absolute;
+            top: 80px;
+            right: 32px;
+            width: 360px;
+            max-width: 90vw;
+            background: rgba(12, 12, 12, 0.6);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            transform: translateY(-10px) scale(0.96);
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
+        }
+        
+        .dropdown.open {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        
+        .dropdown-profile {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .dropdown-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .dropdown-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .dropdown-avatar .initials {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 400;
+            font-size: 22px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .dropdown-avatar .upload-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            color: #f2f2f2;
+        }
+        
+        .dropdown-avatar:hover .upload-overlay {
+            opacity: 1;
+        }
+        
+        .dropdown-info {
+            flex: 1;
+        }
+        
+        .dropdown-info .name {
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .dropdown-info .email {
+            font-weight: 300;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .dropdown-info .badge {
+            font-size: 14px;
+            margin-left: 6px;
             vertical-align: middle;
         }
         
@@ -98,218 +212,269 @@
             color: #f5c518;
         }
         
+        .dropdown-details {
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 16px;
+            margin-top: 16px;
+        }
+        
         .detail-row {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-        }
-        
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        
-        .detail-label {
+            padding: 8px 0;
             font-weight: 300;
-            opacity: 0.6;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
         }
         
-        .detail-value {
-            font-weight: 400;
-        }
-        
-        .edit-btn {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            padding: 6px 16px;
-            color: #f2f2f2;
-            font-family: 'SF Pro Display', sans-serif;
-            font-weight: 300;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 4px;
-        }
-        
-        .edit-btn:hover {
-            border-color: rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.02);
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 50px;
-            padding: 10px 24px;
-            color: #f2f2f2;
-            font-family: 'SF Pro Display', sans-serif;
-            font-weight: 300;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.5s ease;
-        }
-        
-        .btn-secondary:hover {
-            border-color: rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.02);
-        }
-        
-        .btn-secondary:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            border-color: rgba(255, 255, 255, 0.05);
-        }
-        
-        .btn-logout {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            padding: 10px 24px;
-            color: rgba(255, 255, 255, 0.5);
-            font-family: 'SF Pro Display', sans-serif;
-            font-weight: 300;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.5s ease;
-            margin-top: 24px;
-        }
-        
-        .btn-logout:hover {
-            border-color: rgba(255, 255, 255, 0.2);
+        .detail-row .val {
             color: #f2f2f2;
         }
         
-        .hidden {
-            display: none;
-        }
-        
-        .edit-inline {
+        .detail-row .edit-inline {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-top: 4px;
+            flex: 1;
+            justify-content: flex-end;
         }
         
-        .edit-inline input {
+        .detail-row .edit-inline input {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 6px 12px;
+            border-radius: 6px;
+            padding: 4px 8px;
             color: #f2f2f2;
             font-family: inherit;
-            font-size: 14px;
-            width: 100%;
+            font-size: 13px;
+            width: 140px;
             outline: none;
         }
         
-        .edit-inline input:focus {
+        .detail-row .edit-inline input:focus {
             border-color: rgba(255, 255, 255, 0.3);
         }
         
-        .edit-inline button {
+        .detail-row .edit-inline button {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            padding: 6px 14px;
+            border-radius: 6px;
+            padding: 4px 10px;
             color: #f2f2f2;
             font-family: inherit;
             font-size: 11px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: 0.3s;
         }
         
-        .edit-inline button:hover {
+        .detail-row .edit-inline button:hover {
             border-color: rgba(255, 255, 255, 0.3);
         }
         
-        .footer {
-            margin-top: 40px;
-            font-weight: 300;
-            font-size: 9px;
-            letter-spacing: 0.2em;
-            color: rgba(255, 255, 255, 0.06);
-            text-transform: uppercase;
+        .detail-row .edit-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+            margin-left: 8px;
+            transition: color 0.3s;
         }
         
+        .detail-row .edit-btn:hover {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .dropdown-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 16px;
+        }
+        
+        .dropdown-actions button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 8px 0;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 300;
+            color: #f2f2f2;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+        }
+        
+        .dropdown-actions button:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .dropdown-actions button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .logout-btn {
+            margin-top: 4px;
+            border-color: rgba(255, 255, 255, 0.05) !important;
+            color: rgba(255, 255, 255, 0.3) !important;
+        }
+        
+        .logout-btn:hover {
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            color: #f2f2f2 !important;
+        }
+        /* ---- MAIN DASHBOARD CONTENT (placeholder) ---- */
+        
+        .main-content {
+            margin-top: 40px;
+            text-align: center;
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .main-content h2 {
+            font-weight: 400;
+            font-size: 28px;
+            opacity: 0.6;
+            letter-spacing: 0.05em;
+        }
+        
+        .main-content p {
+            font-weight: 300;
+            font-size: 14px;
+            opacity: 0.3;
+            margin-top: 8px;
+        }
+        /* ---- FILE INPUT (hidden) ---- */
+        
+        #avatarInput {
+            display: none;
+        }
+        /* ---- RESPONSIVE ---- */
+        
         @media (max-width: 600px) {
-            .profile-card {
-                padding: 20px;
+            .dashboard-container {
+                padding: 16px;
             }
-            .detail-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
+            .dropdown {
+                right: 16px;
+                width: 320px;
             }
-            .edit-inline {
-                width: 100%;
+            .top-bar {
+                flex-wrap: wrap;
+                gap: 12px;
             }
-            .action-buttons {
-                flex-direction: column;
+            .brand {
+                font-size: 18px;
+            }
+            .brand img {
+                height: 24px;
+            }
+            .avatar-btn {
+                width: 40px;
+                height: 40px;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <img src="PASTE_YOUR_BASE64_LOGO_HERE" alt="Barvassi" class="logo" onerror="this.style.display='none'; document.getElementById('logoFallbackDash').style.display='block';" />
-        <div id="logoFallbackDash" class="logo-fallback">Barvassi</div>
 
-        <div class="profile-card" id="profileCard">
-            <div class="profile-header">
-                <div class="user-name" id="userNameDisplay">Loading…</div>
-                <div id="badgeContainer"></div>
-            </div>
+    <div class="dashboard-container">
 
-            <div class="detail-row">
-                <span class="detail-label">Barvassi ID</span>
-                <span class="detail-value" id="accountIdDisplay">—</span>
+        <!-- TOP BAR -->
+        <header class="top-bar">
+            <div class="brand">
+                <img src="PASTE_YOUR_BASE64_LOGO_HERE" alt="Barvassi" onerror="this.style.display='none'; document.getElementById('brandText').style.display='block';" />
+                <span id="brandText" style="display:none;">Barvassi</span>
+                <span style="font-weight:300; font-size:14px; opacity:0.4;">· The Vault</span>
             </div>
-            <div class="detail-row">
-                <span class="detail-label">Email</span>
-                <span class="detail-value" id="emailDisplay">—</span>
+            <div class="top-right">
+                <button class="avatar-btn" id="avatarBtn">
+                    <span class="initials" id="avatarInitials">B</span>
+                    <img id="avatarImg" style="display:none;" alt="" />
+                </button>
             </div>
-            <div class="detail-row">
-                <span class="detail-label">Phone</span>
-                <div class="detail-value" id="phoneDisplay">
-                    <span id="phoneText">—</span>
-                    <div class="edit-inline hidden" id="phoneEdit">
-                        <input type="text" id="phoneInputEdit" placeholder="+963 99 123 4567" />
-                        <button id="phoneSaveBtn">Save</button>
-                        <button id="phoneCancelBtn">Cancel</button>
+        </header>
+
+        <!-- DROPDOWN OVERLAY & CONTAINER -->
+        <div class="dropdown-overlay" id="dropdownOverlay">
+            <div class="dropdown" id="dropdown">
+                <!-- Profile header -->
+                <div class="dropdown-profile">
+                    <div class="dropdown-avatar" id="dropAvatar">
+                        <span class="initials" id="dropInitials">B</span>
+                        <img id="dropImg" style="display:none;" alt="" />
+                        <div class="upload-overlay">Upload</div>
                     </div>
-                    <button class="edit-btn" id="phoneEditBtn">Edit</button>
+                    <div class="dropdown-info">
+                        <div class="name" id="dropName">Loading…</div>
+                        <div class="email" id="dropEmail">—</div>
+                    </div>
                 </div>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Verification</span>
-                <span class="detail-value" id="verificationDisplay">Unverified</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Subscription</span>
-                <span class="detail-value" id="subscriptionDisplay">None</span>
-            </div>
 
-            <div class="action-buttons">
-                <button class="btn-secondary" id="verifyBtn">Verify Identity</button>
-                <button class="btn-secondary" id="upgradeBtn" disabled>Upgrade to Pro</button>
+                <!-- Details -->
+                <div class="dropdown-details">
+                    <div class="detail-row">
+                        <span>Barvassi ID</span>
+                        <span class="val" id="dropId">—</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>Email</span>
+                        <span class="val" id="dropEmailDetail">—</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>Phone</span>
+                        <span class="val" id="dropPhoneText">—</span>
+                        <div class="edit-inline" id="dropPhoneEdit" style="display:none;">
+                            <input type="text" id="phoneInputEdit" placeholder="+963 99 123 4567" />
+                            <button id="phoneSaveBtn">Save</button>
+                            <button id="phoneCancelBtn">Cancel</button>
+                        </div>
+                        <button class="edit-btn" id="phoneEditBtn">Edit</button>
+                    </div>
+                    <div class="detail-row">
+                        <span>Verification</span>
+                        <span class="val" id="dropVerification">Unverified</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>Subscription</span>
+                        <span class="val" id="dropSubscription">None</span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="dropdown-actions">
+                    <button id="verifyBtn">Verify Identity</button>
+                    <button id="upgradeBtn" disabled>Upgrade to Pro</button>
+                    <button class="logout-btn" id="logoutBtn">Exit the Vault</button>
+                </div>
             </div>
         </div>
 
-        <button class="btn-logout" id="logoutBtn">Exit the Vault</button>
-        <div class="footer">© 2026 The House of Barvassi</div>
+        <!-- MAIN CONTENT (future dashboard sections) -->
+        <section class="main-content">
+            <h2>Welcome to the Vault.</h2>
+            <p>The chambers are being prepared.</p>
+        </section>
+
     </div>
 
+    <!-- Hidden file input for avatar upload -->
+    <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/jpg,image/webp" />
+
     <script>
+        // ===== INIT SUPABASE =====
         let supabaseClient = null;
         try {
             if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
@@ -317,26 +482,36 @@
             }
         } catch (e) {}
 
-        // DOM refs
-        const userNameDisplay = document.getElementById('userNameDisplay');
-        const badgeContainer = document.getElementById('badgeContainer');
-        const accountIdDisplay = document.getElementById('accountIdDisplay');
-        const emailDisplay = document.getElementById('emailDisplay');
-        const phoneText = document.getElementById('phoneText');
-        const phoneEdit = document.getElementById('phoneEdit');
+        // ===== DOM REFS =====
+        const avatarBtn = document.getElementById('avatarBtn');
+        const avatarInitials = document.getElementById('avatarInitials');
+        const avatarImg = document.getElementById('avatarImg');
+        const dropAvatar = document.getElementById('dropAvatar');
+        const dropInitials = document.getElementById('dropInitials');
+        const dropImg = document.getElementById('dropImg');
+        const dropName = document.getElementById('dropName');
+        const dropEmail = document.getElementById('dropEmail');
+        const dropId = document.getElementById('dropId');
+        const dropEmailDetail = document.getElementById('dropEmailDetail');
+        const dropPhoneText = document.getElementById('dropPhoneText');
+        const dropPhoneEdit = document.getElementById('dropPhoneEdit');
         const phoneInputEdit = document.getElementById('phoneInputEdit');
-        const phoneEditBtn = document.getElementById('phoneEditBtn');
         const phoneSaveBtn = document.getElementById('phoneSaveBtn');
         const phoneCancelBtn = document.getElementById('phoneCancelBtn');
-        const verificationDisplay = document.getElementById('verificationDisplay');
-        const subscriptionDisplay = document.getElementById('subscriptionDisplay');
+        const phoneEditBtn = document.getElementById('phoneEditBtn');
+        const dropVerification = document.getElementById('dropVerification');
+        const dropSubscription = document.getElementById('dropSubscription');
         const verifyBtn = document.getElementById('verifyBtn');
         const upgradeBtn = document.getElementById('upgradeBtn');
         const logoutBtn = document.getElementById('logoutBtn');
+        const dropdownOverlay = document.getElementById('dropdownOverlay');
+        const dropdown = document.getElementById('dropdown');
+        const avatarInput = document.getElementById('avatarInput');
 
         let currentUser = null;
         let userProfile = null;
 
+        // ===== LOAD PROFILE =====
         async function loadProfile() {
             const {
                 data: {
@@ -349,7 +524,6 @@
             }
             currentUser = session.user;
 
-            // Fetch profile from clients table
             const {
                 data,
                 error
@@ -367,40 +541,94 @@
             renderProfile();
         }
 
+        // ===== RENDER PROFILE =====
         function renderProfile() {
             const p = userProfile;
-            userNameDisplay.textContent = p.full_name || 'Member';
-            accountIdDisplay.textContent = p.account_id || '—';
-            emailDisplay.textContent = p.email;
-            phoneText.textContent = p.phone || '—';
-            verificationDisplay.textContent = p.verification_status === 'verified' ? 'Verified' :
-                p.verification_status === 'pro' ? 'Pro' : 'Unverified';
-            subscriptionDisplay.textContent = p.subscription_status === 'pro' ? 'Pro' : 'None';
+            const name = p.full_name || 'Member';
+            const initial = name.charAt(0).toUpperCase();
 
-            // Badge
-            badgeContainer.innerHTML = '';
-            if (p.verification_status === 'verified') {
-                badgeContainer.innerHTML = '<span class="badge badge-blue">✓</span>';
-            } else if (p.verification_status === 'pro') {
-                badgeContainer.innerHTML = '<span class="badge badge-gold">★</span>';
+            // Avatar button
+            if (p.avatar_url) {
+                avatarImg.src = p.avatar_url;
+                avatarImg.style.display = 'block';
+                avatarInitials.style.display = 'none';
+                dropImg.src = p.avatar_url;
+                dropImg.style.display = 'block';
+                dropInitials.style.display = 'none';
+            } else {
+                avatarImg.style.display = 'none';
+                avatarInitials.style.display = 'block';
+                avatarInitials.textContent = initial;
+                dropImg.style.display = 'none';
+                dropInitials.style.display = 'block';
+                dropInitials.textContent = initial;
             }
 
-            // Enable/disable upgrade button
+            // Info
+            dropName.textContent = name;
+            dropEmail.textContent = p.email;
+            dropId.textContent = p.account_id || '—';
+            dropEmailDetail.textContent = p.email;
+            dropPhoneText.textContent = p.phone || '—';
+            dropVerification.textContent = p.verification_status === 'verified' ? 'Verified' :
+                p.verification_status === 'pro' ? 'Pro' : 'Unverified';
+            dropSubscription.textContent = p.subscription_status === 'pro' ? 'Pro' : 'None';
+
+            // Badge (in name area)
+            const badgeSpan = document.querySelector('.dropdown-info .badge');
+            if (p.verification_status === 'verified') {
+                badgeSpan.innerHTML = '<span class="badge badge-blue">✓</span>';
+            } else if (p.verification_status === 'pro') {
+                badgeSpan.innerHTML = '<span class="badge badge-gold">★</span>';
+            } else {
+                badgeSpan.innerHTML = '';
+            }
+
+            // Enable/disable upgrade
             upgradeBtn.disabled = p.verification_status !== 'verified';
         }
 
-        // --- Edit phone ---
+        // ===== TOGGLE DROPDOWN =====
+        function openDropdown() {
+            dropdownOverlay.classList.add('open');
+            dropdown.classList.add('open');
+            // Close phone edit if open
+            phoneEditBtn.style.display = 'inline-block';
+            dropPhoneEdit.style.display = 'none';
+            dropPhoneText.style.display = 'inline';
+        }
+
+        function closeDropdown() {
+            dropdownOverlay.classList.remove('open');
+            dropdown.classList.remove('open');
+        }
+        avatarBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (dropdown.classList.contains('open')) {
+                closeDropdown();
+            } else {
+                openDropdown();
+            }
+        });
+        dropdownOverlay.addEventListener('click', (e) => {
+            if (e.target === dropdownOverlay) closeDropdown();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDropdown();
+        });
+
+        // ===== PHONE EDIT =====
         phoneEditBtn.addEventListener('click', () => {
-            phoneText.classList.add('hidden');
-            phoneEdit.classList.remove('hidden');
+            phoneEditBtn.style.display = 'none';
+            dropPhoneText.style.display = 'none';
+            dropPhoneEdit.style.display = 'flex';
             phoneInputEdit.value = userProfile.phone || '';
         });
-
         phoneCancelBtn.addEventListener('click', () => {
-            phoneEdit.classList.add('hidden');
-            phoneText.classList.remove('hidden');
+            dropPhoneEdit.style.display = 'none';
+            dropPhoneText.style.display = 'inline';
+            phoneEditBtn.style.display = 'inline-block';
         });
-
         phoneSaveBtn.addEventListener('click', async() => {
             const newPhone = phoneInputEdit.value.trim();
             const {
@@ -416,19 +644,19 @@
                 alert('Failed to update phone.');
             } else {
                 userProfile.phone = newPhone;
-                phoneText.textContent = newPhone || '—';
-                phoneEdit.classList.add('hidden');
-                phoneText.classList.remove('hidden');
+                dropPhoneText.textContent = newPhone || '—';
+                dropPhoneEdit.style.display = 'none';
+                dropPhoneText.style.display = 'inline';
+                phoneEditBtn.style.display = 'inline-block';
             }
         });
 
-        // --- Verify Identity (placeholder) ---
+        // ===== VERIFY IDENTITY (demo) =====
         verifyBtn.addEventListener('click', async() => {
             if (userProfile.verification_status !== 'unverified') {
                 alert('Already verified or pro.');
                 return;
             }
-            // For demo, we'll just set it to 'verified'
             const {
                 error
             } = await supabaseClient
@@ -447,13 +675,12 @@
             }
         });
 
-        // --- Upgrade to Pro (only if verified) ---
+        // ===== UPGRADE TO PRO =====
         upgradeBtn.addEventListener('click', async() => {
             if (userProfile.verification_status !== 'verified') {
                 alert('Please verify your identity first.');
                 return;
             }
-            // For demo, we set to 'pro'
             const {
                 error
             } = await supabaseClient
@@ -474,13 +701,67 @@
             }
         });
 
-        // --- Logout ---
+        // ===== AVATAR UPLOAD =====
+        dropAvatar.addEventListener('click', () => avatarInput.click());
+        avatarInput.addEventListener('change', async(e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Upload to Supabase Storage
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${currentUser.id}.${fileExt}`;
+            const {
+                error: uploadError
+            } = await supabaseClient.storage
+                .from('avatars')
+                .upload(fileName, file, {
+                    upsert: true
+                });
+
+            if (uploadError) {
+                console.error('Upload error:', uploadError);
+                alert('Failed to upload avatar.');
+                return;
+            }
+
+            // Get public URL
+            const {
+                data: {
+                    publicUrl
+                }
+            } = supabaseClient.storage
+                .from('avatars')
+                .getPublicUrl(fileName);
+
+            // Update profile with avatar_url
+            const {
+                error: updateError
+            } = await supabaseClient
+                .from('clients')
+                .update({
+                    avatar_url: publicUrl
+                })
+                .eq('id', currentUser.id);
+
+            if (updateError) {
+                console.error('Update avatar error:', updateError);
+                alert('Failed to save avatar URL.');
+                return;
+            }
+
+            userProfile.avatar_url = publicUrl;
+            renderProfile();
+            alert('Avatar updated!');
+            avatarInput.value = '';
+        });
+
+        // ===== LOGOUT =====
         logoutBtn.addEventListener('click', async() => {
             await supabaseClient.auth.signOut();
             window.location.href = 'index.html';
         });
 
-        // --- Inactivity timer (optional, keep from earlier) ---
+        // ===== INACTIVITY TIMER =====
         let inactivityTimer;
 
         function resetTimer() {
@@ -496,7 +777,7 @@
         document.addEventListener('keypress', resetTimer);
         resetTimer();
 
-        // --- Init ---
+        // ===== INIT =====
         loadProfile();
     </script>
 </body>
