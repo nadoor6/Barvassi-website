@@ -9,6 +9,8 @@
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* ——— same CSS as before ——— */
+        
         * {
             margin: 0;
             padding: 0;
@@ -145,7 +147,6 @@
             border-color: rgba(26, 26, 26, 0.2);
             background: rgba(26, 26, 26, 0.06);
         }
-        /* ===== BUTTON1 (LOCKED IN MEMORY) ===== */
         
         .btn1 {
             width: 100%;
@@ -247,7 +248,6 @@
         .toggle-text:hover {
             color: rgba(26, 26, 26, 0.7);
         }
-        /* New: Skip Button for ID */
         
         .skip-btn {
             background: transparent;
@@ -328,7 +328,6 @@
                 <div class="form-title" id="formTitle">Welcome back.</div>
                 <div class="form-sub" id="formSub">Enter the vault.</div>
 
-                <!-- SIGN UP FIELDS (Hidden on Login) -->
                 <div id="signupFields" style="display:none;">
                     <div class="form-group">
                         <label class="form-label">Full Name</label>
@@ -347,7 +346,6 @@
                     </div>
                 </div>
 
-                <!-- SHARED FIELDS -->
                 <div class="form-group">
                     <label class="form-label">Email Address</label>
                     <input type="email" class="form-input" id="emailInput" placeholder="name@domain.com" autocomplete="off" />
@@ -383,7 +381,6 @@
             }
         } catch (e) {}
 
-        // --- BUTTON ELEMENTS ---
         const mainBtn = document.getElementById('mainBtn');
         const btnText = document.getElementById('btnText');
         const signupFields = document.getElementById('signupFields');
@@ -400,7 +397,6 @@
 
         let isSigningUp = false;
 
-        // --- SKIP ID BUTTON LOGIC ---
         skipIdBtn.addEventListener('click', function(e) {
             e.preventDefault();
             idInput.value = 'Skipped';
@@ -408,7 +404,6 @@
             skipIdBtn.style.display = 'none';
         });
 
-        // --- TOGGLE BUTTON ---
         toggleBtn.addEventListener('click', function(e) {
             e.preventDefault();
             isSigningUp = !isSigningUp;
@@ -429,7 +424,6 @@
             }
         });
 
-        // --- MAIN BUTTON ---
         mainBtn.addEventListener('click', async function() {
             if (!supabaseClient) {
                 errorMsg.innerText = 'Database connection error.';
@@ -472,9 +466,19 @@
                     errorMsg.innerText = error.message;
                     errorMsg.classList.add('visible');
                 } else {
-                    // ========================================================
-                    // 🔥 UPDATED: We now print the exact DB error to the console
-                    // ========================================================
+                    // 🔥 NEW: Generate a unique Barvassi account ID
+                    const {
+                        data: idData,
+                        error: idError
+                    } = await supabaseClient.rpc('generate_barvassi_id');
+                    if (idError) {
+                        console.error("ID generation failed:", idError);
+                        errorMsg.innerText = 'Could not generate account ID.';
+                        errorMsg.classList.add('visible');
+                        return;
+                    }
+                    const accountId = idData;
+
                     const {
                         error: insertError
                     } = await supabaseClient.from('clients').insert([{
@@ -482,20 +486,15 @@
                         full_name: name,
                         email: email,
                         phone: phone,
-                        id_verified: id_verified
+                        id_verified: id_verified,
+                        account_id: accountId, // 🔥 NEW
+                        verification_status: 'unverified', // default
+                        subscription_status: 'none'
                     }]);
 
                     if (insertError) {
-                        console.log("🔴 Payload attempted:", {
-                            id: data.user.id,
-                            full_name: name,
-                            email: email,
-                            phone: phone,
-                            id_verified: id_verified
-                        });
-                        console.error("🔴 Supabase Insert Error Details:", insertError);
-
-                        errorMsg.innerText = "Account created, but couldn't save extra data. Check console (F12).";
+                        console.error("Insert error:", insertError);
+                        errorMsg.innerText = "Account created, but couldn't save extra data.";
                         errorMsg.classList.add('visible');
                     } else {
                         alert('Account created successfully!');
@@ -522,7 +521,6 @@
             }
         });
 
-        // ENTER KEY SUPPORT
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') mainBtn.click();
         });
