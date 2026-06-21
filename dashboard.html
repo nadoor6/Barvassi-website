@@ -8,7 +8,6 @@
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
 
     <script>
-        // Your Supabase credentials
         const SUPABASE_URL = "https://inycllornehmohderdfz.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_Bnkek18bbEnBgnis-nUVKw_QABqaYKj";
         console.log("✅ Keys loaded!");
@@ -429,9 +428,7 @@
 </head>
 
 <body>
-
     <div class="dashboard-container">
-
         <header class="top-bar">
             <div class="brand">
                 <img src="logo.png" alt="Barvassi" />
@@ -467,32 +464,18 @@
                 </div>
 
                 <div class="dropdown-details">
+                    <div class="detail-row"><span>Barvassi ID</span><span class="val" id="dropId">—</span></div>
+                    <div class="detail-row"><span>Email</span><span class="val" id="dropEmailDetail">—</span></div>
                     <div class="detail-row">
-                        <span>Barvassi ID</span>
-                        <span class="val" id="dropId">—</span>
-                    </div>
-                    <div class="detail-row">
-                        <span>Email</span>
-                        <span class="val" id="dropEmailDetail">—</span>
-                    </div>
-                    <div class="detail-row">
-                        <span>Phone</span>
-                        <span class="val" id="dropPhoneText">—</span>
+                        <span>Phone</span><span class="val" id="dropPhoneText">—</span>
                         <div class="edit-inline" id="dropPhoneEdit" style="display:none;">
                             <input type="text" id="phoneInputEdit" placeholder="+963 99 123 4567" />
-                            <button id="phoneSaveBtn">Save</button>
-                            <button id="phoneCancelBtn">Cancel</button>
+                            <button id="phoneSaveBtn">Save</button><button id="phoneCancelBtn">Cancel</button>
                         </div>
                         <button class="edit-btn" id="phoneEditBtn">Edit</button>
                     </div>
-                    <div class="detail-row">
-                        <span>Verification</span>
-                        <span class="val" id="dropVerification">Unverified</span>
-                    </div>
-                    <div class="detail-row">
-                        <span>Subscription</span>
-                        <span class="val" id="dropSubscription">None</span>
-                    </div>
+                    <div class="detail-row"><span>Verification</span><span class="val" id="dropVerification">Unverified</span></div>
+                    <div class="detail-row"><span>Subscription</span><span class="val" id="dropSubscription">None</span></div>
                 </div>
 
                 <div class="dropdown-actions">
@@ -507,7 +490,6 @@
             <h2>Welcome to the Vault.</h2>
             <p>The chambers are being prepared.</p>
         </section>
-
     </div>
 
     <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/jpg,image/webp" />
@@ -572,12 +554,7 @@
             const {
                 data,
                 error
-            } = await supabaseClient
-                .from('clients')
-                .select('*')
-                .eq('id', currentUser.id)
-                .maybeSingle();
-
+            } = await supabaseClient.from('clients').select('*').eq('id', currentUser.id).maybeSingle();
             if (error) {
                 console.error('❌ Profile fetch error:', error);
                 dropName.textContent = 'Error';
@@ -593,7 +570,6 @@
                 } = await supabaseClient.rpc('generate_barvassi_id');
                 if (idError) console.error("ID gen error", idError);
                 const accountId = idData || 'BA' + Math.random().toString(36).substring(2, 8).toUpperCase();
-
                 const {
                     error: insertError
                 } = await supabaseClient.from('clients').insert([{
@@ -602,25 +578,18 @@
                     email: currentUser.email,
                     account_id: accountId
                 }]);
-
                 if (insertError) {
                     console.error("❌ Failed to auto-create profile", insertError);
                     return;
                 }
-
                 const {
                     data: newData,
                     error: newError
-                } = await supabaseClient
-                    .from('clients')
-                    .select('*')
-                    .eq('id', currentUser.id)
-                    .single();
+                } = await supabaseClient.from('clients').select('*').eq('id', currentUser.id).single();
                 userProfile = newData;
                 renderProfile();
                 return;
             }
-
             userProfile = data;
             console.log("✅ Profile data loaded");
             renderProfile();
@@ -634,7 +603,6 @@
             const p = userProfile;
             const name = p.full_name || 'Member';
             const initial = name.charAt(0).toUpperCase();
-
             if (p.avatar_url) {
                 avatarImg.src = p.avatar_url;
                 avatarImg.style.display = 'block';
@@ -650,14 +618,12 @@
                 dropInitials.style.display = 'block';
                 dropInitials.textContent = initial;
             }
-
             dropName.textContent = name;
             dropEmail.textContent = p.email;
             dropId.textContent = p.account_id || '—';
             dropEmailDetail.textContent = p.email;
             dropPhoneText.textContent = p.phone || '—';
 
-            // Use if/else to avoid VS Code formatter crashes on nested ternaries
             let verificationText = 'Unverified';
             if (p.verification_status === 'verified') {
                 verificationText = 'Verified';
@@ -666,7 +632,11 @@
             }
             dropVerification.textContent = verificationText;
 
-            dropSubscription.textContent = p.subscription_status === 'pro' ? 'Pro' : 'None';
+            if (p.subscription_status === 'pro') {
+                dropSubscription.textContent = 'Pro';
+            } else {
+                dropSubscription.textContent = 'None';
+            }
 
             const badgeSpan = document.querySelector('.dropdown-info .badge');
             let badgeHtml = '';
@@ -676,7 +646,6 @@
                 badgeHtml = '<span class="badge badge-gold">★</span>';
             }
             badgeSpan.innerHTML = badgeHtml;
-
             upgradeBtn.disabled = p.verification_status !== 'verified';
         }
 
@@ -692,16 +661,11 @@
             dropdownOverlay.classList.remove('open');
             dropdown.classList.remove('open');
         }
-
         avatarBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (dropdown.classList.contains('open')) {
-                closeDropdown();
-            } else {
-                openDropdown();
-            }
+            if (dropdown.classList.contains('open')) closeDropdown();
+            else openDropdown();
         });
-
         dropdownOverlay.addEventListener('click', (e) => {
             if (e.target === dropdownOverlay) closeDropdown();
         });
@@ -716,13 +680,11 @@
             dropPhoneEdit.style.display = 'flex';
             phoneInputEdit.value = userProfile.phone || '';
         });
-
         phoneCancelBtn.addEventListener('click', () => {
             dropPhoneEdit.style.display = 'none';
             dropPhoneText.style.display = 'inline';
             phoneEditBtn.style.display = 'inline-block';
         });
-
         phoneSaveBtn.addEventListener('click', async() => {
             if (!userProfile) return;
             const newPhone = phoneInputEdit.value.trim();
@@ -762,7 +724,6 @@
                 alert('Identity verified!');
             }
         });
-
         upgradeBtn.addEventListener('click', async() => {
             if (!userProfile || userProfile.verification_status !== 'verified') {
                 alert('Please verify your identity first.');
@@ -786,7 +747,6 @@
         });
 
         dropAvatar.addEventListener('click', () => avatarInput.click());
-
         avatarInput.addEventListener('change', async(e) => {
             const file = e.target.files[0];
             if (!file || !currentUser) return;
