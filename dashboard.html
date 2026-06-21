@@ -7,7 +7,6 @@
     <title>Barvassi · The Vault</title>
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
 
-    <!-- ===== EMBEDDED KEYS DIRECTLY HERE ===== -->
     <script>
         // Your Supabase credentials
         const SUPABASE_URL = "https://inycllornehmohderdfz.supabase.co";
@@ -38,7 +37,6 @@
             margin: 0 auto;
             padding: 24px 32px;
         }
-        /* ---- TOP BAR ---- */
         
         .top-bar {
             display: flex;
@@ -98,7 +96,6 @@
             font-size: 16px;
             color: rgba(255, 255, 255, 0.5);
         }
-        /* ---- PROFILE DROPDOWN (glass) ---- */
         
         .dropdown-overlay {
             position: fixed;
@@ -437,8 +434,7 @@
 
         <header class="top-bar">
             <div class="brand">
-                <img src="PASTE_YOUR_BASE64_LOGO_HERE" alt="Barvassi" onerror="this.style.display='none'; document.getElementById('brandText').style.display='block';" />
-                <span id="brandText" style="display:none;">Barvassi</span>
+                <img src="logo.png" alt="Barvassi" />
                 <span style="font-weight:300; font-size:14px; opacity:0.4;">· The Vault</span>
             </div>
             <div class="top-right">
@@ -467,7 +463,6 @@
                         <div class="name" id="dropName">Loading…</div>
                         <div class="email" id="dropEmail">—</div>
                         <span class="badge"></span>
-                        <!-- Badge will be filled by JS -->
                     </div>
                 </div>
 
@@ -518,8 +513,7 @@
     <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/jpg,image/webp" />
 
     <script>
-        console.log("✅ Complex Dashboard Script Loaded");
-
+        console.log("✅ Dashboard Script Loaded");
         let supabaseClient = null;
         try {
             if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
@@ -532,7 +526,6 @@
             console.error('❌ Supabase init error:', e);
         }
 
-        // DOM refs
         const avatarBtn = document.getElementById('avatarBtn');
         const avatarInitials = document.getElementById('avatarInitials');
         const avatarImg = document.getElementById('avatarImg');
@@ -569,7 +562,7 @@
                 }
             } = await supabaseClient.auth.getSession();
             if (!session) {
-                console.log("🚫 No session, redirecting to login.");
+                console.log("🚫 No session, redirecting.");
                 window.location.href = 'index.html';
                 return;
             }
@@ -592,7 +585,7 @@
             }
 
             if (!data) {
-                console.warn("⚠️ Profile row missing. Auto-creating...");
+                console.warn("⚠️ Profile missing. Auto-creating...");
                 let name = currentUser.user_metadata ? .full_name || 'Member';
                 const {
                     data: idData,
@@ -663,11 +656,27 @@
             dropId.textContent = p.account_id || '—';
             dropEmailDetail.textContent = p.email;
             dropPhoneText.textContent = p.phone || '—';
-            dropVerification.textContent = p.verification_status === 'verified' ? 'Verified' : p.verification_status === 'pro' ? 'Pro' : 'Unverified';
+
+            // Use if/else to avoid VS Code formatter crashes on nested ternaries
+            let verificationText = 'Unverified';
+            if (p.verification_status === 'verified') {
+                verificationText = 'Verified';
+            } else if (p.verification_status === 'pro') {
+                verificationText = 'Pro';
+            }
+            dropVerification.textContent = verificationText;
+
             dropSubscription.textContent = p.subscription_status === 'pro' ? 'Pro' : 'None';
 
             const badgeSpan = document.querySelector('.dropdown-info .badge');
-            badgeSpan.innerHTML = p.verification_status === 'verified' ? '<span class="badge badge-blue">✓</span>' : p.verification_status === 'pro' ? '<span class="badge badge-gold">★</span>' : '';
+            let badgeHtml = '';
+            if (p.verification_status === 'verified') {
+                badgeHtml = '<span class="badge badge-blue">✓</span>';
+            } else if (p.verification_status === 'pro') {
+                badgeHtml = '<span class="badge badge-gold">★</span>';
+            }
+            badgeSpan.innerHTML = badgeHtml;
+
             upgradeBtn.disabled = p.verification_status !== 'verified';
         }
 
@@ -686,9 +695,11 @@
 
         avatarBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            console.log("✅ Avatar clicked!");
-            if (dropdown.classList.contains('open')) closeDropdown();
-            else openDropdown();
+            if (dropdown.classList.contains('open')) {
+                closeDropdown();
+            } else {
+                openDropdown();
+            }
         });
 
         dropdownOverlay.addEventListener('click', (e) => {
@@ -705,11 +716,13 @@
             dropPhoneEdit.style.display = 'flex';
             phoneInputEdit.value = userProfile.phone || '';
         });
+
         phoneCancelBtn.addEventListener('click', () => {
             dropPhoneEdit.style.display = 'none';
             dropPhoneText.style.display = 'inline';
             phoneEditBtn.style.display = 'inline-block';
         });
+
         phoneSaveBtn.addEventListener('click', async() => {
             if (!userProfile) return;
             const newPhone = phoneInputEdit.value.trim();
@@ -773,6 +786,7 @@
         });
 
         dropAvatar.addEventListener('click', () => avatarInput.click());
+
         avatarInput.addEventListener('change', async(e) => {
             const file = e.target.files[0];
             if (!file || !currentUser) return;
@@ -790,13 +804,10 @@
                 alert('Failed to upload avatar: ' + uploadError.message);
                 return;
             }
-
-            // ✅ FIX: Replaced nested destructuring with standard assignment to avoid parsing errors
             const {
                 data
             } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
             const publicUrl = data.publicUrl;
-
             const {
                 error: updateError
             } = await supabaseClient.from('clients').update({
