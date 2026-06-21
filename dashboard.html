@@ -9,8 +9,6 @@
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* (same styles as before – unchanged) */
-        
         * {
             margin: 0;
             padding: 0;
@@ -167,11 +165,12 @@
             font-size: 22px;
             color: rgba(255, 255, 255, 0.4);
         }
+        /* Avatar Upload Overlay & Button1 Spinner Integration */
         
         .dropdown-avatar .upload-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.6);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -183,6 +182,44 @@
         
         .dropdown-avatar:hover .upload-overlay {
             opacity: 1;
+        }
+        /* SPINNER - EXACT BUTTON1 REPLICA */
+        
+        .dropdown-avatar .upload-spinner {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        
+        .dropdown-avatar.loading .upload-spinner {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .dropdown-avatar.loading .upload-overlay {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .dropdown-avatar .upload-spinner svg {
+            width: 22px;
+            height: 22px;
+            animation: spin 0.9s linear infinite;
+        }
+        
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
         }
         
         .dropdown-info {
@@ -362,18 +399,6 @@
         #avatarInput {
             display: none;
         }
-        /* ---- ERROR DISPLAY ---- */
-        
-        .error-banner {
-            background: rgba(180, 40, 40, 0.2);
-            border: 1px solid rgba(180, 40, 40, 0.3);
-            border-radius: 8px;
-            padding: 12px 16px;
-            font-size: 13px;
-            color: #e57a7a;
-            margin-top: 12px;
-            display: none;
-        }
         /* ---- RESPONSIVE ---- */
         
         @media (max-width: 600px) {
@@ -429,6 +454,13 @@
                         <span class="initials" id="dropInitials">B</span>
                         <img id="dropImg" style="display:none;" alt="" />
                         <div class="upload-overlay">Upload</div>
+                        <!-- BUTTON1 SPINNER -->
+                        <div class="upload-spinner">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" stroke-opacity="0.2" />
+                                <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="1" />
+                            </svg>
+                        </div>
                     </div>
                     <div class="dropdown-info">
                         <div class="name" id="dropName">Loading…</div>
@@ -534,6 +566,7 @@
             }
             currentUser = session.user;
 
+            // FIX: Use maybeSingle() to avoid JSON coercion errors if row is missing
             const {
                 data,
                 error
@@ -541,15 +574,70 @@
                 .from('clients')
                 .select('*')
                 .eq('id', currentUser.id)
-                .single();
+                .maybeSingle();
 
             if (error) {
                 console.error('Profile fetch error:', error);
-                // Show error in dropdown
                 dropName.textContent = 'Error loading profile';
                 dropEmail.textContent = error.message;
                 return;
             }
+
+            // FIX: If data is null, the profile row was deleted. Let's auto-recreate it!
+            if (!data) {
+                console.warn("Profile row missing! Auto-creating profile...");
+
+                // Get the user's name from the signup metadata
+                let name = currentUser.user_metadata ? .full_name || 'Member';
+
+                // Generate a fresh Barvassi ID
+                const {
+                    data: idData,
+                    error: idError
+                } = await supabaseClient.rpc('generate_barvassi_id');
+                if (idError) {
+                    console.error("Failed to generate ID on recreation", idError);
+                }
+                const accountId = idData || 'BA' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+                // Insert the missing row
+                const {
+                    error: insertError
+                } = await supabaseClient.from('clients').insert([{
+                    id: currentUser.id,
+                    full_name: name,
+                    email: currentUser.email,
+                    account_id: accountId,
+                    verification_status: 'unverified',
+                    subscription_status: 'none'
+                }]);
+
+                if (insertError) {
+                    console.error("Failed to auto-create profile", insertError);
+                    dropName.textContent = 'Error creating profile';
+                    return;
+                }
+
+                // Fetch the profile again (now it exists)
+                const {
+                    data: newData,
+                    error: newError
+                } = await supabaseClient
+                    .from('clients')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (newError) {
+                    console.error("Error fetching newly created profile", newError);
+                    return;
+                }
+
+                userProfile = newData;
+                renderProfile();
+                return;
+            }
+
             userProfile = data;
             renderProfile();
         }
@@ -707,11 +795,14 @@
             }
         });
 
-        // Avatar upload
+        // Avatar upload (with Button1 Loading Animation)
         dropAvatar.addEventListener('click', () => avatarInput.click());
         avatarInput.addEventListener('change', async(e) => {
             const file = e.target.files[0];
             if (!file) return;
+
+            // TRIGGER BUTTON1 LOADING ANIMATION
+            dropAvatar.classList.add('loading');
 
             const fileExt = file.name.split('.').pop();
             const fileName = `${currentUser.id}.${fileExt}`;
@@ -723,7 +814,9 @@
                     upsert: true
                 });
 
+            // If upload fails, remove loading state and alert
             if (uploadError) {
+                dropAvatar.classList.remove('loading');
                 console.error('Upload error:', uploadError);
                 alert('Failed to upload avatar: ' + uploadError.message);
                 return;
@@ -745,6 +838,9 @@
                     avatar_url: publicUrl
                 })
                 .eq('id', currentUser.id);
+
+            // REMOVE LOADING STATE
+            dropAvatar.classList.remove('loading');
 
             if (updateError) {
                 console.error('Update avatar error:', updateError);
