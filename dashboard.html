@@ -9,6 +9,8 @@
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* (same styles as before – unchanged) */
+        
         * {
             margin: 0;
             padding: 0;
@@ -330,7 +332,7 @@
             border-color: rgba(255, 255, 255, 0.15) !important;
             color: #f2f2f2 !important;
         }
-        /* ---- MAIN DASHBOARD CONTENT (placeholder) ---- */
+        /* ---- MAIN DASHBOARD CONTENT ---- */
         
         .main-content {
             margin-top: 40px;
@@ -355,9 +357,21 @@
             opacity: 0.3;
             margin-top: 8px;
         }
-        /* ---- FILE INPUT (hidden) ---- */
+        /* ---- FILE INPUT ---- */
         
         #avatarInput {
+            display: none;
+        }
+        /* ---- ERROR DISPLAY ---- */
+        
+        .error-banner {
+            background: rgba(180, 40, 40, 0.2);
+            border: 1px solid rgba(180, 40, 40, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #e57a7a;
+            margin-top: 12px;
             display: none;
         }
         /* ---- RESPONSIVE ---- */
@@ -407,10 +421,9 @@
             </div>
         </header>
 
-        <!-- DROPDOWN OVERLAY & CONTAINER -->
+        <!-- DROPDOWN -->
         <div class="dropdown-overlay" id="dropdownOverlay">
             <div class="dropdown" id="dropdown">
-                <!-- Profile header -->
                 <div class="dropdown-profile">
                     <div class="dropdown-avatar" id="dropAvatar">
                         <span class="initials" id="dropInitials">B</span>
@@ -423,7 +436,6 @@
                     </div>
                 </div>
 
-                <!-- Details -->
                 <div class="dropdown-details">
                     <div class="detail-row">
                         <span>Barvassi ID</span>
@@ -453,7 +465,6 @@
                     </div>
                 </div>
 
-                <!-- Actions -->
                 <div class="dropdown-actions">
                     <button id="verifyBtn">Verify Identity</button>
                     <button id="upgradeBtn" disabled>Upgrade to Pro</button>
@@ -462,7 +473,7 @@
             </div>
         </div>
 
-        <!-- MAIN CONTENT (future dashboard sections) -->
+        <!-- MAIN CONTENT -->
         <section class="main-content">
             <h2>Welcome to the Vault.</h2>
             <p>The chambers are being prepared.</p>
@@ -470,19 +481,19 @@
 
     </div>
 
-    <!-- Hidden file input for avatar upload -->
     <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/jpg,image/webp" />
 
     <script>
-        // ===== INIT SUPABASE =====
         let supabaseClient = null;
         try {
             if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             }
-        } catch (e) {}
+        } catch (e) {
+            console.error('Supabase init error:', e);
+        }
 
-        // ===== DOM REFS =====
+        // DOM refs
         const avatarBtn = document.getElementById('avatarBtn');
         const avatarInitials = document.getElementById('avatarInitials');
         const avatarImg = document.getElementById('avatarImg');
@@ -511,7 +522,6 @@
         let currentUser = null;
         let userProfile = null;
 
-        // ===== LOAD PROFILE =====
         async function loadProfile() {
             const {
                 data: {
@@ -535,19 +545,20 @@
 
             if (error) {
                 console.error('Profile fetch error:', error);
+                // Show error in dropdown
+                dropName.textContent = 'Error loading profile';
+                dropEmail.textContent = error.message;
                 return;
             }
             userProfile = data;
             renderProfile();
         }
 
-        // ===== RENDER PROFILE =====
         function renderProfile() {
             const p = userProfile;
             const name = p.full_name || 'Member';
             const initial = name.charAt(0).toUpperCase();
 
-            // Avatar button
             if (p.avatar_url) {
                 avatarImg.src = p.avatar_url;
                 avatarImg.style.display = 'block';
@@ -564,7 +575,6 @@
                 dropInitials.textContent = initial;
             }
 
-            // Info
             dropName.textContent = name;
             dropEmail.textContent = p.email;
             dropId.textContent = p.account_id || '—';
@@ -574,7 +584,6 @@
                 p.verification_status === 'pro' ? 'Pro' : 'Unverified';
             dropSubscription.textContent = p.subscription_status === 'pro' ? 'Pro' : 'None';
 
-            // Badge (in name area)
             const badgeSpan = document.querySelector('.dropdown-info .badge');
             if (p.verification_status === 'verified') {
                 badgeSpan.innerHTML = '<span class="badge badge-blue">✓</span>';
@@ -584,15 +593,12 @@
                 badgeSpan.innerHTML = '';
             }
 
-            // Enable/disable upgrade
             upgradeBtn.disabled = p.verification_status !== 'verified';
         }
 
-        // ===== TOGGLE DROPDOWN =====
         function openDropdown() {
             dropdownOverlay.classList.add('open');
             dropdown.classList.add('open');
-            // Close phone edit if open
             phoneEditBtn.style.display = 'inline-block';
             dropPhoneEdit.style.display = 'none';
             dropPhoneText.style.display = 'inline';
@@ -617,7 +623,7 @@
             if (e.key === 'Escape') closeDropdown();
         });
 
-        // ===== PHONE EDIT =====
+        // Phone edit
         phoneEditBtn.addEventListener('click', () => {
             phoneEditBtn.style.display = 'none';
             dropPhoneText.style.display = 'none';
@@ -640,8 +646,8 @@
                 })
                 .eq('id', currentUser.id);
             if (error) {
-                console.error('Update error:', error);
-                alert('Failed to update phone.');
+                console.error('Update phone error:', error);
+                alert('Failed to update phone: ' + error.message);
             } else {
                 userProfile.phone = newPhone;
                 dropPhoneText.textContent = newPhone || '—';
@@ -651,7 +657,7 @@
             }
         });
 
-        // ===== VERIFY IDENTITY (demo) =====
+        // Verify identity
         verifyBtn.addEventListener('click', async() => {
             if (userProfile.verification_status !== 'unverified') {
                 alert('Already verified or pro.');
@@ -667,7 +673,7 @@
                 .eq('id', currentUser.id);
             if (error) {
                 console.error('Verification error:', error);
-                alert('Verification failed.');
+                alert('Verification failed: ' + error.message);
             } else {
                 userProfile.verification_status = 'verified';
                 renderProfile();
@@ -675,7 +681,7 @@
             }
         });
 
-        // ===== UPGRADE TO PRO =====
+        // Upgrade
         upgradeBtn.addEventListener('click', async() => {
             if (userProfile.verification_status !== 'verified') {
                 alert('Please verify your identity first.');
@@ -692,7 +698,7 @@
                 .eq('id', currentUser.id);
             if (error) {
                 console.error('Upgrade error:', error);
-                alert('Upgrade failed.');
+                alert('Upgrade failed: ' + error.message);
             } else {
                 userProfile.verification_status = 'pro';
                 userProfile.subscription_status = 'pro';
@@ -701,13 +707,12 @@
             }
         });
 
-        // ===== AVATAR UPLOAD =====
+        // Avatar upload
         dropAvatar.addEventListener('click', () => avatarInput.click());
         avatarInput.addEventListener('change', async(e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // Upload to Supabase Storage
             const fileExt = file.name.split('.').pop();
             const fileName = `${currentUser.id}.${fileExt}`;
             const {
@@ -720,11 +725,10 @@
 
             if (uploadError) {
                 console.error('Upload error:', uploadError);
-                alert('Failed to upload avatar.');
+                alert('Failed to upload avatar: ' + uploadError.message);
                 return;
             }
 
-            // Get public URL
             const {
                 data: {
                     publicUrl
@@ -733,7 +737,6 @@
                 .from('avatars')
                 .getPublicUrl(fileName);
 
-            // Update profile with avatar_url
             const {
                 error: updateError
             } = await supabaseClient
@@ -745,7 +748,7 @@
 
             if (updateError) {
                 console.error('Update avatar error:', updateError);
-                alert('Failed to save avatar URL.');
+                alert('Failed to save avatar URL: ' + updateError.message);
                 return;
             }
 
@@ -755,13 +758,13 @@
             avatarInput.value = '';
         });
 
-        // ===== LOGOUT =====
+        // Logout
         logoutBtn.addEventListener('click', async() => {
             await supabaseClient.auth.signOut();
             window.location.href = 'index.html';
         });
 
-        // ===== INACTIVITY TIMER =====
+        // Inactivity timer
         let inactivityTimer;
 
         function resetTimer() {
@@ -777,7 +780,6 @@
         document.addEventListener('keypress', resetTimer);
         resetTimer();
 
-        // ===== INIT =====
         loadProfile();
     </script>
 </body>
