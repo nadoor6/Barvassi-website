@@ -9,6 +9,8 @@
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* (Same CSS as before, unchanged) */
+        
         * {
             margin: 0;
             padding: 0;
@@ -29,7 +31,6 @@
             margin: 0 auto;
             padding: 24px 32px;
         }
-        /* ---- TOP BAR ---- */
         
         .top-bar {
             display: flex;
@@ -165,12 +166,11 @@
             font-size: 22px;
             color: rgba(255, 255, 255, 0.4);
         }
-        /* Avatar Upload Overlay & Button1 Spinner Integration */
         
         .dropdown-avatar .upload-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -183,7 +183,6 @@
         .dropdown-avatar:hover .upload-overlay {
             opacity: 1;
         }
-        /* SPINNER - EXACT BUTTON1 REPLICA */
         
         .dropdown-avatar .upload-spinner {
             position: absolute;
@@ -369,7 +368,6 @@
             border-color: rgba(255, 255, 255, 0.15) !important;
             color: #f2f2f2 !important;
         }
-        /* ---- MAIN DASHBOARD CONTENT ---- */
         
         .main-content {
             margin-top: 40px;
@@ -394,12 +392,10 @@
             opacity: 0.3;
             margin-top: 8px;
         }
-        /* ---- FILE INPUT ---- */
         
         #avatarInput {
             display: none;
         }
-        /* ---- RESPONSIVE ---- */
         
         @media (max-width: 600px) {
             .dashboard-container {
@@ -431,7 +427,6 @@
 
     <div class="dashboard-container">
 
-        <!-- TOP BAR -->
         <header class="top-bar">
             <div class="brand">
                 <img src="PASTE_YOUR_BASE64_LOGO_HERE" alt="Barvassi" onerror="this.style.display='none'; document.getElementById('brandText').style.display='block';" />
@@ -446,7 +441,6 @@
             </div>
         </header>
 
-        <!-- DROPDOWN -->
         <div class="dropdown-overlay" id="dropdownOverlay">
             <div class="dropdown" id="dropdown">
                 <div class="dropdown-profile">
@@ -454,7 +448,6 @@
                         <span class="initials" id="dropInitials">B</span>
                         <img id="dropImg" style="display:none;" alt="" />
                         <div class="upload-overlay">Upload</div>
-                        <!-- BUTTON1 SPINNER -->
                         <div class="upload-spinner">
                             <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="10" stroke-opacity="0.2" />
@@ -505,7 +498,6 @@
             </div>
         </div>
 
-        <!-- MAIN CONTENT -->
         <section class="main-content">
             <h2>Welcome to the Vault.</h2>
             <p>The chambers are being prepared.</p>
@@ -566,7 +558,6 @@
             }
             currentUser = session.user;
 
-            // FIX: Use maybeSingle() to avoid JSON coercion errors if row is missing
             const {
                 data,
                 error
@@ -583,33 +574,24 @@
                 return;
             }
 
-            // FIX: If data is null, the profile row was deleted. Let's auto-recreate it!
+            // If row is missing, auto-create it
             if (!data) {
-                console.warn("Profile row missing! Auto-creating profile...");
-
-                // Get the user's name from the signup metadata
+                console.warn("Profile row missing! Auto-creating...");
                 let name = currentUser.user_metadata ? .full_name || 'Member';
-
-                // Generate a fresh Barvassi ID
                 const {
                     data: idData,
                     error: idError
                 } = await supabaseClient.rpc('generate_barvassi_id');
-                if (idError) {
-                    console.error("Failed to generate ID on recreation", idError);
-                }
+                if (idError) console.error("Failed to generate ID", idError);
                 const accountId = idData || 'BA' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
-                // Insert the missing row
                 const {
                     error: insertError
                 } = await supabaseClient.from('clients').insert([{
                     id: currentUser.id,
                     full_name: name,
                     email: currentUser.email,
-                    account_id: accountId,
-                    verification_status: 'unverified',
-                    subscription_status: 'none'
+                    account_id: accountId
                 }]);
 
                 if (insertError) {
@@ -618,7 +600,6 @@
                     return;
                 }
 
-                // Fetch the profile again (now it exists)
                 const {
                     data: newData,
                     error: newError
@@ -632,7 +613,6 @@
                     console.error("Error fetching newly created profile", newError);
                     return;
                 }
-
                 userProfile = newData;
                 renderProfile();
                 return;
@@ -643,6 +623,12 @@
         }
 
         function renderProfile() {
+            // 🔥 CRASH-PROOF: If profile is null, stop the rendering safely
+            if (!userProfile) {
+                dropName.textContent = 'Loading...';
+                return;
+            }
+
             const p = userProfile;
             const name = p.full_name || 'Member';
             const initial = name.charAt(0).toUpperCase();
@@ -684,6 +670,7 @@
             upgradeBtn.disabled = p.verification_status !== 'verified';
         }
 
+        // --- TOGGLE DROPDOWN ---
         function openDropdown() {
             dropdownOverlay.classList.add('open');
             dropdown.classList.add('open');
@@ -696,8 +683,10 @@
             dropdownOverlay.classList.remove('open');
             dropdown.classList.remove('open');
         }
+
         avatarBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            console.log("✅ Avatar clicked! Toggling dropdown."); // Check console (F12) to verify this shows up!
             if (dropdown.classList.contains('open')) {
                 closeDropdown();
             } else {
@@ -711,8 +700,9 @@
             if (e.key === 'Escape') closeDropdown();
         });
 
-        // Phone edit
+        // --- PHONE EDIT ---
         phoneEditBtn.addEventListener('click', () => {
+            if (!userProfile) return; // Safety check
             phoneEditBtn.style.display = 'none';
             dropPhoneText.style.display = 'none';
             dropPhoneEdit.style.display = 'flex';
@@ -724,6 +714,7 @@
             phoneEditBtn.style.display = 'inline-block';
         });
         phoneSaveBtn.addEventListener('click', async() => {
+            if (!userProfile) return;
             const newPhone = phoneInputEdit.value.trim();
             const {
                 error
@@ -745,8 +736,9 @@
             }
         });
 
-        // Verify identity
+        // --- VERIFY IDENTITY ---
         verifyBtn.addEventListener('click', async() => {
+            if (!userProfile) return;
             if (userProfile.verification_status !== 'unverified') {
                 alert('Already verified or pro.');
                 return;
@@ -769,8 +761,9 @@
             }
         });
 
-        // Upgrade
+        // --- UPGRADE TO PRO ---
         upgradeBtn.addEventListener('click', async() => {
+            if (!userProfile) return;
             if (userProfile.verification_status !== 'verified') {
                 alert('Please verify your identity first.');
                 return;
@@ -795,15 +788,13 @@
             }
         });
 
-        // Avatar upload (with Button1 Loading Animation)
+        // --- AVATAR UPLOAD (Button1 Loading) ---
         dropAvatar.addEventListener('click', () => avatarInput.click());
         avatarInput.addEventListener('change', async(e) => {
             const file = e.target.files[0];
-            if (!file) return;
+            if (!file || !currentUser) return;
 
-            // TRIGGER BUTTON1 LOADING ANIMATION
             dropAvatar.classList.add('loading');
-
             const fileExt = file.name.split('.').pop();
             const fileName = `${currentUser.id}.${fileExt}`;
             const {
@@ -814,7 +805,6 @@
                     upsert: true
                 });
 
-            // If upload fails, remove loading state and alert
             if (uploadError) {
                 dropAvatar.classList.remove('loading');
                 console.error('Upload error:', uploadError);
@@ -839,7 +829,6 @@
                 })
                 .eq('id', currentUser.id);
 
-            // REMOVE LOADING STATE
             dropAvatar.classList.remove('loading');
 
             if (updateError) {
@@ -854,13 +843,13 @@
             avatarInput.value = '';
         });
 
-        // Logout
+        // --- LOGOUT ---
         logoutBtn.addEventListener('click', async() => {
             await supabaseClient.auth.signOut();
             window.location.href = 'index.html';
         });
 
-        // Inactivity timer
+        // --- INACTIVITY TIMER ---
         let inactivityTimer;
 
         function resetTimer() {
