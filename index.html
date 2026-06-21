@@ -471,7 +471,9 @@
                     errorMsg.innerText = error.message;
                     errorMsg.classList.add('visible');
                 } else {
-                    // ====== SEND EXTRA FIELDS TO DB ======
+                    // ========================================================
+                    // 🔥 UPDATED: We now print the exact DB error to the console
+                    // ========================================================
                     const {
                         error: insertError
                     } = await supabaseClient.from('clients').insert([{
@@ -483,8 +485,16 @@
                     }]);
 
                     if (insertError) {
-                        console.error("Database Insert Failed:", insertError);
-                        errorMsg.innerText = "Account created, but couldn't save extra data.";
+                        console.log("🔴 Payload attempted:", {
+                            id: data.user.id,
+                            full_name: name,
+                            email: email,
+                            phone: phone,
+                            id_verified: id_verified
+                        });
+                        console.error("🔴 Supabase Insert Error Details:", insertError);
+
+                        errorMsg.innerText = "Account created, but couldn't save extra data. Check console (F12).";
                         errorMsg.classList.add('visible');
                     } else {
                         alert('Account created successfully!');
