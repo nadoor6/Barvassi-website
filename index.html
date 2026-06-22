@@ -58,7 +58,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* ─── Reset & Base ─── */
         * {
             margin: 0;
             padding: 0;
@@ -74,7 +73,6 @@
             overflow: hidden;
         }
 
-        /* ─── Page Transition ─── */
         .page-transition {
             position: fixed;
             inset: 0;
@@ -86,10 +84,20 @@
         }
         .page-transition.hidden { opacity: 0; }
 
-        /* ─── Loading Overlay ─── */
+        .split-screen {
+            display: none;
+            flex-direction: row;
+            height: 100vh;
+            width: 100vw;
+        }
+        .split-screen.visible { display: flex; }
+
         .loading-overlay {
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: #0c0c0c;
             z-index: 9998;
             display: flex;
@@ -107,170 +115,108 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ─── Split Screen ─── */
-        .split-screen {
-            display: none;
-            flex-direction: row;
-            height: 100vh;
-            width: 100vw;
-        }
-        .split-screen.visible { display: flex; }
-
-        /* ─── Left Panel (Image) ─── */
         .left-panel {
-            flex: 1.2;
+            flex: 2.5;
             position: relative;
             overflow: hidden;
             background-size: cover;
             background-position: center;
-            background-color: #1a1a1a;
         }
-        .left-panel .overlay {
+        .overlay {
             position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.2);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10,10,10,0.55);
             z-index: 1;
             pointer-events: none;
         }
-        /* Optional subtle texture overlay – we keep it clean */
-
-        /* ─── Right Panel (Form) ─── */
-        .right-panel {
-            flex: 1;
-            background: #ffffff;
+        .left-content {
+            position: relative;
+            z-index: 2;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px 48px;
+            height: 100%;
+            padding: 40px;
+        }
+        .left-logo {
+            max-width: 45%;
+            max-height: 120px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            opacity: 0.9;
+        }
+        .left-logo-fallback {
+            display: none;
+            font-family: 'SF Pro Display', sans-serif;
+            font-size: 48px;
+            font-weight: 400;
+            color: #fafafa;
+            opacity: 0.8;
+            letter-spacing: 0.15em;
+        }
+
+        .right-panel {
+            flex: 1.5;
+            background: #fafafa;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 32px;
             position: relative;
         }
-
         .form-container {
             width: 100%;
-            max-width: 380px;
+            max-width: 280px;
             text-align: left;
         }
-
-        /* ─── Brand Icon (Lightning Bolt) ─── */
-        .brand-icon {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 24px;
-        }
-        .brand-icon svg {
-            width: 28px;
-            height: 28px;
-            fill: #1a1a1a;
-        }
-
-        /* ─── Typography ─── */
         .form-title {
             font-weight: 500;
-            font-size: 32px;
+            font-size: clamp(28px, 4vw, 40px);
             letter-spacing: -0.02em;
             color: #1a1a1a;
-            line-height: 1.2;
+            line-height: 1.1;
             margin-bottom: 4px;
-            text-align: center;
         }
         .form-sub {
             font-weight: 300;
-            font-size: 15px;
-            color: rgba(26,26,26,0.5);
-            text-align: center;
+            font-size: 14px;
+            color: rgba(26,26,26,0.4);
             margin-bottom: 32px;
-            line-height: 1.4;
         }
-
-        /* ─── Social Buttons ─── */
-        .social-buttons {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .social-btn {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background: transparent;
-            border: 1px solid rgba(26,26,26,0.15);
-            border-radius: 50px;
-            padding: 10px 0;
-            font-family: 'SF Pro Display', sans-serif;
-            font-weight: 400;
-            font-size: 13px;
-            color: #1a1a1a;
-            cursor: pointer;
-            transition: all 0.25s;
-            letter-spacing: 0.02em;
-        }
-        .social-btn:hover {
-            border-color: rgba(26,26,26,0.3);
-            background: rgba(26,26,26,0.02);
-        }
-        .social-btn .icon {
-            font-size: 16px;
-            font-weight: 500;
-        }
-
-        /* ─── Divider ─── */
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 24px 0 28px;
-            color: rgba(26,26,26,0.2);
-            font-size: 12px;
-            letter-spacing: 0.05em;
-        }
-        .divider::before,
-        .divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: rgba(26,26,26,0.08);
-        }
-        .divider::before { margin-right: 16px; }
-        .divider::after { margin-left: 16px; }
-
-        /* ─── Form Fields ─── */
-        .form-group {
-            margin-bottom: 16px;
-        }
+        .form-group { margin-bottom: 16px; }
         .form-label {
             display: block;
             font-weight: 500;
-            font-size: 11px;
-            letter-spacing: 0.05em;
+            font-size: 10px;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
-            color: rgba(26,26,26,0.4);
-            margin-bottom: 4px;
+            color: rgba(26,26,26,0.5);
+            margin-bottom: 6px;
         }
         .form-input {
             width: 100%;
-            background: #f5f5f5;
-            border: 1px solid transparent;
+            background: rgba(26,26,26,0.04);
+            border: 1px solid rgba(26,26,26,0.06);
             border-radius: 12px;
-            padding: 14px 16px;
+            padding: 12px 16px;
             font-family: 'SF Pro Display', sans-serif;
             font-weight: 300;
-            font-size: 15px;
+            font-size: 14px;
             color: #1a1a1a;
             outline: none;
-            transition: all 0.3s ease;
+            transition: all 0.5s ease;
         }
         .form-input:focus {
-            border-color: #1a1a1a;
-            background: #ffffff;
-        }
-        .form-input::placeholder {
-            color: rgba(26,26,26,0.25);
-            font-weight: 300;
+            border-color: rgba(26,26,26,0.2);
+            background: rgba(26,26,26,0.06);
         }
 
-        /* ─── Primary Button ─── */
         .btn1 {
             width: 100%;
             background: #1a1a1a;
@@ -279,13 +225,13 @@
             border-radius: 50px;
             padding: 14px 0;
             font-weight: 400;
-            font-size: 13px;
-            letter-spacing: 0.08em;
+            font-size: 12px;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
             cursor: pointer;
-            transition: all 0.4s ease;
-            margin-top: 4px;
-            height: 50px;
+            transition: all 0.5s ease;
+            margin-top: 8px;
+            height: 48px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -319,91 +265,87 @@
         }
         .spinner svg { animation: spin 0.9s linear infinite; }
 
-        /* ─── Error Message ─── */
         .error-msg {
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             color: rgba(180,40,40,0.7);
             margin-top: 12px;
-            height: 20px;
+            height: 18px;
             opacity: 0;
             transition: opacity 0.5s;
         }
         .error-msg.visible { opacity: 1; }
 
-        /* ─── Toggle Link ─── */
         .toggle-text {
             text-align: center;
-            margin-top: 18px;
+            margin-top: 16px;
             font-weight: 300;
-            font-size: 13px;
+            font-size: 12px;
             color: rgba(26,26,26,0.4);
             cursor: pointer;
             transition: color 0.3s;
         }
-        .toggle-text:hover {
-            color: rgba(26,26,26,0.7);
-        }
-        .toggle-text strong {
-            font-weight: 500;
-            color: #1a1a1a;
-        }
+        .toggle-text:hover { color: rgba(26,26,26,0.7); }
 
-        /* ─── Footer Links ─── */
-        .footer-links {
-            text-align: center;
-            font-size: 11px;
-            letter-spacing: 0.05em;
-            color: rgba(26,26,26,0.2);
-            margin-top: 32px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(26,26,26,0.04);
-        }
-        .footer-links a {
-            color: inherit;
-            text-decoration: none;
-            margin: 0 8px;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-        .footer-links a:hover {
-            color: rgba(26,26,26,0.5);
-        }
-
-        /* ─── Additional signup fields ─── */
-        #signupFields .form-group:last-of-type {
-            margin-bottom: 8px;
-        }
         .skip-btn {
             background: transparent;
-            border: 1px solid rgba(26,26,26,0.08);
+            border: 1px solid rgba(26,26,26,0.06);
             border-radius: 12px;
             padding: 10px 14px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 400;
-            letter-spacing: 0.04em;
-            color: rgba(26,26,26,0.3);
+            letter-spacing: 0.05em;
+            color: rgba(26,26,26,0.4);
             cursor: pointer;
             transition: all 0.3s ease;
             margin-left: 8px;
             white-space: nowrap;
             font-family: 'SF Pro Display', sans-serif;
-            flex-shrink: 0;
         }
         .skip-btn:hover {
-            border-color: rgba(26,26,26,0.2);
+            border-color: rgba(26,26,26,0.3);
             color: #1a1a1a;
         }
-        .id-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .id-wrapper .form-input {
-            flex: 1;
+
+        .copyright-footer {
+            font-weight: 300;
+            font-size: 9px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(26,26,26,0.15);
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(26,26,26,0.04);
+            width: 100%;
         }
 
-        /* ─── Glass Modal (unchanged) ─── */
+        .footer-links {
+            text-align: center;
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            color: rgba(26,26,26,0.15);
+            margin-top: 12px;
+        }
+        .footer-links a {
+            color: inherit;
+            text-decoration: none;
+            margin: 0 6px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover {
+            color: rgba(26,26,26,0.4);
+        }
+
+        @media (max-width: 900px) {
+            .split-screen { flex-direction: column; }
+            .left-panel { flex: none; height: 35vh; width: 100%; }
+            .right-panel { flex: none; height: 65vh; padding: 40px 24px; width: 100%; }
+            .form-container { max-width: 300px; }
+        }
+
+        /* ─── Glass Modal ─── */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -478,8 +420,7 @@
             margin-top: 20px;
             margin-bottom: 8px;
         }
-        .modal-box p,
-        .modal-box li {
+        .modal-box p, .modal-box li {
             font-weight: 300;
             font-size: 14px;
             line-height: 1.7;
@@ -513,96 +454,37 @@
             border-radius: 4px;
         }
         @media (max-width: 600px) {
-            .modal-box {
-                padding: 28px 20px;
-                max-height: 90vh;
-            }
+            .modal-box { padding: 28px 20px; max-height: 90vh; }
             .modal-box h1 { font-size: 22px; }
-        }
-
-        /* ─── Responsive ─── */
-        @media (max-width: 900px) {
-            .split-screen {
-                flex-direction: column;
-            }
-            .left-panel {
-                flex: none;
-                height: 35vh;
-                width: 100%;
-            }
-            .right-panel {
-                flex: none;
-                height: 65vh;
-                padding: 32px 24px;
-                width: 100%;
-            }
-            .form-container {
-                max-width: 340px;
-            }
-            .social-buttons {
-                flex-direction: column;
-            }
-        }
-        @media (max-width: 500px) {
-            .right-panel {
-                padding: 24px 16px;
-            }
-            .form-title {
-                font-size: 26px;
-            }
-            .form-sub {
-                font-size: 13px;
-            }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- ─── Page Transition ─── -->
+    <!-- Page Transition -->
     <div class="page-transition" id="pageTransition"></div>
 
-    <!-- ─── Loading Overlay ─── -->
+    <!-- Loading -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- ─── Main Split Screen ─── -->
+    <!-- Main Split Screen -->
     <div class="split-screen" id="splitScreen">
-        <!-- Left Panel: Image -->
         <div class="left-panel" id="leftPanel">
             <div class="overlay"></div>
-            <!-- Image is set via JS (loginBG.js) -->
+            <div class="left-content">
+                <img id="leftLogo" src="" alt="Barvassi – Ultra‑Luxury Brand" class="left-logo" />
+                <div id="logoFallback" class="left-logo-fallback">Barvassi</div>
+            </div>
         </div>
 
-        <!-- Right Panel: Form -->
         <div class="right-panel">
             <div class="form-container">
-                <!-- Brand Icon (Lightning Bolt) -->
-                <div class="brand-icon">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M13 2L4 14h6l-2 8 9-12h-6l2-8z" fill="currentColor" />
-                    </svg>
-                </div>
-
-                <!-- Heading -->
                 <h1 class="form-title" id="formTitle">Welcome back.</h1>
-                <div class="form-sub" id="formSub">Your work, your team, your flow — all in one place.</div>
+                <div class="form-sub" id="formSub">Enter the vault.</div>
 
-                <!-- Social Buttons (Placeholder – no functionality) -->
-                <div class="social-buttons">
-                    <button class="social-btn" type="button">
-                        <span class="icon">G</span> Sign in with Google
-                    </button>
-                    <button class="social-btn" type="button">
-                        <span class="icon"></span> Sign in with Apple
-                    </button>
-                </div>
-
-                <!-- Divider -->
-                <div class="divider">or</div>
-
-                <!-- Signup extra fields (hidden by default) -->
                 <div id="signupFields" style="display:none;">
                     <div class="form-group">
                         <label class="form-label">Full Name</label>
@@ -614,28 +496,24 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">ID / Passport Number (Optional)</label>
-                        <div class="id-wrapper">
-                            <input type="text" class="form-input" id="idInput" placeholder="Type your ID or Passport #" autocomplete="off" />
+                        <div style="display:flex; align-items:center;">
+                            <input type="text" class="form-input" id="idInput" placeholder="Type your ID or Passport #" autocomplete="off" style="flex:1;" />
                             <button class="skip-btn" id="skipIdBtn">Skip</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Email -->
                 <div class="form-group">
                     <label class="form-label">Email Address</label>
-                    <input type="email" class="form-input" id="emailInput" placeholder="Enter your email" autocomplete="off" />
+                    <input type="email" class="form-input" id="emailInput" placeholder="name@domain.com" autocomplete="off" />
                 </div>
-
-                <!-- Password -->
                 <div class="form-group">
                     <label class="form-label">Password</label>
                     <input type="password" class="form-input" id="passInput" placeholder="••••••••" autocomplete="off" />
                 </div>
 
-                <!-- Primary Button -->
                 <button class="btn1" id="mainBtn">
-                    <span class="btn-text" id="btnText">Sign in with email</span>
+                    <span class="btn-text" id="btnText">Sign In Here</span>
                     <div class="spinner">
                         <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" stroke-opacity="0.2" />
@@ -644,21 +522,13 @@
                     </div>
                 </button>
 
-                <!-- Error -->
                 <div class="error-msg" id="errorMsg"></div>
-
-                <!-- Toggle Link -->
-                <div class="toggle-text" id="toggleBtn">
-                    Don't have an account? <strong>Sign Up</strong>
-                </div>
-
-                <!-- Footer Links -->
+                <div class="toggle-text" id="toggleBtn">Don't have an account? Sign Up</div>
+                <div class="copyright-footer">© 2026 Barvassi. All rights reserved.</div>
                 <div class="footer-links">
-                    <a href="#" onclick="event.preventDefault();">Help</a>
-                    <span style="opacity:0.3;">·</span>
-                    <a onclick="openModal('terms')">Terms</a>
-                    <span style="opacity:0.3;">·</span>
                     <a onclick="openModal('privacy')">Privacy</a>
+                    <span style="opacity:0.2;">·</span>
+                    <a onclick="openModal('terms')">Terms</a>
                 </div>
             </div>
         </div>
@@ -673,7 +543,6 @@
     </div>
 
     <script>
-        // ─── All original JavaScript remains unchanged ──────────────────
         console.log("🚀 Index page loaded");
 
         // ─── Modal Logic ──────────────────────────────────────────────
@@ -808,12 +677,25 @@
             document.body.style.overflow = '';
         }
 
-        // ─── Original JS Logic ──────────────────────────────────────
+        // ─── Original JS ──────────────────────────────────────────────
         function hideTransition() {
             const overlay = document.getElementById('pageTransition');
             if (overlay) {
                 overlay.classList.add('hidden');
                 setTimeout(() => overlay.style.display = 'none', 800);
+            }
+        }
+
+        function loadLogo() {
+            const logoEl = document.getElementById('leftLogo');
+            const fallback = document.getElementById('logoFallback');
+            if (typeof BARVASSI_LOGO === 'string' && BARVASSI_LOGO.startsWith('data:image')) {
+                logoEl.src = BARVASSI_LOGO;
+                logoEl.style.display = 'block';
+                fallback.style.display = 'none';
+            } else {
+                logoEl.style.display = 'none';
+                fallback.style.display = 'block';
             }
         }
 
@@ -899,13 +781,13 @@
                 formSub.innerText = 'Enter the House.';
                 btnText.innerText = 'Sign Up';
                 signupFields.style.display = 'block';
-                toggleBtn.innerHTML = 'Already have an account? <strong>Sign In</strong>';
+                toggleBtn.innerText = 'Already have an account? Sign In';
             } else {
                 formTitle.innerText = 'Welcome back.';
-                formSub.innerText = 'Your work, your team, your flow — all in one place.';
-                btnText.innerText = 'Sign in with email';
+                formSub.innerText = 'Enter the vault.';
+                btnText.innerText = 'Sign In Here';
                 signupFields.style.display = 'none';
-                toggleBtn.innerHTML = 'Don\'t have an account? <strong>Sign Up</strong>';
+                toggleBtn.innerText = "Don't have an account? Sign Up";
             }
         });
 
@@ -997,9 +879,8 @@
             if (e.key === 'Enter') mainBtn.click();
         });
 
-        // Load background image (left panel)
+        loadLogo();
         loadBackground();
-        // Check session and show form if needed
         checkSessionAndRedirect();
     </script>
 </body>
