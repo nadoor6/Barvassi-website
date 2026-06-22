@@ -160,21 +160,46 @@
             letter-spacing: 0.15em;
         }
 
+        /* ── Right Panel – scrollable, with flex spacers ── */
         .right-panel {
             flex: 1.5;
             background: #fafafa;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             padding: 40px 32px;
             position: relative;
+            overflow-y: auto;
+            height: 100%;
         }
+
+        /* thin, dark scrollbar – luxury touch */
+        .right-panel::-webkit-scrollbar {
+            width: 3px;
+        }
+        .right-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .right-panel::-webkit-scrollbar-thumb {
+            background: rgba(26, 26, 26, 0.15);
+            border-radius: 4px;
+        }
+        .right-panel::-webkit-scrollbar-thumb:hover {
+            background: rgba(26, 26, 26, 0.3);
+        }
+
+        .flex-spacer {
+            flex: 1 1 0;
+            min-height: 0;
+        }
+
         .form-container {
+            flex-shrink: 0;
             width: 100%;
             max-width: 280px;
             text-align: left;
         }
+
         .form-title {
             font-weight: 500;
             font-size: clamp(28px, 4vw, 40px);
@@ -341,7 +366,7 @@
         @media (max-width: 900px) {
             .split-screen { flex-direction: column; }
             .left-panel { flex: none; height: 35vh; width: 100%; }
-            .right-panel { flex: none; height: 65vh; padding: 40px 24px; width: 100%; }
+            .right-panel { flex: none; height: 65vh; padding: 32px 24px; width: 100%; }
             .form-container { max-width: 300px; }
         }
 
@@ -481,6 +506,9 @@
         </div>
 
         <div class="right-panel">
+            <!-- Spacer (top) -->
+            <div class="flex-spacer"></div>
+
             <div class="form-container">
                 <h1 class="form-title" id="formTitle">Welcome back.</h1>
                 <div class="form-sub" id="formSub">Enter the vault.</div>
@@ -531,6 +559,9 @@
                     <a onclick="openModal('terms')">Terms</a>
                 </div>
             </div>
+
+            <!-- Spacer (bottom) -->
+            <div class="flex-spacer"></div>
         </div>
     </div>
 
