@@ -86,12 +86,24 @@
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         .dropdown-info { flex: 1; }
-        .dropdown-info .name { font-weight: 500; font-size: 16px; }
-        .dropdown-info .email { font-weight: 300; font-size: 12px; color: rgba(255,255,255,0.4); }
+        .dropdown-info .name-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .dropdown-info .name {
+            font-weight: 500;
+            font-size: 16px;
+        }
+        .dropdown-info .email {
+            font-weight: 300;
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+            margin-top: 2px;
+        }
         .dropdown-info .badge {
-            display: inline-block;
-            margin-left: 6px;
-            vertical-align: middle;
+            display: inline-flex;
+            align-items: center;
             line-height: 0;
         }
         .dropdown-info .badge img {
@@ -100,6 +112,11 @@
             height: 18px;
             vertical-align: middle;
         }
+        .dropdown-info .badge .fallback {
+            font-size: 16px;
+        }
+        .badge-blue { color: #4a90e2; }
+        .badge-gold { color: #f5c518; }
 
         .dropdown-details {
             border-top: 1px solid rgba(255,255,255,0.04); padding-top: 16px; margin-top: 16px;
@@ -339,9 +356,11 @@
                         </div>
                     </div>
                     <div class="dropdown-info">
-                        <div class="name" id="dropName">Loading…</div>
+                        <div class="name-row">
+                            <div class="name" id="dropName">Loading…</div>
+                            <span class="badge" id="badgeContainer"></span>
+                        </div>
                         <div class="email" id="dropEmail">—</div>
-                        <span class="badge" id="badgeContainer"></span>
                     </div>
                 </div>
 
@@ -565,15 +584,19 @@
             let badgeHtml = '';
             if (p.verification_status === 'verified') {
                 if (typeof BLUE_CHECKMARK !== 'undefined' && BLUE_CHECKMARK) {
+                    console.log("✅ Using BLUE_CHECKMARK from checkmarks.js");
                     badgeHtml = `<img src="${BLUE_CHECKMARK}" alt="Verified" />`;
                 } else {
-                    badgeHtml = '<span style="color:#4a90e2; font-size:18px;">✓</span>';
+                    console.warn("⚠️ BLUE_CHECKMARK not found, using fallback");
+                    badgeHtml = '<span class="fallback badge-blue">✓</span>';
                 }
             } else if (p.verification_status === 'pro') {
                 if (typeof GOLD_CHECKMARK !== 'undefined' && GOLD_CHECKMARK) {
+                    console.log("✅ Using GOLD_CHECKMARK from checkmarks.js");
                     badgeHtml = `<img src="${GOLD_CHECKMARK}" alt="Pro" />`;
                 } else {
-                    badgeHtml = '<span style="color:#f5c518; font-size:18px;">★</span>';
+                    console.warn("⚠️ GOLD_CHECKMARK not found, using fallback");
+                    badgeHtml = '<span class="fallback badge-gold">★</span>';
                 }
             }
             badgeContainer.innerHTML = badgeHtml;
