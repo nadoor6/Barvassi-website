@@ -433,6 +433,9 @@
 
         // Initialize Supabase client with explicit localStorage for session persistence
         let supabaseClient = null;
+        let sessionRestored = false;
+        let redirectTimeout = null;
+
         try {
             if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -519,20 +522,22 @@
         let selectedFile = null;
 
         // ---- Auth state listener for session restoration ----
-        let authInitialized = false;
-        let authTimeout = null;
-
         supabaseClient.auth.onAuthStateChange((event, session) => {
             console.log('🔄 Auth state changed:', event, session ? 'session exists' : 'no session');
             if (event === 'SIGNED_OUT') {
                 // Redirect to home on sign out
-                window.location.href = '/';
+                if (!sessionRestored) {
+                    window.location.href = '/';
+                }
             }
             if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-                if (!authInitialized) {
-                    authInitialized = true;
-                    if (authTimeout) clearTimeout(authTimeout);
-                    // Load profile now that we have a session
+                sessionRestored = true;
+                if (redirectTimeout) {
+                    clearTimeout(redirectTimeout);
+                    redirectTimeout = null;
+                }
+                // Load profile now that we have a session
+                if (!userProfile) {
                     loadProfile();
                 }
             }
@@ -540,20 +545,36 @@
 
         // ---- Check for existing session on page load ----
         async function checkSessionAndLoad() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                authInitialized = true;
-                loadProfile();
-            } else {
-                // Wait for the auth state event, but set a timeout to avoid infinite waiting
-                authTimeout = setTimeout(() => {
-                    if (!authInitialized) {
-                        // No session after 3 seconds, redirect to home
-                        console.log("⏰ No session after timeout, redirecting.");
+            // First, check if there's a session in localStorage directly (fast)
+            const storedSession = localStorage.getItem('supabase.auth.token');
+            if (storedSession) {
+                console.log("📦 Found session in localStorage, attempting restore...");
+                // Try to get session from Supabase
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    sessionRestored = true;
+                    loadProfile();
+                    return;
+                }
+            }
+
+            // If we reach here, either no session or not restored yet.
+            // We'll wait for the auth state event, but set a timeout to avoid infinite waiting.
+            console.log("⏳ No immediate session, waiting for auth state...");
+            redirectTimeout = setTimeout(() => {
+                // Check again if session is now available
+                supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                    if (session) {
+                        sessionRestored = true;
+                        loadProfile();
+                    } else {
+                        console.log("🚫 No session after timeout, redirecting.");
                         window.location.href = '/';
                     }
-                }, 3000);
-            }
+                }).catch(() => {
+                    window.location.href = '/';
+                });
+            }, 3000);
         }
 
         // ---- Profile loading ----
