@@ -171,7 +171,8 @@
             touch-action: none;
         }
         .cropper-image-wrapper img {
-            max-width: 100%; max-height: 60vh; object-fit: contain;
+            max-width: 100%; max-height: 60vh;
+            object-fit: contain;
             display: block; user-select: none; -webkit-user-drag: none;
             pointer-events: none;
         }
@@ -314,8 +315,8 @@
                 <img id="cropperImage" src="" alt="Crop" />
                 <div class="cropper-circle" id="cropperCircle"></div>
             </div>
-            
-            <!-- ===== RESIZE SLIDER ===== -->
+
+            <!-- RESIZE SLIDER -->
             <div class="cropper-resize">
                 <input type="range" id="cropSizeSlider" min="20" max="400" step="1" value="200" />
             </div>
@@ -420,7 +421,8 @@
             currentUser = session.user;
             console.log("✅ User ID:", currentUser.id);
 
-            const { data, error } = await supabaseClient.from('clients').select('*').eq('id', currentUser.id).maybeSingle(); 
+            const { data, error } = await supabaseClient.from('clients').select('*').eq('id', currentUser.id)
+            .maybeSingle();
             if (error) { console.error('❌ Profile fetch error:', error); dropName.textContent = 'Error'; return; }
 
             if (!data) {
@@ -433,8 +435,11 @@
                     { id: currentUser.id, full_name: name, email: currentUser.email, account_id: accountId }
                 ]);
                 if (insertError) { console.error("❌ Failed to auto-create profile", insertError); return; }
-                const { data: newData, error: newError } = await supabaseClient.from('clients').select('*').eq('id', currentUser.id).single();
-                userProfile = newData; renderProfile(); return;
+                const { data: newData, error: newError } = await supabaseClient.from('clients').select('*').eq('id',
+                    currentUser.id).single();
+                userProfile = newData;
+                renderProfile();
+                return;
             }
             userProfile = data;
             console.log("✅ Profile data loaded");
@@ -444,7 +449,9 @@
         // ---- Render profile ----
         function renderProfile() {
             if (!userProfile) { dropName.textContent = 'Loading...'; return; }
-            const p = userProfile; const name = p.full_name || 'Member'; const initial = name.charAt(0).toUpperCase();
+            const p = userProfile;
+            const name = p.full_name || 'Member';
+            const initial = name.charAt(0).toUpperCase();
 
             const cacheKey = localStorage.getItem('barvassi_avatar_timestamp') || Date.now();
 
@@ -464,74 +471,118 @@
                 dropInitials.style.display = 'block';
                 dropInitials.textContent = initial;
             }
-            dropName.textContent = name; dropEmail.textContent = p.email; dropId.textContent = p.account_id || '—'; dropEmailDetail.textContent = p.email; dropPhoneText.textContent = p.phone || '—';
+            dropName.textContent = name;
+            dropEmail.textContent = p.email;
+            dropId.textContent = p.account_id || '—';
+            dropEmailDetail.textContent = p.email;
+            dropPhoneText.textContent = p.phone || '—';
 
             let verificationText = 'Unverified';
-            if (p.verification_status === 'verified') { verificationText = 'Verified'; }
-            else if (p.verification_status === 'pro') { verificationText = 'Pro'; }
+            if (p.verification_status === 'verified') { verificationText = 'Verified'; } else if (p.verification_status ===
+                'pro') { verificationText = 'Pro'; }
             dropVerification.textContent = verificationText;
 
-            if (p.subscription_status === 'pro') { dropSubscription.textContent = 'Pro'; }
-            else { dropSubscription.textContent = 'None'; }
+            if (p.subscription_status === 'pro') { dropSubscription.textContent = 'Pro'; } else { dropSubscription
+                    .textContent = 'None'; }
 
             const badgeSpan = document.querySelector('.dropdown-info .badge');
             let badgeHtml = '';
-            if (p.verification_status === 'verified') { badgeHtml = '<span class="badge badge-blue">✓</span>'; }
-            else if (p.verification_status === 'pro') { badgeHtml = '<span class="badge badge-gold">★</span>'; }
+            if (p.verification_status === 'verified') { badgeHtml = '<span class="badge badge-blue">✓</span>'; } else if (p
+                .verification_status === 'pro') { badgeHtml = '<span class="badge badge-gold">★</span>'; }
             badgeSpan.innerHTML = badgeHtml;
             upgradeBtn.disabled = p.verification_status !== 'verified';
         }
 
         // ---- Dropdown ----
-        function openDropdown() { dropdownOverlay.classList.add('open'); dropdown.classList.add('open'); phoneEditBtn.style.display = 'inline-block'; dropPhoneEdit.style.display = 'none'; dropPhoneText.style.display = 'inline'; }
-        function closeDropdown() { dropdownOverlay.classList.remove('open'); dropdown.classList.remove('open'); }
-        avatarBtn.addEventListener('click', (e) => { e.stopPropagation(); if (dropdown.classList.contains('open')) closeDropdown(); else openDropdown(); });
+        function openDropdown() { dropdownOverlay.classList.add('open');
+            dropdown.classList.add('open');
+            phoneEditBtn.style.display = 'inline-block';
+            dropPhoneEdit.style.display = 'none';
+            dropPhoneText.style.display = 'inline'; }
+
+        function closeDropdown() { dropdownOverlay.classList.remove('open');
+            dropdown.classList.remove('open'); }
+        avatarBtn.addEventListener('click', (e) => { e.stopPropagation(); if (dropdown.classList.contains('open'))
+                closeDropdown();
+            else openDropdown(); });
         dropdownOverlay.addEventListener('click', (e) => { if (e.target === dropdownOverlay) closeDropdown(); });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDropdown(); });
 
         // ---- Phone ----
-        phoneEditBtn.addEventListener('click', () => { if (!userProfile) return; phoneEditBtn.style.display = 'none'; dropPhoneText.style.display = 'none'; dropPhoneEdit.style.display = 'flex'; phoneInputEdit.value = userProfile.phone || ''; });
-        phoneCancelBtn.addEventListener('click', () => { dropPhoneEdit.style.display = 'none'; dropPhoneText.style.display = 'inline'; phoneEditBtn.style.display = 'inline-block'; });
+        phoneEditBtn.addEventListener('click', () => { if (!userProfile) return;
+            phoneEditBtn.style.display = 'none';
+            dropPhoneText.style.display = 'none';
+            dropPhoneEdit.style.display = 'flex';
+            phoneInputEdit.value = userProfile.phone || ''; });
+        phoneCancelBtn.addEventListener('click', () => { dropPhoneEdit.style.display = 'none';
+            dropPhoneText.style.display = 'inline';
+            phoneEditBtn.style.display = 'inline-block'; });
         phoneSaveBtn.addEventListener('click', async () => {
-            if (!userProfile) return; const newPhone = phoneInputEdit.value.trim();
-            const { error } = await supabaseClient.from('clients').update({ phone: newPhone }).eq('id', currentUser.id);
-            if (error) { console.error('❌ Phone update error:', error); showNotification('Failed to update phone.', 'error'); }
-            else { userProfile.phone = newPhone; dropPhoneText.textContent = newPhone || '—'; dropPhoneEdit.style.display = 'none'; dropPhoneText.style.display = 'inline'; phoneEditBtn.style.display = 'inline-block'; showNotification('Phone number updated.'); }
+            if (!userProfile) return;
+            const newPhone = phoneInputEdit.value.trim();
+            const { error } = await supabaseClient.from('clients').update({ phone: newPhone }).eq('id', currentUser
+                .id);
+            if (error) { console.error('❌ Phone update error:', error);
+                showNotification('Failed to update phone.', 'error'); } else { userProfile.phone = newPhone;
+                dropPhoneText.textContent = newPhone || '—';
+                dropPhoneEdit.style.display = 'none';
+                dropPhoneText.style.display = 'inline';
+                phoneEditBtn.style.display = 'inline-block';
+                showNotification('Phone number updated.'); }
         });
 
         // ---- Verify & Upgrade ----
         verifyBtn.addEventListener('click', async () => {
-            if (!userProfile || userProfile.verification_status !== 'unverified') { showNotification('Already verified or pro.', 'error'); return; }
-            const { error } = await supabaseClient.from('clients').update({ verification_status: 'verified' }).eq('id', currentUser.id);
-            if (error) { console.error('❌ Verification error:', error); showNotification('Verification failed: ' + error.message, 'error'); }
-            else { userProfile.verification_status = 'verified'; renderProfile(); showNotification('Identity verified!'); }
+            if (!userProfile || userProfile.verification_status !== 'unverified') { showNotification(
+                    'Already verified or pro.', 'error'); return; }
+            const { error } = await supabaseClient.from('clients').update({ verification_status: 'verified' }).eq(
+                'id', currentUser.id);
+            if (error) { console.error('❌ Verification error:', error);
+                showNotification('Verification failed: ' + error.message, 'error'); } else { userProfile
+                    .verification_status = 'verified';
+                renderProfile();
+                showNotification('Identity verified!'); }
         });
         upgradeBtn.addEventListener('click', async () => {
-            if (!userProfile || userProfile.verification_status !== 'verified') { showNotification('Please verify your identity first.', 'error'); return; }
-            const { error } = await supabaseClient.from('clients').update({ verification_status: 'pro', subscription_status: 'pro' }).eq('id', currentUser.id);
-            if (error) { console.error('❌ Upgrade error:', error); showNotification('Upgrade failed: ' + error.message, 'error'); }
-            else { userProfile.verification_status = 'pro'; userProfile.subscription_status = 'pro'; renderProfile(); showNotification('Welcome to Pro!'); }
+            if (!userProfile || userProfile.verification_status !== 'verified') { showNotification(
+                    'Please verify your identity first.', 'error'); return; }
+            const { error } = await supabaseClient.from('clients').update({ verification_status: 'pro',
+                subscription_status: 'pro' }).eq('id', currentUser.id);
+            if (error) { console.error('❌ Upgrade error:', error);
+                showNotification('Upgrade failed: ' + error.message, 'error'); } else { userProfile
+                    .verification_status = 'pro';
+                userProfile.subscription_status = 'pro';
+                renderProfile();
+                showNotification('Welcome to Pro!'); }
         });
 
         // ---- Logout ----
-        logoutBtn.addEventListener('click', async () => { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; });
+        logoutBtn.addEventListener('click', async () => { await supabaseClient.auth.signOut();
+            window.location.href = 'index.html'; });
 
         // ---- Inactivity ----
         let inactivityTimer;
-        function resetTimer() { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { showNotification('Session expired. Logging out...'); setTimeout(() => { supabaseClient.auth.signOut(); window.location.href = 'index.html'; }, 1500); }, 3600000); }
+
+        function resetTimer() { clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => { showNotification('Session expired. Logging out...');
+                setTimeout(() => { supabaseClient.auth.signOut();
+                    window.location.href = 'index.html'; }, 1500); }, 3600000); }
         document.addEventListener('mousemove', resetTimer);
         document.addEventListener('mousedown', resetTimer);
         document.addEventListener('keypress', resetTimer);
         resetTimer();
 
         // ================================================================
-        // ===== CROPPER LOGIC (EDGE-TO-EDGE MAX SIZE) =====
+        // ===== FIXED CROPPER LOGIC – circle now reaches the image edges =
         // ================================================================
 
-        let cropX = 0, cropY = 0;
+        let cropX = 0,
+            cropY = 0;
         let isDragging = false;
-        let dragStartX = 0, dragStartY = 0;
+        let dragStartX = 0,
+            dragStartY = 0;
         let circleSize = 160;
+        let maxCircleSize = 400;
 
         function openCropper(file) {
             selectedFile = file;
@@ -539,23 +590,56 @@
             reader.onload = (e) => {
                 cropperImage.src = e.target.result;
                 cropperImage.onload = () => {
-                    const wrapperRect = cropperWrapper.getBoundingClientRect();
-                    
-                    // ===== TRUE FIX: Use the LARGER side so it spans the whole frame =====
-                    let maxSize = Math.max(wrapperRect.width, wrapperRect.height);
-                    if (maxSize === 0) { maxSize = 200; }
-                    
-                    circleSize = maxSize; 
-                    cropSizeSlider.min = 20;
-                    cropSizeSlider.max = maxSize;
-                    cropSizeSlider.value = circleSize;
+                    // Use requestAnimationFrame to ensure the browser has laid out the image
+                    requestAnimationFrame(() => {
+                        const imgRect = cropperImage.getBoundingClientRect();
+                        const wrapperRect = cropperWrapper.getBoundingClientRect();
 
-                    cropperCircle.style.width = circleSize + 'px';
-                    cropperCircle.style.height = circleSize + 'px';
-                    cropX = wrapperRect.width / 2;
-                    cropY = wrapperRect.height / 2;
-                    updateCirclePosition();
-                    cropperModal.classList.add('open');
+                        // --- KEY FIX: use the image's actual rendered size, not the wrapper ---
+                        // The image is displayed with object-fit:contain, so it may be smaller
+                        // than the wrapper. Using the image's rendered dimensions ensures the
+                        // circle can scale to touch the actual image edges.
+                        let imgDisplayWidth = imgRect.width;
+                        let imgDisplayHeight = imgRect.height;
+
+                        // Fallback: if the image hasn't rendered yet, use the wrapper size
+                        if (imgDisplayWidth === 0 || imgDisplayHeight === 0 || !isFinite(imgDisplayWidth) || !isFinite(
+                                imgDisplayHeight)) {
+                            imgDisplayWidth = wrapperRect.width;
+                            imgDisplayHeight = wrapperRect.height;
+                        }
+
+                        // Max circle size = the smaller of the image's displayed dimensions
+                        // This makes the circle touch all four edges for square images,
+                        // and touch two opposite edges for rectangular images.
+                        let rawMax = Math.min(imgDisplayWidth, imgDisplayHeight);
+
+                        // Sanity check – never let it go below 20px or above a reasonable limit
+                        if (rawMax < 20) rawMax = 200;
+                        if (rawMax > 800) rawMax = 800; // safety cap
+
+                        maxCircleSize = rawMax;
+
+                        // Set slider range
+                        cropSizeSlider.min = 20;
+                        cropSizeSlider.max = maxCircleSize;
+
+                        // Start the circle at full size (touching the edges)
+                        circleSize = maxCircleSize;
+                        cropSizeSlider.value = circleSize;
+
+                        // Apply circle size
+                        cropperCircle.style.width = circleSize + 'px';
+                        cropperCircle.style.height = circleSize + 'px';
+
+                        // Center the circle on the image (the image is centered in the wrapper via flex)
+                        // We use the wrapper's center because the image is centered inside it.
+                        cropX = wrapperRect.width / 2;
+                        cropY = wrapperRect.height / 2;
+
+                        updateCirclePosition();
+                        cropperModal.classList.add('open');
+                    });
                 };
             };
             reader.readAsDataURL(file);
@@ -568,11 +652,13 @@
 
         // ===== RESIZE LISTENER =====
         cropSizeSlider.addEventListener('input', (e) => {
-            const newSize = parseInt(e.target.value, 10);
+            const newSize = parseFloat(e.target.value);
+            if (isNaN(newSize) || newSize < 1) return;
             circleSize = newSize;
             cropperCircle.style.width = circleSize + 'px';
             cropperCircle.style.height = circleSize + 'px';
 
+            // Constrain the circle position so it doesn't go outside the wrapper
             const rect = cropperWrapper.getBoundingClientRect();
             const half = circleSize / 2;
             cropX = Math.max(half, Math.min(rect.width - half, cropX));
@@ -615,8 +701,10 @@
         cropperCircle.addEventListener('mousedown', startDrag);
         document.addEventListener('mousemove', onDrag);
         document.addEventListener('mouseup', endDrag);
-        cropperCircle.addEventListener('touchstart', (e) => { e.preventDefault(); startDrag(e); });
-        document.addEventListener('touchmove', (e) => { e.preventDefault(); onDrag(e); });
+        cropperCircle.addEventListener('touchstart', (e) => { e.preventDefault();
+            startDrag(e); });
+        document.addEventListener('touchmove', (e) => { e.preventDefault();
+            onDrag(e); });
         document.addEventListener('touchend', endDrag);
 
         cropperCancel.addEventListener('click', () => {
@@ -683,8 +771,11 @@
                 }
 
                 const fileName = `${currentUser.id}.png`;
-                const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(fileName, blob, { upsert: true, contentType: 'image/png' });
-                
+                const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(fileName, blob, {
+                    upsert: true,
+                    contentType: 'image/png'
+                });
+
                 if (uploadError) {
                     console.error('❌ Upload error:', uploadError);
                     showNotification('Failed to upload avatar.', 'error');
@@ -697,8 +788,9 @@
                 const uploadTimestamp = Date.now();
                 localStorage.setItem('barvassi_avatar_timestamp', uploadTimestamp);
 
-                const { error: updateError } = await supabaseClient.from('clients').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
-                
+                const { error: updateError } = await supabaseClient.from('clients').update({ avatar_url: publicUrl })
+                    .eq('id', currentUser.id);
+
                 if (updateError) {
                     console.error('❌ Update error:', updateError);
                     showNotification('Failed to save avatar URL.', 'error');
