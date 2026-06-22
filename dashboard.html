@@ -14,6 +14,7 @@
     </script>
 
     <script src="logo.js"></script>
+    <script src="checkmarks.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -87,9 +88,18 @@
         .dropdown-info { flex: 1; }
         .dropdown-info .name { font-weight: 500; font-size: 16px; }
         .dropdown-info .email { font-weight: 300; font-size: 12px; color: rgba(255,255,255,0.4); }
-        .dropdown-info .badge { font-size: 14px; margin-left: 6px; vertical-align: middle; }
-        .badge-blue { color: #4a90e2; }
-        .badge-gold { color: #f5c518; }
+        .dropdown-info .badge {
+            display: inline-block;
+            margin-left: 6px;
+            vertical-align: middle;
+            line-height: 0;
+        }
+        .dropdown-info .badge img {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+        }
 
         .dropdown-details {
             border-top: 1px solid rgba(255,255,255,0.04); padding-top: 16px; margin-top: 16px;
@@ -331,7 +341,7 @@
                     <div class="dropdown-info">
                         <div class="name" id="dropName">Loading…</div>
                         <div class="email" id="dropEmail">—</div>
-                        <span class="badge"></span>
+                        <span class="badge" id="badgeContainer"></span>
                     </div>
                 </div>
 
@@ -486,8 +496,7 @@
             currentUser = session.user;
             console.log("✅ User ID:", currentUser.id);
 
-            const { data, error } = await supabaseClient.from('clients').select('*').eq('id', currentUser.id)
-            .maybeSingle();
+            const { data, error } = await supabaseClient.from('clients').select('*').eq('id', currentUser.id).maybeSingle();
             if (error) { console.error('❌ Profile fetch error:', error); dropName.textContent = 'Error'; return; }
 
             if (!data) {
@@ -500,8 +509,7 @@
                     { id: currentUser.id, full_name: name, email: currentUser.email, account_id: accountId }
                 ]);
                 if (insertError) { console.error("❌ Failed to auto-create profile", insertError); return; }
-                const { data: newData, error: newError } = await supabaseClient.from('clients').select('*').eq('id',
-                    currentUser.id).single();
+                const { data: newData, error: newError } = await supabaseClient.from('clients').select('*').eq('id', currentUser.id).single();
                 userProfile = newData;
                 renderProfile();
                 return;
@@ -543,109 +551,87 @@
             dropPhoneText.textContent = p.phone || '—';
 
             let verificationText = 'Unverified';
-            if (p.verification_status === 'verified') { verificationText = 'Verified'; } else if (p.verification_status ===
-                'pro') { verificationText = 'Pro'; }
+            if (p.verification_status === 'verified') verificationText = 'Verified';
+            else if (p.verification_status === 'pro') verificationText = 'Pro';
             dropVerification.textContent = verificationText;
 
-            if (p.subscription_status === 'pro') { dropSubscription.textContent = 'Pro'; } else { dropSubscription
-                    .textContent = 'None'; }
+            if (p.subscription_status === 'pro') dropSubscription.textContent = 'Pro';
+            else dropSubscription.textContent = 'None';
 
-            const badgeSpan = document.querySelector('.dropdown-info .badge');
+            // ---- Render badge using images from checkmarks.js ----
+            const badgeContainer = document.getElementById('badgeContainer');
+            badgeContainer.innerHTML = ''; // clear
+
             let badgeHtml = '';
-            if (p.verification_status === 'verified') { badgeHtml = '<span class="badge badge-blue">✓</span>'; } else if (p
-                .verification_status === 'pro') { badgeHtml = '<span class="badge badge-gold">★</span>'; }
-            badgeSpan.innerHTML = badgeHtml;
+            if (p.verification_status === 'verified') {
+                if (typeof BLUE_CHECKMARK !== 'undefined' && BLUE_CHECKMARK) {
+                    badgeHtml = `<img src="${BLUE_CHECKMARK}" alt="Verified" />`;
+                } else {
+                    badgeHtml = '<span style="color:#4a90e2; font-size:18px;">✓</span>';
+                }
+            } else if (p.verification_status === 'pro') {
+                if (typeof GOLD_CHECKMARK !== 'undefined' && GOLD_CHECKMARK) {
+                    badgeHtml = `<img src="${GOLD_CHECKMARK}" alt="Pro" />`;
+                } else {
+                    badgeHtml = '<span style="color:#f5c518; font-size:18px;">★</span>';
+                }
+            }
+            badgeContainer.innerHTML = badgeHtml;
+
+            // Enable/disable upgrade button
             upgradeBtn.disabled = p.verification_status !== 'verified';
         }
 
         // ---- Dropdown ----
-        function openDropdown() { dropdownOverlay.classList.add('open');
-            dropdown.classList.add('open');
-            phoneEditBtn.style.display = 'inline-block';
-            dropPhoneEdit.style.display = 'none';
-            dropPhoneText.style.display = 'inline'; }
-
-        function closeDropdown() { dropdownOverlay.classList.remove('open');
-            dropdown.classList.remove('open'); }
-        avatarBtn.addEventListener('click', (e) => { e.stopPropagation(); if (dropdown.classList.contains('open'))
-                closeDropdown();
-            else openDropdown(); });
+        function openDropdown() { dropdownOverlay.classList.add('open'); dropdown.classList.add('open'); phoneEditBtn.style.display = 'inline-block'; dropPhoneEdit.style.display = 'none'; dropPhoneText.style.display = 'inline'; }
+        function closeDropdown() { dropdownOverlay.classList.remove('open'); dropdown.classList.remove('open'); }
+        avatarBtn.addEventListener('click', (e) => { e.stopPropagation(); if (dropdown.classList.contains('open')) closeDropdown(); else openDropdown(); });
         dropdownOverlay.addEventListener('click', (e) => { if (e.target === dropdownOverlay) closeDropdown(); });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDropdown(); });
 
         // ---- Phone ----
-        phoneEditBtn.addEventListener('click', () => { if (!userProfile) return;
-            phoneEditBtn.style.display = 'none';
-            dropPhoneText.style.display = 'none';
-            dropPhoneEdit.style.display = 'flex';
-            phoneInputEdit.value = userProfile.phone || ''; });
-        phoneCancelBtn.addEventListener('click', () => { dropPhoneEdit.style.display = 'none';
-            dropPhoneText.style.display = 'inline';
-            phoneEditBtn.style.display = 'inline-block'; });
+        phoneEditBtn.addEventListener('click', () => { if (!userProfile) return; phoneEditBtn.style.display = 'none'; dropPhoneText.style.display = 'none'; dropPhoneEdit.style.display = 'flex'; phoneInputEdit.value = userProfile.phone || ''; });
+        phoneCancelBtn.addEventListener('click', () => { dropPhoneEdit.style.display = 'none'; dropPhoneText.style.display = 'inline'; phoneEditBtn.style.display = 'inline-block'; });
         phoneSaveBtn.addEventListener('click', async () => {
             if (!userProfile) return;
             const newPhone = phoneInputEdit.value.trim();
-            const { error } = await supabaseClient.from('clients').update({ phone: newPhone }).eq('id', currentUser
-                .id);
-            if (error) { console.error('❌ Phone update error:', error);
-                showNotification('Failed to update phone.', 'error'); } else { userProfile.phone = newPhone;
-                dropPhoneText.textContent = newPhone || '—';
-                dropPhoneEdit.style.display = 'none';
-                dropPhoneText.style.display = 'inline';
-                phoneEditBtn.style.display = 'inline-block';
-                showNotification('Phone number updated.'); }
+            const { error } = await supabaseClient.from('clients').update({ phone: newPhone }).eq('id', currentUser.id);
+            if (error) { console.error('❌ Phone update error:', error); showNotification('Failed to update phone.', 'error'); }
+            else { userProfile.phone = newPhone; dropPhoneText.textContent = newPhone || '—'; dropPhoneEdit.style.display = 'none'; dropPhoneText.style.display = 'inline'; phoneEditBtn.style.display = 'inline-block'; showNotification('Phone number updated.'); }
         });
 
         // ---- Verify & Upgrade ----
         verifyBtn.addEventListener('click', async () => {
-            if (!userProfile || userProfile.verification_status !== 'unverified') { showNotification(
-                    'Already verified or pro.', 'error'); return; }
-            const { error } = await supabaseClient.from('clients').update({ verification_status: 'verified' }).eq(
-                'id', currentUser.id);
-            if (error) { console.error('❌ Verification error:', error);
-                showNotification('Verification failed: ' + error.message, 'error'); } else { userProfile
-                    .verification_status = 'verified';
-                renderProfile();
-                showNotification('Identity verified!'); }
+            if (!userProfile || userProfile.verification_status !== 'unverified') { showNotification('Already verified or pro.', 'error'); return; }
+            const { error } = await supabaseClient.from('clients').update({ verification_status: 'verified' }).eq('id', currentUser.id);
+            if (error) { console.error('❌ Verification error:', error); showNotification('Verification failed: ' + error.message, 'error'); }
+            else { userProfile.verification_status = 'verified'; renderProfile(); showNotification('Identity verified!'); }
         });
         upgradeBtn.addEventListener('click', async () => {
-            if (!userProfile || userProfile.verification_status !== 'verified') { showNotification(
-                    'Please verify your identity first.', 'error'); return; }
-            const { error } = await supabaseClient.from('clients').update({ verification_status: 'pro',
-                subscription_status: 'pro' }).eq('id', currentUser.id);
-            if (error) { console.error('❌ Upgrade error:', error);
-                showNotification('Upgrade failed: ' + error.message, 'error'); } else { userProfile
-                    .verification_status = 'pro';
-                userProfile.subscription_status = 'pro';
-                renderProfile();
-                showNotification('Welcome to Pro!'); }
+            if (!userProfile || userProfile.verification_status !== 'verified') { showNotification('Please verify your identity first.', 'error'); return; }
+            const { error } = await supabaseClient.from('clients').update({ verification_status: 'pro', subscription_status: 'pro' }).eq('id', currentUser.id);
+            if (error) { console.error('❌ Upgrade error:', error); showNotification('Upgrade failed: ' + error.message, 'error'); }
+            else { userProfile.verification_status = 'pro'; userProfile.subscription_status = 'pro'; renderProfile(); showNotification('Welcome to Pro!'); }
         });
 
         // ---- Logout ----
-        logoutBtn.addEventListener('click', async () => { await supabaseClient.auth.signOut();
-            window.location.href = 'index.html'; });
+        logoutBtn.addEventListener('click', async () => { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; });
 
         // ---- Inactivity ----
         let inactivityTimer;
-
-        function resetTimer() { clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(() => { showNotification('Session expired. Logging out...');
-                setTimeout(() => { supabaseClient.auth.signOut();
-                    window.location.href = 'index.html'; }, 1500); }, 3600000); }
+        function resetTimer() { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { showNotification('Session expired. Logging out...'); setTimeout(() => { supabaseClient.auth.signOut(); window.location.href = 'index.html'; }, 1500); }, 3600000); }
         document.addEventListener('mousemove', resetTimer);
         document.addEventListener('mousedown', resetTimer);
         document.addEventListener('keypress', resetTimer);
         resetTimer();
 
         // ================================================================
-        // ===== CROPPER LOGIC (fixed loading state) =====
+        // ===== CROPPER LOGIC (with btn1 loading state) =====
         // ================================================================
 
-        let cropX = 0,
-            cropY = 0;
+        let cropX = 0, cropY = 0;
         let isDragging = false;
-        let dragStartX = 0,
-            dragStartY = 0;
+        let dragStartX = 0, dragStartY = 0;
         let circleSize = 160;
         let maxCircleSize = 400;
 
@@ -754,10 +740,8 @@
         cropperCircle.addEventListener('mousedown', startDrag);
         document.addEventListener('mousemove', onDrag);
         document.addEventListener('mouseup', endDrag);
-        cropperCircle.addEventListener('touchstart', (e) => { e.preventDefault();
-            startDrag(e); });
-        document.addEventListener('touchmove', (e) => { e.preventDefault();
-            onDrag(e); });
+        cropperCircle.addEventListener('touchstart', (e) => { e.preventDefault(); startDrag(e); });
+        document.addEventListener('touchmove', (e) => { e.preventDefault(); onDrag(e); });
         document.addEventListener('touchend', endDrag);
 
         cropperCancel.addEventListener('click', () => {
@@ -769,7 +753,6 @@
         cropperDone.addEventListener('click', async function() {
             if (!selectedFile || !currentUser) return;
 
-            // Show loading state immediately
             this.classList.add('loading');
             this.disabled = true;
 
@@ -821,7 +804,6 @@
                     finalSize, finalSize
                 );
 
-                // Convert canvas to blob with a Promise so we can await it
                 const blob = await new Promise((resolve) => {
                     canvas.toBlob(resolve, 'image/png');
                 });
@@ -867,7 +849,6 @@
                 console.error('Cropper error:', err);
                 showNotification('An error occurred.', 'error');
             } finally {
-                // Remove loading state and re-enable button
                 this.classList.remove('loading');
                 this.disabled = false;
             }
