@@ -393,7 +393,7 @@
         </section>
     </div>
 
-    <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/jpg,image/webp" />
+    <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/jpg,image/webp,image/gif,image/bmp" />
 
     <!-- CROPPER MODAL -->
     <div id="cropper-modal">
@@ -640,12 +640,26 @@
         // ---- Logout ----
         logoutBtn.addEventListener('click', async () => { await supabaseClient.auth.signOut(); window.location.href = '/'; });
 
-        // ---- Inactivity ----
+        // ---- Inactivity Timer ----
+        // Set to 100 hours = 360,000,000 ms
+        const INACTIVITY_TIMEOUT_MS = 100 * 60 * 60 * 1000; // 100 hours
+
         let inactivityTimer;
-        function resetTimer() { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { showNotification('Session expired. Logging out...'); setTimeout(() => { supabaseClient.auth.signOut(); window.location.href = '/'; }, 1500); }, 3600000); }
+        function resetTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                showNotification('Session expired. Logging out...');
+                setTimeout(() => {
+                    supabaseClient.auth.signOut();
+                    window.location.href = '/';
+                }, 1500);
+            }, INACTIVITY_TIMEOUT_MS);
+        }
+        // Reset on user activity
         document.addEventListener('mousemove', resetTimer);
         document.addEventListener('mousedown', resetTimer);
         document.addEventListener('keypress', resetTimer);
+        document.addEventListener('touchstart', resetTimer); // for mobile
         resetTimer();
 
         // ================================================================
@@ -772,9 +786,16 @@
             selectedFile = null;
         });
 
-        // ---- CROPPER DONE with proper loading state ----
+        // ---- CROPPER DONE with proper loading state and file type validation ----
         cropperDone.addEventListener('click', async function() {
             if (!selectedFile || !currentUser) return;
+
+            // Validate file type (extra safety)
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif', 'image/bmp'];
+            if (!allowedTypes.includes(selectedFile.type)) {
+                showNotification('Unsupported file format. Please use JPG, PNG, WebP, GIF, or BMP.', 'error');
+                return;
+            }
 
             this.classList.add('loading');
             this.disabled = true;
@@ -827,6 +848,7 @@
                     finalSize, finalSize
                 );
 
+                // Convert to PNG (safe and lossless)
                 const blob = await new Promise((resolve) => {
                     canvas.toBlob(resolve, 'image/png');
                 });
@@ -882,6 +904,13 @@
         avatarInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
+            // Extra validation on file type
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif', 'image/bmp'];
+            if (!allowedTypes.includes(file.type)) {
+                showNotification('Please select a valid image (JPG, PNG, WebP, GIF, BMP).', 'error');
+                avatarInput.value = '';
+                return;
+            }
             openCropper(file);
             avatarInput.value = '';
         });
