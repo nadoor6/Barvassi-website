@@ -7,6 +7,7 @@
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
 
     <script>
+        // Your Supabase credentials
         const SUPABASE_URL = "https://inycllornehmohderdfz.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_Bnkek18bbEnBgnis-nUVKw_QABqaYKj";
         console.log("✅ Keys loaded!");
@@ -131,6 +132,25 @@
         .main-content h2 { font-weight: 400; font-size: 28px; opacity: 0.6; letter-spacing: 0.05em; }
         .main-content p { font-weight: 300; font-size: 14px; opacity: 0.3; margin-top: 8px; }
         #avatarInput { display: none; }
+
+        /* ---- MODERN NOTIFICATION SYSTEM ---- */
+        #toast-container {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 9999; pointer-events: none;
+        }
+        #toast {
+            background: rgba(12, 12, 12, 0.8); backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px;
+            padding: 14px 28px; color: #f2f2f2;
+            font-family: 'SF Pro Display', sans-serif; font-weight: 300; font-size: 14px;
+            letter-spacing: 0.05em; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            opacity: 0; transform: translateY(-20px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1); pointer-events: none; white-space: nowrap;
+        }
+        #toast.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        #toast.error { border-color: rgba(180, 40, 40, 0.3); background: rgba(30, 10, 10, 0.8); }
+
         @media (max-width: 600px) {
             .dashboard-container { padding: 16px; }
             .dropdown { right: 16px; width: 320px; }
@@ -145,6 +165,7 @@
     <div class="dashboard-container">
         <header class="top-bar">
             <div class="brand">
+                <!-- PLACEHOLDER: Replace src="logo.png" with your Base64 string later -->
                 <img src="logo.png" alt="Barvassi" />
                 <span style="font-weight:300; font-size:14px; opacity:0.4;">· The Vault</span>
             </div>
@@ -208,6 +229,13 @@
 
     <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/jpg,image/webp" />
 
+    <!-- ===== NOTIFICATION BAR ===== -->
+    <div id="toast-container">
+        <div id="toast">
+            <span id="toast-message">Success</span>
+        </div>
+    </div>
+
     <script>
         console.log("✅ Dashboard Script Loaded");
         let supabaseClient = null;
@@ -217,6 +245,20 @@
                 console.log("✅ Supabase Client Created");
             } else { console.error("❌ Keys are missing!"); }
         } catch (e) { console.error('❌ Supabase init error:', e); }
+
+        // ===== NOTIFICATION SYSTEM =====
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toast-message');
+        let toastTimeout;
+
+        function showNotification(message, type = 'success') {
+            clearTimeout(toastTimeout);
+            toastMsg.textContent = message;
+            toast.classList.remove('error');
+            if (type === 'error') { toast.classList.add('error'); }
+            toast.classList.add('show');
+            toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 5000);
+        }
 
         const avatarBtn = document.getElementById('avatarBtn');
         const avatarInitials = document.getElementById('avatarInitials');
@@ -309,30 +351,41 @@
         phoneSaveBtn.addEventListener('click', async () => {
             if (!userProfile) return; const newPhone = phoneInputEdit.value.trim();
             const { error } = await supabaseClient.from('clients').update({ phone: newPhone }).eq('id', currentUser.id);
-            if (error) { console.error('❌ Phone update error:', error); alert('Failed to update phone: ' + error.message); }
-            else { userProfile.phone = newPhone; dropPhoneText.textContent = newPhone || '—'; dropPhoneEdit.style.display = 'none'; dropPhoneText.style.display = 'inline'; phoneEditBtn.style.display = 'inline-block'; }
+            if (error) { console.error('❌ Phone update error:', error); showNotification('Failed to update phone.', 'error'); }
+            else { userProfile.phone = newPhone; dropPhoneText.textContent = newPhone || '—'; dropPhoneEdit.style.display = 'none'; dropPhoneText.style.display = 'inline'; phoneEditBtn.style.display = 'inline-block'; showNotification('Phone number updated.'); }
         });
 
-        verifyBtn.addEventListener('click', async () => { if (!userProfile || userProfile.verification_status !== 'unverified') { alert('Already verified or pro.'); return; } const { error } = await supabaseClient.from('clients').update({ verification_status: 'verified' }).eq('id', currentUser.id); if (error) { console.error('❌ Verification error:', error); alert('Verification failed: ' + error.message); } else { userProfile.verification_status = 'verified'; renderProfile(); alert('Identity verified!'); } });
-        upgradeBtn.addEventListener('click', async () => { if (!userProfile || userProfile.verification_status !== 'verified') { alert('Please verify your identity first.'); return; } const { error } = await supabaseClient.from('clients').update({ verification_status: 'pro', subscription_status: 'pro' }).eq('id', currentUser.id); if (error) { console.error('❌ Upgrade error:', error); alert('Upgrade failed: ' + error.message); } else { userProfile.verification_status = 'pro'; userProfile.subscription_status = 'pro'; renderProfile(); alert('Welcome to Pro!'); } });
+        verifyBtn.addEventListener('click', async () => {
+            if (!userProfile || userProfile.verification_status !== 'unverified') { showNotification('Already verified or pro.', 'error'); return; }
+            const { error } = await supabaseClient.from('clients').update({ verification_status: 'verified' }).eq('id', currentUser.id);
+            if (error) { console.error('❌ Verification error:', error); showNotification('Verification failed: ' + error.message, 'error'); }
+            else { userProfile.verification_status = 'verified'; renderProfile(); showNotification('Identity verified!'); }
+        });
+
+        upgradeBtn.addEventListener('click', async () => {
+            if (!userProfile || userProfile.verification_status !== 'verified') { showNotification('Please verify your identity first.', 'error'); return; }
+            const { error } = await supabaseClient.from('clients').update({ verification_status: 'pro', subscription_status: 'pro' }).eq('id', currentUser.id);
+            if (error) { console.error('❌ Upgrade error:', error); showNotification('Upgrade failed: ' + error.message, 'error'); }
+            else { userProfile.verification_status = 'pro'; userProfile.subscription_status = 'pro'; renderProfile(); showNotification('Welcome to Pro!'); }
+        });
 
         dropAvatar.addEventListener('click', () => avatarInput.click());
         avatarInput.addEventListener('change', async (e) => {
             const file = e.target.files[0]; if (!file || !currentUser) return; dropAvatar.classList.add('loading');
             const fileExt = file.name.split('.').pop(); const fileName = `${currentUser.id}.${fileExt}`;
             const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(fileName, file, { upsert: true });
-            if (uploadError) { dropAvatar.classList.remove('loading'); console.error('❌ Upload error:', uploadError); alert('Failed to upload avatar: ' + uploadError.message); return; }
+            if (uploadError) { dropAvatar.classList.remove('loading'); console.error('❌ Upload error:', uploadError); showNotification('Failed to upload avatar.', 'error'); return; }
             const publicUrlData = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
             const publicUrl = publicUrlData.data.publicUrl;
             const { error: updateError } = await supabaseClient.from('clients').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
             dropAvatar.classList.remove('loading');
-            if (updateError) { console.error('❌ Update avatar error:', updateError); alert('Failed to save avatar URL: ' + updateError.message); return; }
-            userProfile.avatar_url = publicUrl; renderProfile(); alert('Avatar updated!'); avatarInput.value = '';
+            if (updateError) { console.error('❌ Update avatar error:', updateError); showNotification('Failed to save avatar URL.', 'error'); return; }
+            userProfile.avatar_url = publicUrl; renderProfile(); showNotification('Avatar updated!'); avatarInput.value = '';
         });
 
         logoutBtn.addEventListener('click', async () => { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; });
 
-        let inactivityTimer; function resetTimer() { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { supabaseClient.auth.signOut(); window.location.href = 'index.html'; }, 3600000); }
+        let inactivityTimer; function resetTimer() { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { showNotification('Session expired. Logging out...'); setTimeout(() => { supabaseClient.auth.signOut(); window.location.href = 'index.html'; }, 1500); }, 3600000); }
         document.addEventListener('mousemove', resetTimer); document.addEventListener('mousedown', resetTimer); document.addEventListener('keypress', resetTimer); resetTimer();
 
         loadProfile();
