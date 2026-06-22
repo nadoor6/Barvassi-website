@@ -357,8 +357,27 @@
         function renderProfile() {
             if (!userProfile) { dropName.textContent = 'Loading...'; return; }
             const p = userProfile; const name = p.full_name || 'Member'; const initial = name.charAt(0).toUpperCase();
-            if (p.avatar_url) { avatarImg.src = p.avatar_url; avatarImg.style.display = 'block'; avatarInitials.style.display = 'none'; dropImg.src = p.avatar_url; dropImg.style.display = 'block'; dropInitials.style.display = 'none'; }
-            else { avatarImg.style.display = 'none'; avatarInitials.style.display = 'block'; avatarInitials.textContent = initial; dropImg.style.display = 'none'; dropInitials.style.display = 'block'; dropInitials.textContent = initial; }
+
+            // ===== AVATAR RENDER WITH PERMANENT CACHE BUSTING =====
+            // Retrieve the timestamp from localStorage (set during upload). If none exists, use the current time.
+            const cacheKey = localStorage.getItem('barvassi_avatar_timestamp') || Date.now();
+
+            if (p.avatar_url) {
+                const bustedSrc = p.avatar_url + '?t=' + cacheKey;
+                avatarImg.src = bustedSrc;
+                avatarImg.style.display = 'block';
+                avatarInitials.style.display = 'none';
+                dropImg.src = bustedSrc;
+                dropImg.style.display = 'block';
+                dropInitials.style.display = 'none';
+            } else {
+                avatarImg.style.display = 'none';
+                avatarInitials.style.display = 'block';
+                avatarInitials.textContent = initial;
+                dropImg.style.display = 'none';
+                dropInitials.style.display = 'block';
+                dropInitials.textContent = initial;
+            }
             dropName.textContent = name; dropEmail.textContent = p.email; dropId.textContent = p.account_id || '—'; dropEmailDetail.textContent = p.email; dropPhoneText.textContent = p.phone || '—';
 
             let verificationText = 'Unverified';
@@ -409,7 +428,7 @@
         dropAvatar.addEventListener('click', () => avatarInput.click());
         
         // ============================================================
-        // 🚀 AVATAR UPLOAD WITH INSTANT CACHE-BUSTING & LOAD WAIT
+        // 🚀 FINAL AVATAR UPLOAD - PERMANENT CACHE BUSTING
         // ============================================================
         avatarInput.addEventListener('change', async (e) => {
             const file = e.target.files[0]; 
@@ -431,8 +450,9 @@
             const publicUrlData = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
             const publicUrl = publicUrlData.data.publicUrl;
             
-            // ✅ FIX: Add a cache-busting timestamp to the URL
-            const bustedUrl = publicUrl + '?t=' + new Date().getTime();
+            // Save the new timestamp to localStorage. This will be used on EVERY render/refresh to bust the cache.
+            const uploadTimestamp = Date.now();
+            localStorage.setItem('barvassi_avatar_timestamp', uploadTimestamp);
 
             const { error: updateError } = await supabaseClient.from('clients').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
             
@@ -444,14 +464,12 @@
             }
 
             userProfile.avatar_url = publicUrl; 
-            renderProfile(); 
-
-            // Apply the new image and wait for it to actually load before hiding the spinner
+            
+            // Preload the image in the background, then render.
+            const bustedUrl = publicUrl + '?t=' + uploadTimestamp;
             const img = new Image();
             img.onload = () => {
-                // Update the actual DOM elements
-                avatarImg.src = bustedUrl;
-                dropImg.src = bustedUrl;
+                renderProfile();
                 dropAvatar.classList.remove('loading');
                 showNotification('Avatar updated!');
             };
@@ -460,7 +478,7 @@
                 console.error('❌ Failed to load the new image');
                 showNotification('Failed to load updated avatar.', 'error');
             };
-            img.src = bustedUrl; // Start the background download
+            img.src = bustedUrl; 
 
             avatarInput.value = '';
         });
