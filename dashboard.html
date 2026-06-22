@@ -152,6 +152,63 @@
         #toast.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
         #toast.error { border-color: rgba(180, 40, 40, 0.3); background: rgba(30, 10, 10, 0.8); }
 
+        /* ---- btn1 style (copied from index.html) ---- */
+        .btn1 {
+            width: 100%;
+            background: #1a1a1a;
+            color: #fafafa;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 0;
+            font-weight: 400;
+            font-size: 12px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .btn1:hover {
+            background: #2a2a2a;
+            transform: scale(1.02);
+        }
+        .btn1:active {
+            transform: scale(0.96);
+        }
+        .btn1.loading {
+            pointer-events: none;
+            background: #2a2a2a;
+            transform: scale(1);
+        }
+        .btn1 .btn-text {
+            transition: opacity 0.4s ease;
+        }
+        .btn1.loading .btn-text {
+            opacity: 0;
+        }
+        .btn1 .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            opacity: 0;
+            transition: all 0.4s ease;
+            width: 22px;
+            height: 22px;
+        }
+        .btn1.loading .spinner {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .btn1 .spinner svg {
+            animation: spin 0.9s linear infinite;
+        }
+
+        /* ---- Cropper ---- */
         #cropper-modal {
             display: none;
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -223,10 +280,11 @@
             background: transparent; color: #f2f2f2;
         }
         .cropper-actions button:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.02); }
-        .cropper-actions button.done-btn {
-            background: #fafafa; color: #0c0c0c; border: none;
+        /* Cancel button stays as is */
+        .cropper-actions .btn1 {
+            /* btn1 styles override */
+            border: none;
         }
-        .cropper-actions button.done-btn:hover { background: #e6e6e6; }
 
         @media (max-width: 600px) {
             .dashboard-container { padding: 16px; }
@@ -322,7 +380,15 @@
 
             <div class="cropper-actions">
                 <button id="cropperCancel">Cancel</button>
-                <button class="done-btn" id="cropperDone">Done</button>
+                <button class="btn1" id="cropperDone">
+                    <span class="btn-text">Done</span>
+                    <div class="spinner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" stroke-opacity="0.2" />
+                            <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="1" />
+                        </svg>
+                    </div>
+                </button>
             </div>
         </div>
     </div>
@@ -572,7 +638,7 @@
         resetTimer();
 
         // ================================================================
-        // ===== FIXED CROPPER – shows modal before measuring =====
+        // ===== CROPPER LOGIC (with btn1 loading state) =====
         // ================================================================
 
         let cropX = 0,
@@ -587,12 +653,9 @@
             selectedFile = file;
             const reader = new FileReader();
             reader.onload = (e) => {
-                // Show modal immediately so the wrapper becomes visible and has dimensions.
                 cropperModal.classList.add('open');
-
                 cropperImage.src = e.target.result;
                 cropperImage.onload = () => {
-                    // Use double requestAnimationFrame to ensure layout is fully settled
                     requestAnimationFrame(() => {
                         requestAnimationFrame(() => {
                             const wrapper = cropperWrapper;
@@ -600,7 +663,6 @@
                             const h = wrapper.offsetHeight;
 
                             if (w === 0 || h === 0) {
-                                // Fallback: try using getBoundingClientRect
                                 const rect = wrapper.getBoundingClientRect();
                                 const w2 = rect.width;
                                 const h2 = rect.height;
@@ -628,7 +690,6 @@
                             cropperCircle.style.width = circleSize + 'px';
                             cropperCircle.style.height = circleSize + 'px';
 
-                            // Center the circle in the wrapper
                             const rect = wrapper.getBoundingClientRect();
                             cropX = rect.width / 2;
                             cropY = rect.height / 2;
@@ -645,7 +706,6 @@
             cropperCircle.style.top = cropY + 'px';
         }
 
-        // ---- Resize ----
         cropSizeSlider.addEventListener('input', (e) => {
             const newSize = parseFloat(e.target.value);
             if (isNaN(newSize) || newSize < 1) return;
@@ -660,7 +720,6 @@
             updateCirclePosition();
         });
 
-        // ---- Drag ----
         function startDrag(e) {
             const clientX = e.clientX || e.touches?.[0]?.clientX;
             const clientY = e.clientY || e.touches?.[0]?.clientY;
@@ -706,98 +765,110 @@
             selectedFile = null;
         });
 
-        // ---- Done ----
+        // ---- CROPPER DONE with loading state ----
         cropperDone.addEventListener('click', async () => {
             if (!selectedFile || !currentUser) return;
-            const img = cropperImage;
 
-            if (!img || !img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) {
-                showNotification('Image not loaded properly. Try again.', 'error');
-                return;
-            }
+            // Show loading state on the button
+            cropperDone.classList.add('loading');
+            cropperDone.disabled = true;
 
-            const naturalWidth = img.naturalWidth;
-            const naturalHeight = img.naturalHeight;
-            const displayWidth = img.clientWidth;
-            const displayHeight = img.clientHeight;
+            try {
+                const img = cropperImage;
 
-            if (displayWidth === 0 || displayHeight === 0) {
-                showNotification('Display size error. Try refreshing.', 'error');
-                return;
-            }
-
-            const scaleX = naturalWidth / displayWidth;
-            const scaleY = naturalHeight / displayHeight;
-            const naturalCropSize = circleSize * ((scaleX + scaleY) / 2);
-
-            if (naturalCropSize <= 0) {
-                showNotification('Calculated crop size is invalid.', 'error');
-                return;
-            }
-
-            const naturalCropX = cropX * scaleX;
-            const naturalCropY = cropY * scaleY;
-
-            const canvas = document.createElement('canvas');
-            const finalSize = Math.floor(naturalCropSize);
-            canvas.width = finalSize;
-            canvas.height = finalSize;
-
-            if (canvas.width === 0 || canvas.height === 0) {
-                showNotification('Canvas size calculation failed.', 'error');
-                return;
-            }
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(
-                img,
-                naturalCropX - finalSize / 2,
-                naturalCropY - finalSize / 2,
-                finalSize, finalSize,
-                0, 0,
-                finalSize, finalSize
-            );
-
-            canvas.toBlob(async (blob) => {
-                if (!blob) {
-                    showNotification('Failed to process image (Empty blob).', 'error');
+                if (!img || !img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) {
+                    showNotification('Image not loaded properly. Try again.', 'error');
                     return;
                 }
 
-                const fileName = `${currentUser.id}.png`;
-                const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(fileName, blob, {
-                    upsert: true,
-                    contentType: 'image/png'
-                });
+                const naturalWidth = img.naturalWidth;
+                const naturalHeight = img.naturalHeight;
+                const displayWidth = img.clientWidth;
+                const displayHeight = img.clientHeight;
 
-                if (uploadError) {
-                    console.error('❌ Upload error:', uploadError);
-                    showNotification('Failed to upload avatar.', 'error');
+                if (displayWidth === 0 || displayHeight === 0) {
+                    showNotification('Display size error. Try refreshing.', 'error');
+                    return;
+                }
+
+                const scaleX = naturalWidth / displayWidth;
+                const scaleY = naturalHeight / displayHeight;
+                const naturalCropSize = circleSize * ((scaleX + scaleY) / 2);
+
+                if (naturalCropSize <= 0) {
+                    showNotification('Calculated crop size is invalid.', 'error');
+                    return;
+                }
+
+                const naturalCropX = cropX * scaleX;
+                const naturalCropY = cropY * scaleY;
+
+                const canvas = document.createElement('canvas');
+                const finalSize = Math.floor(naturalCropSize);
+                canvas.width = finalSize;
+                canvas.height = finalSize;
+
+                if (canvas.width === 0 || canvas.height === 0) {
+                    showNotification('Canvas size calculation failed.', 'error');
+                    return;
+                }
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(
+                    img,
+                    naturalCropX - finalSize / 2,
+                    naturalCropY - finalSize / 2,
+                    finalSize, finalSize,
+                    0, 0,
+                    finalSize, finalSize
+                );
+
+                canvas.toBlob(async (blob) => {
+                    if (!blob) {
+                        showNotification('Failed to process image (Empty blob).', 'error');
+                        return;
+                    }
+
+                    const fileName = `${currentUser.id}.png`;
+                    const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(fileName, blob, {
+                        upsert: true,
+                        contentType: 'image/png'
+                    });
+
+                    if (uploadError) {
+                        console.error('❌ Upload error:', uploadError);
+                        showNotification('Failed to upload avatar.', 'error');
+                        return;
+                    }
+
+                    const publicUrlData = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
+                    const publicUrl = publicUrlData.data.publicUrl;
+                    const uploadTimestamp = Date.now();
+                    localStorage.setItem('barvassi_avatar_timestamp', uploadTimestamp);
+
+                    const { error: updateError } = await supabaseClient.from('clients').update({ avatar_url: publicUrl })
+                        .eq('id', currentUser.id);
+
+                    if (updateError) {
+                        console.error('❌ Update error:', updateError);
+                        showNotification('Failed to save avatar URL.', 'error');
+                        return;
+                    }
+
+                    userProfile.avatar_url = publicUrl;
+                    renderProfile();
                     cropperModal.classList.remove('open');
-                    return;
-                }
-
-                const publicUrlData = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
-                const publicUrl = publicUrlData.data.publicUrl;
-                const uploadTimestamp = Date.now();
-                localStorage.setItem('barvassi_avatar_timestamp', uploadTimestamp);
-
-                const { error: updateError } = await supabaseClient.from('clients').update({ avatar_url: publicUrl })
-                    .eq('id', currentUser.id);
-
-                if (updateError) {
-                    console.error('❌ Update error:', updateError);
-                    showNotification('Failed to save avatar URL.', 'error');
-                    cropperModal.classList.remove('open');
-                    return;
-                }
-
-                userProfile.avatar_url = publicUrl;
-                renderProfile();
-                cropperModal.classList.remove('open');
-                showNotification('Avatar updated!');
-                selectedFile = null;
-            }, 'image/png');
+                    showNotification('Avatar updated!');
+                    selectedFile = null;
+                }, 'image/png');
+            } catch (err) {
+                console.error('Cropper error:', err);
+                showNotification('An error occurred.', 'error');
+            } finally {
+                // Remove loading state
+                cropperDone.classList.remove('loading');
+                cropperDone.disabled = false;
+            }
         });
 
         // ---- Trigger ----
