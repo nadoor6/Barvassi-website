@@ -572,7 +572,7 @@
         resetTimer();
 
         // ================================================================
-        // ===== DEFINITIVE CROPPER FIX – uses offset dimensions =====
+        // ===== FIXED CROPPER – shows modal before measuring =====
         // ================================================================
 
         let cropX = 0,
@@ -587,9 +587,12 @@
             selectedFile = file;
             const reader = new FileReader();
             reader.onload = (e) => {
+                // Show modal immediately so the wrapper becomes visible and has dimensions.
+                cropperModal.classList.add('open');
+
                 cropperImage.src = e.target.result;
                 cropperImage.onload = () => {
-                    // Use a double requestAnimationFrame to ensure layout is fully done
+                    // Use double requestAnimationFrame to ensure layout is fully settled
                     requestAnimationFrame(() => {
                         requestAnimationFrame(() => {
                             const wrapper = cropperWrapper;
@@ -597,34 +600,39 @@
                             const h = wrapper.offsetHeight;
 
                             if (w === 0 || h === 0) {
-                                showNotification('Could not determine image dimensions.', 'error');
-                                return;
+                                // Fallback: try using getBoundingClientRect
+                                const rect = wrapper.getBoundingClientRect();
+                                const w2 = rect.width;
+                                const h2 = rect.height;
+                                if (w2 === 0 || h2 === 0) {
+                                    showNotification('Could not determine image dimensions.', 'error');
+                                    maxCircleSize = 200;
+                                } else {
+                                    let rawMax = Math.min(w2, h2);
+                                    if (rawMax < 20) rawMax = 20;
+                                    if (rawMax > 800) rawMax = 800;
+                                    maxCircleSize = rawMax;
+                                }
+                            } else {
+                                let rawMax = Math.min(w, h);
+                                if (rawMax < 20) rawMax = 20;
+                                if (rawMax > 800) rawMax = 800;
+                                maxCircleSize = rawMax;
                             }
 
-                            // Max circle size = smallest side of the wrapper
-                            let rawMax = Math.min(w, h);
-                            // Clamp to reasonable limits
-                            if (rawMax < 20) rawMax = 20;
-                            if (rawMax > 800) rawMax = 800;
-                            maxCircleSize = rawMax;
-
-                            // Set slider range
                             cropSizeSlider.min = 20;
                             cropSizeSlider.max = maxCircleSize;
-                            // Start at max
                             circleSize = maxCircleSize;
                             cropSizeSlider.value = circleSize;
 
-                            // Apply size
                             cropperCircle.style.width = circleSize + 'px';
                             cropperCircle.style.height = circleSize + 'px';
 
                             // Center the circle in the wrapper
-                            cropX = w / 2;
-                            cropY = h / 2;
-
+                            const rect = wrapper.getBoundingClientRect();
+                            cropX = rect.width / 2;
+                            cropY = rect.height / 2;
                             updateCirclePosition();
-                            cropperModal.classList.add('open');
                         });
                     });
                 };
