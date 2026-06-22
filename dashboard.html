@@ -1038,97 +1038,113 @@
 
         // ─── RENDER PROFILE & STATS ──────────────────────────────────
         function renderProfile() {
-            if (!userProfile) { dropName.textContent = 'Loading...'; return; }
-            const p = userProfile;
-            const name = p.full_name || 'Member';
-            const initial = name.charAt(0).toUpperCase();
+    if (!userProfile) {
+        dropName.textContent = 'Loading...';
+        // Set fallback stats while loading
+        statStatus.textContent = '—';
+        statSubscription.textContent = '—';
+        statMemberSince.textContent = '—';
+        statId.textContent = '—';
+        return;
+    }
+    const p = userProfile;
+    const name = p.full_name || 'Member';
+    const initial = name.charAt(0).toUpperCase();
 
-            const cacheKey = localStorage.getItem('barvassi_avatar_timestamp') || Date.now();
+    const cacheKey = localStorage.getItem('barvassi_avatar_timestamp') || Date.now();
 
-            if (p.avatar_url) {
-                const bustedSrc = p.avatar_url + '?t=' + cacheKey;
-                avatarImg.src = bustedSrc;
-                avatarImg.style.display = 'block';
-                avatarInitials.style.display = 'none';
-                dropImg.src = bustedSrc;
-                dropImg.style.display = 'block';
-                dropInitials.style.display = 'none';
-            } else {
-                avatarImg.style.display = 'none';
-                avatarInitials.style.display = 'block';
-                avatarInitials.textContent = initial;
-                dropImg.style.display = 'none';
-                dropInitials.style.display = 'block';
-                dropInitials.textContent = initial;
-            }
+    if (p.avatar_url) {
+        const bustedSrc = p.avatar_url + '?t=' + cacheKey;
+        avatarImg.src = bustedSrc;
+        avatarImg.style.display = 'block';
+        avatarInitials.style.display = 'none';
+        dropImg.src = bustedSrc;
+        dropImg.style.display = 'block';
+        dropInitials.style.display = 'none';
+    } else {
+        avatarImg.style.display = 'none';
+        avatarInitials.style.display = 'block';
+        avatarInitials.textContent = initial;
+        dropImg.style.display = 'none';
+        dropInitials.style.display = 'block';
+        dropInitials.textContent = initial;
+    }
 
-            dropName.textContent = name;
-            dropEmail.textContent = p.email;
-            dropId.textContent = p.account_id || '—';
-            dropEmailDetail.textContent = p.email;
-            dropPhoneText.textContent = p.phone || '—';
+    dropName.textContent = name;
+    dropEmail.textContent = p.email;
+    dropId.textContent = p.account_id || '—';
+    dropEmailDetail.textContent = p.email;
+    dropPhoneText.textContent = p.phone || '—';
 
-            let verificationText = 'Unverified';
-            if (p.verification_status === 'verified') verificationText = 'Verified';
-            else if (p.verification_status === 'pro') verificationText = 'Pro';
-            dropVerification.textContent = verificationText;
-            dropSubscription.textContent = p.subscription_status === 'pro' ? 'Pro' : 'None';
+    let verificationText = 'Unverified';
+    if (p.verification_status === 'verified') verificationText = 'Verified';
+    else if (p.verification_status === 'pro') verificationText = 'Pro';
+    dropVerification.textContent = verificationText;
+    dropSubscription.textContent = p.subscription_status === 'pro' ? 'Pro' : 'None';
 
-            // ─── Badge ──────────────────────────────────────────────────
-            const badgeContainer = document.getElementById('badgeContainer');
-            badgeContainer.innerHTML = '';
-            let badgeHtml = '';
-            if (p.verification_status === 'verified') {
-                if (typeof BLUE_CHECKMARK !== 'undefined' && BLUE_CHECKMARK) {
-                    badgeHtml = `<img src="${BLUE_CHECKMARK}" alt="Verified" />`;
-                } else {
-                    badgeHtml = '<span class="fallback badge-blue">✓</span>';
-                }
-            } else if (p.verification_status === 'pro') {
-                if (typeof GOLD_CHECKMARK !== 'undefined' && GOLD_CHECKMARK) {
-                    badgeHtml = `<img src="${GOLD_CHECKMARK}" alt="Pro" />`;
-                } else {
-                    badgeHtml = '<span class="fallback badge-gold">★</span>';
-                }
-            }
-            badgeContainer.innerHTML = badgeHtml;
-
-            upgradeBtn.disabled = p.verification_status !== 'verified';
-
-            // ─── Update Stats Cards ────────────────────────────────────
-            // Status
-            let statusDisplay = 'Unverified';
-            let statusBadge = '';
-            if (p.verification_status === 'verified') {
-                statusDisplay = 'Verified';
-                if (typeof BLUE_CHECKMARK !== 'undefined' && BLUE_CHECKMARK) {
-                    statusBadge = `<span class="badge-inline"><img src="${BLUE_CHECKMARK}" alt="✓" /></span>`;
-                } else {
-                    statusBadge = `<span class="badge-inline fallback badge-blue">✓</span>`;
-                }
-            } else if (p.verification_status === 'pro') {
-                statusDisplay = 'Pro';
-                if (typeof GOLD_CHECKMARK !== 'undefined' && GOLD_CHECKMARK) {
-                    statusBadge = `<span class="badge-inline"><img src="${GOLD_CHECKMARK}" alt="★" /></span>`;
-                } else {
-                    statusBadge = `<span class="badge-inline fallback badge-gold">★</span>`;
-                }
-            }
-            statStatus.innerHTML = statusDisplay + ' ' + statusBadge;
-
-            statSubscription.textContent = p.subscription_status === 'pro' ? 'Pro' : 'None';
-
-            // Member since (created_at)
-            if (p.created_at) {
-                const date = new Date(p.created_at);
-                const options = { year: 'numeric', month: 'short' };
-                statMemberSince.textContent = date.toLocaleDateString('en-US', options);
-            } else {
-                statMemberSince.textContent = '—';
-            }
-
-            statId.textContent = p.account_id || '—';
+    // ─── Badge ──────────────────────────────────────────────────
+    const badgeContainer = document.getElementById('badgeContainer');
+    badgeContainer.innerHTML = '';
+    let badgeHtml = '';
+    if (p.verification_status === 'verified') {
+        if (typeof BLUE_CHECKMARK !== 'undefined' && BLUE_CHECKMARK) {
+            badgeHtml = `<img src="${BLUE_CHECKMARK}" alt="Verified" />`;
+        } else {
+            badgeHtml = '<span class="fallback badge-blue">✓</span>';
         }
+    } else if (p.verification_status === 'pro') {
+        if (typeof GOLD_CHECKMARK !== 'undefined' && GOLD_CHECKMARK) {
+            badgeHtml = `<img src="${GOLD_CHECKMARK}" alt="Pro" />`;
+        } else {
+            badgeHtml = '<span class="fallback badge-gold">★</span>';
+        }
+    }
+    badgeContainer.innerHTML = badgeHtml;
+
+    upgradeBtn.disabled = p.verification_status !== 'verified';
+
+    // ─── Update Stats Cards ────────────────────────────────────
+    // Status
+    let statusDisplay = 'Unverified';
+    let statusBadge = '';
+    if (p.verification_status === 'verified') {
+        statusDisplay = 'Verified';
+        if (typeof BLUE_CHECKMARK !== 'undefined' && BLUE_CHECKMARK) {
+            statusBadge = `<span class="badge-inline"><img src="${BLUE_CHECKMARK}" alt="✓" /></span>`;
+        } else {
+            statusBadge = `<span class="badge-inline fallback badge-blue">✓</span>`;
+        }
+    } else if (p.verification_status === 'pro') {
+        statusDisplay = 'Pro';
+        if (typeof GOLD_CHECKMARK !== 'undefined' && GOLD_CHECKMARK) {
+            statusBadge = `<span class="badge-inline"><img src="${GOLD_CHECKMARK}" alt="★" /></span>`;
+        } else {
+            statusBadge = `<span class="badge-inline fallback badge-gold">★</span>`;
+        }
+    }
+    statStatus.innerHTML = statusDisplay + ' ' + statusBadge;
+
+    statSubscription.textContent = p.subscription_status === 'pro' ? 'Pro' : 'None';
+
+    // Member since (created_at)
+    if (p.created_at) {
+        const date = new Date(p.created_at);
+        const options = { year: 'numeric', month: 'short' };
+        statMemberSince.textContent = date.toLocaleDateString('en-US', options);
+    } else {
+        statMemberSince.textContent = '—';
+    }
+
+    statId.textContent = p.account_id || '—';
+
+    // Log to see if it's working
+    console.log('✅ Stats updated:', {
+        status: statStatus.textContent,
+        subscription: statSubscription.textContent,
+        memberSince: statMemberSince.textContent,
+        id: statId.textContent
+    });
+}
 
         // ─── DROPDOWN TOGGLE ──────────────────────────────────────────
         function openDropdown() {
