@@ -525,7 +525,7 @@
         resetTimer();
 
         // ================================================================
-        // ===== CROPPER LOGIC (WRAPPER-BASED EDGE-TO-EDGE) =====
+        // ===== CROPPER LOGIC (EDGE-TO-EDGE MAX SIZE) =====
         // ================================================================
 
         let cropX = 0, cropY = 0;
@@ -539,9 +539,10 @@
             reader.onload = (e) => {
                 cropperImage.src = e.target.result;
                 cropperImage.onload = () => {
-                    // ===== FIX: Use the WRAPPER's dimensions =====
                     const wrapperRect = cropperWrapper.getBoundingClientRect();
-                    let maxSize = Math.min(wrapperRect.width, wrapperRect.height);
+                    
+                    // ===== TRUE FIX: Use the LARGER side so it spans the whole frame =====
+                    let maxSize = Math.max(wrapperRect.width, wrapperRect.height);
                     if (maxSize === 0) { maxSize = 200; }
                     
                     circleSize = maxSize; 
