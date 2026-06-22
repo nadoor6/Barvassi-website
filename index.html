@@ -11,6 +11,7 @@
     <script src="loginBG.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* ... (all CSS remains the same as your original) ... */
         * {
             margin: 0;
             padding: 0;
@@ -26,7 +27,6 @@
             overflow: hidden;
         }
 
-        /* Initially hidden to prevent flash */
         .split-screen {
             display: none;
             flex-direction: row;
@@ -38,7 +38,6 @@
             display: flex;
         }
 
-        /* Loading overlay – optional, but we'll keep it dark */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -70,7 +69,6 @@
             flex: 2.5;
             position: relative;
             overflow: hidden;
-            /* background-image set by JS */;
             background-size: cover;
             background-position: center;
         }
@@ -434,7 +432,6 @@
                 console.log("✅ Background loaded from loginBG.js");
             } else {
                 console.warn("⚠️ BG not found, using fallback background image.");
-                // fallback to the inline image if needed
                 panel.style.backgroundImage = "url('abstract-dark-8k-ua.jpg')";
             }
         }
@@ -468,16 +465,15 @@
                 return;
             }
 
-            // If no session immediately, wait a moment and check again (for async restore)
-            console.log("⏳ No immediate session, waiting 500ms for possible restore...");
-            await new Promise(resolve => setTimeout(resolve, 500));
+            // If no session immediately, wait a short moment (200ms) for async restore
+            console.log("⏳ No immediate session, waiting 200ms for possible restore...");
+            await new Promise(resolve => setTimeout(resolve, 200));
             const { data: { session: session2 } } = await supabaseClient.auth.getSession();
             if (session2) {
                 console.log("✅ Session restored, redirecting to dashboard.");
                 window.location.href = '/dashboard';
             } else {
                 console.log("🚫 No session, showing login form.");
-                // Show the split-screen and hide the loading overlay
                 document.getElementById('splitScreen').classList.add('visible');
                 document.getElementById('loadingOverlay').classList.add('hidden');
             }
@@ -566,7 +562,6 @@
                     errorMsg.innerText = error.message;
                     errorMsg.classList.add('visible');
                 } else {
-                    // Generate a unique Barvassi account ID
                     const { data: idData, error: idError } = await supabaseClient.rpc('generate_barvassi_id');
                     if (idError) {
                         console.error("ID generation failed:", idError);

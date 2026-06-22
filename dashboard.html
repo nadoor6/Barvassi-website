@@ -14,10 +14,12 @@
     </script>
 
     <script src="logo.js"></script>
+    <!-- FIX: load the correctly named file (checkmarks.js) -->
     <script src="checkmarks.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+        /* ... (all CSS remains identical to your original) ... */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'SF Pro Display', -apple-system, sans-serif;
@@ -433,14 +435,6 @@
 
         // Initialize Supabase client with explicit localStorage for session persistence
         let supabaseClient = null;
-        let sessionRestored = false;
-        let authResolve = null;
-        let authReject = null;
-        const authPromise = new Promise((resolve, reject) => {
-            authResolve = resolve;
-            authReject = reject;
-        });
-
         try {
             if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -526,21 +520,10 @@
         let userProfile = null;
         let selectedFile = null;
 
-        // ---- Auth state listener ----
+        // ---- Auth state listener (for logging / future use) ----
         supabaseClient.auth.onAuthStateChange((event, session) => {
             console.log('🔄 Auth state changed:', event, session ? 'session exists' : 'no session');
-            if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-                if (!sessionRestored) {
-                    sessionRestored = true;
-                    if (authResolve) {
-                        authResolve(session);
-                    }
-                }
-                // Load profile if not already loaded
-                if (!userProfile && session) {
-                    loadProfile();
-                }
-            }
+            // We do not rely on this for initial load; we use getSession directly.
         });
 
         // ---- Profile loading ----
@@ -691,9 +674,7 @@
         });
 
         // ---- Inactivity Timer ----
-        // Set to 100 hours = 360,000,000 ms
         const INACTIVITY_TIMEOUT_MS = 100 * 60 * 60 * 1000; // 100 hours
-
         let inactivityTimer;
         function resetTimer() {
             clearTimeout(inactivityTimer);
@@ -705,11 +686,10 @@
                 }, 1500);
             }, INACTIVITY_TIMEOUT_MS);
         }
-        // Reset on user activity
         document.addEventListener('mousemove', resetTimer);
         document.addEventListener('mousedown', resetTimer);
         document.addEventListener('keypress', resetTimer);
-        document.addEventListener('touchstart', resetTimer); // for mobile
+        document.addEventListener('touchstart', resetTimer);
         resetTimer();
 
         // ================================================================
@@ -840,7 +820,6 @@
         cropperDone.addEventListener('click', async function() {
             if (!selectedFile || !currentUser) return;
 
-            // Validate file type (extra safety)
             const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif', 'image/bmp'];
             if (!allowedTypes.includes(selectedFile.type)) {
                 showNotification('Unsupported file format. Please use JPG, PNG, WebP, GIF, or BMP.', 'error');
@@ -898,7 +877,6 @@
                     finalSize, finalSize
                 );
 
-                // Convert to PNG (safe and lossless)
                 const blob = await new Promise((resolve) => {
                     canvas.toBlob(resolve, 'image/png');
                 });
@@ -954,7 +932,6 @@
         avatarInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
-            // Extra validation on file type
             const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif', 'image/bmp'];
             if (!allowedTypes.includes(file.type)) {
                 showNotification('Please select a valid image (JPG, PNG, WebP, GIF, BMP).', 'error');
@@ -966,26 +943,14 @@
         });
 
         // ================================================================
-        // ===== WAIT FOR SESSION RESTORATION =====
+        // ===== INITIALIZATION – FAST SESSION CHECK =====
         // ================================================================
 
         async function initialize() {
-            console.log("⏳ Waiting for session restoration...");
-            // Wait up to 5 seconds for the INITIAL_SESSION or SIGNED_IN event
-            let session = null;
-            try {
-                const timeout = new Promise((_, reject) => setTimeout(() => reject('timeout'), 5000));
-                session = await Promise.race([authPromise, timeout]);
-            } catch (e) {
-                console.log("⏰ No session after timeout, checking getSession...");
-                const { data } = await supabaseClient.auth.getSession();
-                if (data.session) {
-                    session = data.session;
-                }
-            }
-
+            console.log("⏳ Checking session...");
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                console.log("✅ Session restored, loading profile.");
+                console.log("✅ Session found, loading profile.");
                 await loadProfile();
             } else {
                 console.log("🚫 No session found, redirecting to login.");
