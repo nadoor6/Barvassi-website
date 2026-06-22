@@ -166,7 +166,7 @@
     <div class="dashboard-container">
         <header class="top-bar">
             <div class="brand">
-                <!-- Auto-loaded from logoBase64.txt -->
+                <!-- Auto-loaded from logo.json -->
                 <img id="brandLogo" src="logo.png" alt="Barvassi" onerror="this.style.display='none'; document.getElementById('brandTextFallback').style.display='block';" />
                 <span id="brandTextFallback" class="brand-text-fallback">Barvassi</span>
                 <span style="font-weight:300; font-size:14px; opacity:0.4;">· The Vault</span>
@@ -248,21 +248,18 @@
             } else { console.error("❌ Keys are missing!"); }
         } catch (e) { console.error('❌ Supabase init error:', e); }
 
-        // ===== DYNAMIC LOGO LOADER (Reads your text file) =====
+        // ===== DYNAMIC LOGO LOADER (Reads logo.json) =====
         async function loadBrandLogo() {
             try {
-                const response = await fetch('logoBase64.txt');
-                if (response.ok) {
-                    const base64String = await response.text();
-                    const cleanBase64 = base64String.trim(); // Remove any accidental white spaces
-                    document.getElementById('brandLogo').src = cleanBase64;
-                } else {
-                    console.warn("logoBase64.txt not found, using fallback text.");
-                    document.getElementById('brandLogo').style.display = 'none';
-                    document.getElementById('brandTextFallback').style.display = 'block';
+                const response = await fetch('logo.json');
+                if (!response.ok) {
+                    throw new Error("JSON load failed");
                 }
+                const data = await response.json();
+                // Fetch the base64 string from the "logo" key
+                document.getElementById('brandLogo').src = data.logo;
             } catch (e) {
-                console.warn("Error fetching logoBase64.txt. Using fallback text.");
+                console.warn("logo.json not found. Using fallback text.");
                 document.getElementById('brandLogo').style.display = 'none';
                 document.getElementById('brandTextFallback').style.display = 'block';
             }
@@ -412,7 +409,7 @@
 
         // ===== START THE APP =====
         loadProfile();      // Load the user data
-        loadBrandLogo();    // Load your logo from logoBase64.txt
+        loadBrandLogo();    // Load your logo from logo.json
     </script>
 </body>
 </html>
