@@ -519,19 +519,46 @@
         let userProfile = null;
         let selectedFile = null;
 
-        // ---- Auth state listener (just for logging; NO redirect here) ----
+        // ---- Auth state listener (just for logging and triggering profile load) ----
+        let authStateResolve = null;
+        let authStatePromise = new Promise(resolve => { authStateResolve = resolve; });
+
         supabaseClient.auth.onAuthStateChange((event, session) => {
             console.log('🔄 Auth state changed:', event, session ? 'session exists' : 'no session');
             if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-                // If we have a session and profile isn't loaded, load it
+                if (authStateResolve) {
+                    authStateResolve(session);
+                    authStateResolve = null;
+                }
+                // If profile isn't loaded yet, load it
                 if (!userProfile && session) {
                     loadProfile();
                 }
             }
-            // We do NOT redirect on SIGNED_OUT here; loadProfile() will handle it.
+            // We don't redirect on SIGNED_OUT here; loadProfile handles it.
         });
 
-        // ---- Check for existing session and load profile ----
+        // ---- Wait for session restoration ----
+        async function waitForSession(timeoutMs = 3000) {
+            // First, check if session already exists
+            const { data: { session: existing } } = await supabaseClient.auth.getSession();
+            if (existing) return existing;
+
+            // Otherwise, wait for auth state event or timeout
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Timeout waiting for session')), timeoutMs);
+            });
+
+            try {
+                const session = await Promise.race([authStatePromise, timeoutPromise]);
+                return session;
+            } catch (e) {
+                // Timeout or error
+                return null;
+            }
+        }
+
+        // ---- Profile loading ----
         async function loadProfile() {
             console.log("⏳ Loading profile...");
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -953,9 +980,19 @@
             avatarInput.value = '';
         });
 
-        // ---- Start: Load profile ----
-        // We call loadProfile directly; it will check session and redirect if none.
-        loadProfile();
+        // ---- Start: Wait for session and load profile ----
+        async function init() {
+            const session = await waitForSession(4000); // wait up to 4 seconds
+            if (session) {
+                await loadProfile();
+            } else {
+                // No session after timeout, redirect to login
+                console.log("🚫 Session not restored, redirecting to login.");
+                window.location.href = '/';
+            }
+        }
+
+        init();
         loadBrandLogo();
     </script>
 </body>
