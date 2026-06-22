@@ -7,16 +7,13 @@
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
 
-    <!-- Supabase config -->
     <script>
         const SUPABASE_URL = "https://inycllornehmohderdfz.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_Bnkek18bbEnBgnis-nUVKw_QABqaYKj";
         console.log("✅ Keys loaded!");
     </script>
 
-    <!-- Load logo string from logo.js -->
     <script src="logo.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -138,7 +135,6 @@
         .main-content p { font-weight: 300; font-size: 14px; opacity: 0.3; margin-top: 8px; }
         #avatarInput { display: none; }
 
-        /* ---- MODERN NOTIFICATION SYSTEM ---- */
         #toast-container {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             z-index: 9999; pointer-events: none;
@@ -156,7 +152,6 @@
         #toast.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
         #toast.error { border-color: rgba(180, 40, 40, 0.3); background: rgba(30, 10, 10, 0.8); }
 
-        /* ===== CROPPER MODAL ===== */
         #cropper-modal {
             display: none;
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -317,7 +312,7 @@
             } else { console.error("❌ Keys are missing!"); }
         } catch (e) { console.error('❌ Supabase init error:', e); }
 
-        // ---- LOGO LOADER ----
+        // ---- LOGO ----
         function loadBrandLogo() {
             const logoEl = document.getElementById('brandLogo');
             const textFallback = document.getElementById('brandTextFallback');
@@ -382,7 +377,7 @@
 
         let currentUser = null;
         let userProfile = null;
-        let selectedFile = null;  // the file the user picked
+        let selectedFile = null;
 
         // ---- Profile loading ----
         async function loadProfile() {
@@ -462,7 +457,7 @@
         dropdownOverlay.addEventListener('click', (e) => { if (e.target === dropdownOverlay) closeDropdown(); });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDropdown(); });
 
-        // ---- Phone edit ----
+        // ---- Phone ----
         phoneEditBtn.addEventListener('click', () => { if (!userProfile) return; phoneEditBtn.style.display = 'none'; dropPhoneText.style.display = 'none'; dropPhoneEdit.style.display = 'flex'; phoneInputEdit.value = userProfile.phone || ''; });
         phoneCancelBtn.addEventListener('click', () => { dropPhoneEdit.style.display = 'none'; dropPhoneText.style.display = 'inline'; phoneEditBtn.style.display = 'inline-block'; });
         phoneSaveBtn.addEventListener('click', async () => {
@@ -489,7 +484,7 @@
         // ---- Logout ----
         logoutBtn.addEventListener('click', async () => { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; });
 
-        // ---- Inactivity timer ----
+        // ---- Inactivity ----
         let inactivityTimer;
         function resetTimer() { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { showNotification('Session expired. Logging out...'); setTimeout(() => { supabaseClient.auth.signOut(); window.location.href = 'index.html'; }, 1500); }, 3600000); }
         document.addEventListener('mousemove', resetTimer);
@@ -498,28 +493,25 @@
         resetTimer();
 
         // ================================================================
-        // ===== CROPPER LOGIC =====
+        // ===== CROPPER LOGIC (BULLETPROOFED) =====
         // ================================================================
 
-        let cropX = 0, cropY = 0;          // center of circle relative to image container (in pixels)
+        let cropX = 0, cropY = 0;
         let isDragging = false;
         let dragStartX = 0, dragStartY = 0;
-        let circleSize = 160; // will be set based on container
+        let circleSize = 160;
 
         function openCropper(file) {
             selectedFile = file;
             const reader = new FileReader();
             reader.onload = (e) => {
                 cropperImage.src = e.target.result;
-                // Wait for image to load to set dimensions
                 cropperImage.onload = () => {
-                    // Set circle size relative to container
                     const rect = cropperWrapper.getBoundingClientRect();
                     const minDim = Math.min(rect.width, rect.height);
-                    circleSize = Math.min(160, minDim * 0.6);
+                    circleSize = Math.min(160, Math.max(40, minDim * 0.6));
                     cropperCircle.style.width = circleSize + 'px';
                     cropperCircle.style.height = circleSize + 'px';
-                    // Center the circle
                     cropX = rect.width / 2;
                     cropY = rect.height / 2;
                     updateCirclePosition();
@@ -534,7 +526,6 @@
             cropperCircle.style.top = cropY + 'px';
         }
 
-        // Mouse drag on circle
         function startDrag(e) {
             const clientX = e.clientX || e.touches?.[0]?.clientX;
             const clientY = e.clientY || e.touches?.[0]?.clientY;
@@ -553,7 +544,6 @@
             const rect = cropperWrapper.getBoundingClientRect();
             let newX = clientX - dragStartX;
             let newY = clientY - dragStartY;
-            // Clamp within the wrapper
             const half = circleSize / 2;
             newX = Math.max(half, Math.min(rect.width - half, newX));
             newY = Math.max(half, Math.min(rect.height - half, newY));
@@ -567,87 +557,103 @@
             cropperCircle.style.cursor = 'grab';
         }
 
-        // Mouse events
         cropperCircle.addEventListener('mousedown', startDrag);
         document.addEventListener('mousemove', onDrag);
         document.addEventListener('mouseup', endDrag);
-
-        // Touch events
-        cropperCircle.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            startDrag(e);
-        });
-        document.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            onDrag(e);
-        });
+        cropperCircle.addEventListener('touchstart', (e) => { e.preventDefault(); startDrag(e); });
+        document.addEventListener('touchmove', (e) => { e.preventDefault(); onDrag(e); });
         document.addEventListener('touchend', endDrag);
 
-        // Cancel
         cropperCancel.addEventListener('click', () => {
             cropperModal.classList.remove('open');
             selectedFile = null;
         });
 
-        // Done: crop and upload
+        // ---- CROPPER DONE (FIXED SAFETY CHECKS) ----
         cropperDone.addEventListener('click', async () => {
             if (!selectedFile || !currentUser) return;
-            // Crop the image using canvas
             const img = cropperImage;
-            const rect = cropperWrapper.getBoundingClientRect();
+
+            // Safety check to ensure image is fully loaded
+            if (!img || !img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) {
+                showNotification('Image not loaded properly. Try again.', 'error');
+                return;
+            }
+
             const naturalWidth = img.naturalWidth;
             const naturalHeight = img.naturalHeight;
             const displayWidth = img.clientWidth;
             const displayHeight = img.clientHeight;
 
-            // Calculate scale factor between display and natural
+            // Prevent division by zero if display dimensions are 0
+            if (displayWidth === 0 || displayHeight === 0) {
+                showNotification('Display size error. Try refreshing.', 'error');
+                return;
+            }
+
+            // Calculate scale accurately
             const scaleX = naturalWidth / displayWidth;
             const scaleY = naturalHeight / displayHeight;
+            const naturalCropSize = circleSize * ((scaleX + scaleY) / 2); // Average scale
 
-            // Crop center in display coords
-            const displayCropX = cropX;
-            const displayCropY = cropY;
-            const displayCropSize = circleSize;
+            if (naturalCropSize <= 0) {
+                showNotification('Calculated crop size is invalid.', 'error');
+                return;
+            }
 
-            // Convert to natural coords
-            const naturalCropX = displayCropX * scaleX;
-            const naturalCropY = displayCropY * scaleY;
-            const naturalCropSize = displayCropSize * scaleX; // we use scaleX, assume uniform scaling
+            const naturalCropX = cropX * scaleX;
+            const naturalCropY = cropY * scaleY;
 
-            // Create a canvas and draw the cropped square
             const canvas = document.createElement('canvas');
-            canvas.width = naturalCropSize;
-            canvas.height = naturalCropSize;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, naturalCropX - naturalCropSize/2, naturalCropY - naturalCropSize/2, naturalCropSize, naturalCropSize, 0, 0, naturalCropSize, naturalCropSize);
+            const finalSize = Math.floor(naturalCropSize);
+            canvas.width = finalSize;
+            canvas.height = finalSize;
 
-            // Convert to blob
+            if (canvas.width === 0 || canvas.height === 0) {
+                showNotification('Canvas size calculation failed.', 'error');
+                return;
+            }
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(
+                img,
+                naturalCropX - finalSize / 2,
+                naturalCropY - finalSize / 2,
+                finalSize, finalSize,
+                0, 0,
+                finalSize, finalSize
+            );
+
             canvas.toBlob(async (blob) => {
                 if (!blob) {
-                    showNotification('Failed to process image.', 'error');
+                    showNotification('Failed to process image (Empty blob).', 'error');
                     return;
                 }
-                // Upload the blob
-                const fileExt = 'png';
-                const fileName = `${currentUser.id}.${fileExt}`;
+
+                const fileName = `${currentUser.id}.png`;
                 const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(fileName, blob, { upsert: true, contentType: 'image/png' });
+                
                 if (uploadError) {
                     console.error('❌ Upload error:', uploadError);
                     showNotification('Failed to upload avatar.', 'error');
                     cropperModal.classList.remove('open');
                     return;
                 }
+
                 const publicUrlData = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
                 const publicUrl = publicUrlData.data.publicUrl;
                 const uploadTimestamp = Date.now();
                 localStorage.setItem('barvassi_avatar_timestamp', uploadTimestamp);
+
                 const { error: updateError } = await supabaseClient.from('clients').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
+                
                 if (updateError) {
                     console.error('❌ Update error:', updateError);
                     showNotification('Failed to save avatar URL.', 'error');
                     cropperModal.classList.remove('open');
                     return;
                 }
+
                 userProfile.avatar_url = publicUrl;
                 renderProfile();
                 cropperModal.classList.remove('open');
@@ -656,7 +662,7 @@
             }, 'image/png');
         });
 
-        // ---- Trigger cropper when user selects file ----
+        // ---- Trigger cropper ----
         dropAvatar.addEventListener('click', () => avatarInput.click());
         avatarInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
