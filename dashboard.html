@@ -525,7 +525,7 @@
         resetTimer();
 
         // ================================================================
-        // ===== CROPPER LOGIC (RESIZE TO THE EXACT EDGES) =====
+        // ===== CROPPER LOGIC (WRAPPER-BASED EDGE-TO-EDGE) =====
         // ================================================================
 
         let cropX = 0, cropY = 0;
@@ -539,12 +539,11 @@
             reader.onload = (e) => {
                 cropperImage.src = e.target.result;
                 cropperImage.onload = () => {
-                    const imgRect = cropperImage.getBoundingClientRect();
-                    // Max size equals the smallest side of the image container
-                    let maxSize = Math.min(imgRect.width, imgRect.height);
+                    // ===== FIX: Use the WRAPPER's dimensions =====
+                    const wrapperRect = cropperWrapper.getBoundingClientRect();
+                    let maxSize = Math.min(wrapperRect.width, wrapperRect.height);
                     if (maxSize === 0) { maxSize = 200; }
                     
-                    // Set circle to touch 4 edges (100% of the max size)
                     circleSize = maxSize; 
                     cropSizeSlider.min = 20;
                     cropSizeSlider.max = maxSize;
@@ -552,8 +551,8 @@
 
                     cropperCircle.style.width = circleSize + 'px';
                     cropperCircle.style.height = circleSize + 'px';
-                    cropX = imgRect.width / 2;
-                    cropY = imgRect.height / 2;
+                    cropX = wrapperRect.width / 2;
+                    cropY = wrapperRect.height / 2;
                     updateCirclePosition();
                     cropperModal.classList.add('open');
                 };
