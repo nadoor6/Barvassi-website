@@ -14,7 +14,7 @@
         console.log("✅ Keys loaded!");
     </script>
 
-    <!-- Load the logo string from logo.js -->
+    <!-- Load logo string from logo.js -->
     <script src="logo.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -156,6 +156,56 @@
         #toast.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
         #toast.error { border-color: rgba(180, 40, 40, 0.3); background: rgba(30, 10, 10, 0.8); }
 
+        /* ===== CROPPER MODAL ===== */
+        #cropper-modal {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+            z-index: 9998; justify-content: center; align-items: center;
+        }
+        #cropper-modal.open { display: flex; }
+        .cropper-container {
+            background: #121212; border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px; padding: 32px; max-width: 90vw; max-height: 90vh;
+            display: flex; flex-direction: column; align-items: center; gap: 24px;
+        }
+        .cropper-image-wrapper {
+            position: relative; width: 100%; max-width: 500px;
+            overflow: hidden; border-radius: 12px; background: #0c0c0c;
+            display: flex; justify-content: center; align-items: center;
+            touch-action: none;
+        }
+        .cropper-image-wrapper img {
+            max-width: 100%; max-height: 60vh; object-fit: contain;
+            display: block; user-select: none; -webkit-user-drag: none;
+        }
+        .cropper-circle {
+            position: absolute;
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.6);
+            width: 160px; height: 160px;
+            transform: translate(-50%, -50%);
+            cursor: grab;
+            touch-action: none;
+        }
+        .cropper-circle:active { cursor: grabbing; }
+        .cropper-actions {
+            display: flex; gap: 16px; width: 100%; max-width: 500px;
+        }
+        .cropper-actions button {
+            flex: 1; padding: 12px 0; border-radius: 50px; font-family: inherit;
+            font-size: 13px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase;
+            cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1);
+            background: transparent; color: #f2f2f2;
+        }
+        .cropper-actions button:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.02); }
+        .cropper-actions button.done-btn {
+            background: #fafafa; color: #0c0c0c; border: none;
+        }
+        .cropper-actions button.done-btn:hover { background: #e6e6e6; }
+
         @media (max-width: 600px) {
             .dashboard-container { padding: 16px; }
             .dropdown { right: 16px; width: 320px; }
@@ -164,6 +214,8 @@
             .brand img { height: 24px; }
             .brand-text-fallback { font-size: 18px; }
             .avatar-btn { width: 40px; height: 40px; }
+            .cropper-container { padding: 20px; }
+            .cropper-circle { width: 120px; height: 120px; }
         }
     </style>
 </head>
@@ -235,6 +287,20 @@
 
     <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/jpg,image/webp" />
 
+    <!-- CROPPER MODAL -->
+    <div id="cropper-modal">
+        <div class="cropper-container">
+            <div class="cropper-image-wrapper" id="cropperWrapper">
+                <img id="cropperImage" src="" alt="Crop" />
+                <div class="cropper-circle" id="cropperCircle"></div>
+            </div>
+            <div class="cropper-actions">
+                <button id="cropperCancel">Cancel</button>
+                <button class="done-btn" id="cropperDone">Done</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast-container">
         <div id="toast">
             <span id="toast-message">Success</span>
@@ -251,28 +317,26 @@
             } else { console.error("❌ Keys are missing!"); }
         } catch (e) { console.error('❌ Supabase init error:', e); }
 
-        // ---- LOGO LOADER (using global variable from logo.js) ----
+        // ---- LOGO LOADER ----
         function loadBrandLogo() {
             const logoEl = document.getElementById('brandLogo');
             const textFallback = document.getElementById('brandTextFallback');
-
             if (typeof BARVASSI_LOGO === 'string' && BARVASSI_LOGO.startsWith('data:image')) {
                 logoEl.src = BARVASSI_LOGO;
                 logoEl.style.display = 'inline-block';
                 textFallback.style.display = 'none';
                 console.log("✅ Logo loaded from logo.js");
             } else {
-                console.warn("⚠️ BARVASSI_LOGO not found or invalid. Using fallback text.");
+                console.warn("⚠️ BARVASSI_LOGO not found. Using fallback.");
                 logoEl.style.display = 'none';
                 textFallback.style.display = 'block';
             }
         }
 
-        // ---- NOTIFICATION SYSTEM ----
+        // ---- NOTIFICATION ----
         const toast = document.getElementById('toast');
         const toastMsg = document.getElementById('toast-message');
         let toastTimeout;
-
         function showNotification(message, type = 'success') {
             clearTimeout(toastTimeout);
             toastMsg.textContent = message;
@@ -282,6 +346,7 @@
             toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 5000);
         }
 
+        // ---- DOM refs ----
         const avatarBtn = document.getElementById('avatarBtn');
         const avatarInitials = document.getElementById('avatarInitials');
         const avatarImg = document.getElementById('avatarImg');
@@ -307,9 +372,19 @@
         const dropdown = document.getElementById('dropdown');
         const avatarInput = document.getElementById('avatarInput');
 
+        // ---- Cropper elements ----
+        const cropperModal = document.getElementById('cropper-modal');
+        const cropperImage = document.getElementById('cropperImage');
+        const cropperCircle = document.getElementById('cropperCircle');
+        const cropperWrapper = document.getElementById('cropperWrapper');
+        const cropperCancel = document.getElementById('cropperCancel');
+        const cropperDone = document.getElementById('cropperDone');
+
         let currentUser = null;
         let userProfile = null;
+        let selectedFile = null;  // the file the user picked
 
+        // ---- Profile loading ----
         async function loadProfile() {
             console.log("⏳ Checking session...");
             const authResponse = await supabaseClient.auth.getSession();
@@ -339,6 +414,7 @@
             renderProfile();
         }
 
+        // ---- Render profile ----
         function renderProfile() {
             if (!userProfile) { dropName.textContent = 'Loading...'; return; }
             const p = userProfile; const name = p.full_name || 'Member'; const initial = name.charAt(0).toUpperCase();
@@ -379,12 +455,14 @@
             upgradeBtn.disabled = p.verification_status !== 'verified';
         }
 
+        // ---- Dropdown ----
         function openDropdown() { dropdownOverlay.classList.add('open'); dropdown.classList.add('open'); phoneEditBtn.style.display = 'inline-block'; dropPhoneEdit.style.display = 'none'; dropPhoneText.style.display = 'inline'; }
         function closeDropdown() { dropdownOverlay.classList.remove('open'); dropdown.classList.remove('open'); }
         avatarBtn.addEventListener('click', (e) => { e.stopPropagation(); if (dropdown.classList.contains('open')) closeDropdown(); else openDropdown(); });
         dropdownOverlay.addEventListener('click', (e) => { if (e.target === dropdownOverlay) closeDropdown(); });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDropdown(); });
 
+        // ---- Phone edit ----
         phoneEditBtn.addEventListener('click', () => { if (!userProfile) return; phoneEditBtn.style.display = 'none'; dropPhoneText.style.display = 'none'; dropPhoneEdit.style.display = 'flex'; phoneInputEdit.value = userProfile.phone || ''; });
         phoneCancelBtn.addEventListener('click', () => { dropPhoneEdit.style.display = 'none'; dropPhoneText.style.display = 'inline'; phoneEditBtn.style.display = 'inline-block'; });
         phoneSaveBtn.addEventListener('click', async () => {
@@ -394,13 +472,13 @@
             else { userProfile.phone = newPhone; dropPhoneText.textContent = newPhone || '—'; dropPhoneEdit.style.display = 'none'; dropPhoneText.style.display = 'inline'; phoneEditBtn.style.display = 'inline-block'; showNotification('Phone number updated.'); }
         });
 
+        // ---- Verify & Upgrade ----
         verifyBtn.addEventListener('click', async () => {
             if (!userProfile || userProfile.verification_status !== 'unverified') { showNotification('Already verified or pro.', 'error'); return; }
             const { error } = await supabaseClient.from('clients').update({ verification_status: 'verified' }).eq('id', currentUser.id);
             if (error) { console.error('❌ Verification error:', error); showNotification('Verification failed: ' + error.message, 'error'); }
             else { userProfile.verification_status = 'verified'; renderProfile(); showNotification('Identity verified!'); }
         });
-
         upgradeBtn.addEventListener('click', async () => {
             if (!userProfile || userProfile.verification_status !== 'verified') { showNotification('Please verify your identity first.', 'error'); return; }
             const { error } = await supabaseClient.from('clients').update({ verification_status: 'pro', subscription_status: 'pro' }).eq('id', currentUser.id);
@@ -408,66 +486,187 @@
             else { userProfile.verification_status = 'pro'; userProfile.subscription_status = 'pro'; renderProfile(); showNotification('Welcome to Pro!'); }
         });
 
-        dropAvatar.addEventListener('click', () => avatarInput.click());
-        
-        avatarInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0]; 
-            if (!file || !currentUser) return; 
+        // ---- Logout ----
+        logoutBtn.addEventListener('click', async () => { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; });
 
-            dropAvatar.classList.add('loading');
-            
-            const fileExt = file.name.split('.').pop(); 
-            const fileName = `${currentUser.id}.${fileExt}`;
-            
-            const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(fileName, file, { upsert: true });
-            if (uploadError) { 
-                dropAvatar.classList.remove('loading'); 
-                console.error('❌ Upload error:', uploadError); 
-                showNotification('Failed to upload avatar.', 'error'); 
-                return; 
-            }
+        // ---- Inactivity timer ----
+        let inactivityTimer;
+        function resetTimer() { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { showNotification('Session expired. Logging out...'); setTimeout(() => { supabaseClient.auth.signOut(); window.location.href = 'index.html'; }, 1500); }, 3600000); }
+        document.addEventListener('mousemove', resetTimer);
+        document.addEventListener('mousedown', resetTimer);
+        document.addEventListener('keypress', resetTimer);
+        resetTimer();
 
-            const publicUrlData = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
-            const publicUrl = publicUrlData.data.publicUrl;
-            
-            const uploadTimestamp = Date.now();
-            localStorage.setItem('barvassi_avatar_timestamp', uploadTimestamp);
+        // ================================================================
+        // ===== CROPPER LOGIC =====
+        // ================================================================
 
-            const { error: updateError } = await supabaseClient.from('clients').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
-            
-            if (updateError) { 
-                dropAvatar.classList.remove('loading'); 
-                console.error('❌ Update avatar error:', updateError); 
-                showNotification('Failed to save avatar URL.', 'error'); 
-                return; 
-            }
+        let cropX = 0, cropY = 0;          // center of circle relative to image container (in pixels)
+        let isDragging = false;
+        let dragStartX = 0, dragStartY = 0;
+        let circleSize = 160; // will be set based on container
 
-            userProfile.avatar_url = publicUrl; 
-            
-            const bustedUrl = publicUrl + '?t=' + uploadTimestamp;
-            const img = new Image();
-            img.onload = () => {
+        function openCropper(file) {
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                cropperImage.src = e.target.result;
+                // Wait for image to load to set dimensions
+                cropperImage.onload = () => {
+                    // Set circle size relative to container
+                    const rect = cropperWrapper.getBoundingClientRect();
+                    const minDim = Math.min(rect.width, rect.height);
+                    circleSize = Math.min(160, minDim * 0.6);
+                    cropperCircle.style.width = circleSize + 'px';
+                    cropperCircle.style.height = circleSize + 'px';
+                    // Center the circle
+                    cropX = rect.width / 2;
+                    cropY = rect.height / 2;
+                    updateCirclePosition();
+                    cropperModal.classList.add('open');
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateCirclePosition() {
+            cropperCircle.style.left = cropX + 'px';
+            cropperCircle.style.top = cropY + 'px';
+        }
+
+        // Mouse drag on circle
+        function startDrag(e) {
+            const clientX = e.clientX || e.touches?.[0]?.clientX;
+            const clientY = e.clientY || e.touches?.[0]?.clientY;
+            if (!clientX) return;
+            isDragging = true;
+            dragStartX = clientX - cropX;
+            dragStartY = clientY - cropY;
+            cropperCircle.style.cursor = 'grabbing';
+        }
+
+        function onDrag(e) {
+            if (!isDragging) return;
+            const clientX = e.clientX || e.touches?.[0]?.clientX;
+            const clientY = e.clientY || e.touches?.[0]?.clientY;
+            if (!clientX) return;
+            const rect = cropperWrapper.getBoundingClientRect();
+            let newX = clientX - dragStartX;
+            let newY = clientY - dragStartY;
+            // Clamp within the wrapper
+            const half = circleSize / 2;
+            newX = Math.max(half, Math.min(rect.width - half, newX));
+            newY = Math.max(half, Math.min(rect.height - half, newY));
+            cropX = newX;
+            cropY = newY;
+            updateCirclePosition();
+        }
+
+        function endDrag() {
+            isDragging = false;
+            cropperCircle.style.cursor = 'grab';
+        }
+
+        // Mouse events
+        cropperCircle.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('mouseup', endDrag);
+
+        // Touch events
+        cropperCircle.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startDrag(e);
+        });
+        document.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            onDrag(e);
+        });
+        document.addEventListener('touchend', endDrag);
+
+        // Cancel
+        cropperCancel.addEventListener('click', () => {
+            cropperModal.classList.remove('open');
+            selectedFile = null;
+        });
+
+        // Done: crop and upload
+        cropperDone.addEventListener('click', async () => {
+            if (!selectedFile || !currentUser) return;
+            // Crop the image using canvas
+            const img = cropperImage;
+            const rect = cropperWrapper.getBoundingClientRect();
+            const naturalWidth = img.naturalWidth;
+            const naturalHeight = img.naturalHeight;
+            const displayWidth = img.clientWidth;
+            const displayHeight = img.clientHeight;
+
+            // Calculate scale factor between display and natural
+            const scaleX = naturalWidth / displayWidth;
+            const scaleY = naturalHeight / displayHeight;
+
+            // Crop center in display coords
+            const displayCropX = cropX;
+            const displayCropY = cropY;
+            const displayCropSize = circleSize;
+
+            // Convert to natural coords
+            const naturalCropX = displayCropX * scaleX;
+            const naturalCropY = displayCropY * scaleY;
+            const naturalCropSize = displayCropSize * scaleX; // we use scaleX, assume uniform scaling
+
+            // Create a canvas and draw the cropped square
+            const canvas = document.createElement('canvas');
+            canvas.width = naturalCropSize;
+            canvas.height = naturalCropSize;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, naturalCropX - naturalCropSize/2, naturalCropY - naturalCropSize/2, naturalCropSize, naturalCropSize, 0, 0, naturalCropSize, naturalCropSize);
+
+            // Convert to blob
+            canvas.toBlob(async (blob) => {
+                if (!blob) {
+                    showNotification('Failed to process image.', 'error');
+                    return;
+                }
+                // Upload the blob
+                const fileExt = 'png';
+                const fileName = `${currentUser.id}.${fileExt}`;
+                const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(fileName, blob, { upsert: true, contentType: 'image/png' });
+                if (uploadError) {
+                    console.error('❌ Upload error:', uploadError);
+                    showNotification('Failed to upload avatar.', 'error');
+                    cropperModal.classList.remove('open');
+                    return;
+                }
+                const publicUrlData = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
+                const publicUrl = publicUrlData.data.publicUrl;
+                const uploadTimestamp = Date.now();
+                localStorage.setItem('barvassi_avatar_timestamp', uploadTimestamp);
+                const { error: updateError } = await supabaseClient.from('clients').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
+                if (updateError) {
+                    console.error('❌ Update error:', updateError);
+                    showNotification('Failed to save avatar URL.', 'error');
+                    cropperModal.classList.remove('open');
+                    return;
+                }
+                userProfile.avatar_url = publicUrl;
                 renderProfile();
-                dropAvatar.classList.remove('loading');
+                cropperModal.classList.remove('open');
                 showNotification('Avatar updated!');
-            };
-            img.onerror = () => {
-                dropAvatar.classList.remove('loading');
-                console.error('❌ Failed to load the new image');
-                showNotification('Failed to load updated avatar.', 'error');
-            };
-            img.src = bustedUrl; 
+                selectedFile = null;
+            }, 'image/png');
+        });
 
+        // ---- Trigger cropper when user selects file ----
+        dropAvatar.addEventListener('click', () => avatarInput.click());
+        avatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            openCropper(file);
             avatarInput.value = '';
         });
 
-        logoutBtn.addEventListener('click', async () => { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; });
-
-        let inactivityTimer; function resetTimer() { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { showNotification('Session expired. Logging out...'); setTimeout(() => { supabaseClient.auth.signOut(); window.location.href = 'index.html'; }, 1500); }, 3600000); }
-        document.addEventListener('mousemove', resetTimer); document.addEventListener('mousedown', resetTimer); document.addEventListener('keypress', resetTimer); resetTimer();
-
-        // ===== START THE APP =====
-        loadProfile();      
+        // ---- Start ----
+        loadProfile();
         loadBrandLogo();
     </script>
 </body>
