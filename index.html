@@ -4,13 +4,62 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Barvassi · Enter the Vault</title>
+
+    <!-- ─── SEO & Brand Identity ─── -->
+    <title>Barvassi – The Vault · Ultra‑Luxury Brand by Nader</title>
+    <meta name="description" content="Barvassi is an ultra‑luxury brand founded by Nader (18, Aleppo). Experience the silent vault of cold minimalism and timeless elegance." />
+    <meta name="keywords" content="Barvassi, luxury brand, Nader, Aleppo, vault, minimalism, cold marble, dark romantic" />
+    <meta name="author" content="Nader" />
+    <link rel="canonical" href="https://barvassi.com/" />
+
+    <!-- ─── Open Graph (Social Sharing) ─── -->
+    <meta property="og:title" content="Barvassi – The Vault" />
+    <meta property="og:description" content="Ultra‑luxury brand founded by Nader (18, Aleppo). Enter the silent vault of cold minimalism." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://barvassi.com/" />
+    <meta property="og:image" content="https://barvassi.com/apple-touch-icon.png" />
+    <meta property="og:image:width" content="180" />
+    <meta property="og:image:height" content="180" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Barvassi – The Vault" />
+    <meta name="twitter:description" content="Ultra‑luxury brand founded by Nader (18, Aleppo)." />
+
+    <!-- ─── JSON‑LD Structured Data ─── -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Barvassi",
+            "description": "Ultra‑luxury brand founded by Nader, offering a silent vault experience of cold minimalism.",
+            "url": "https://barvassi.com",
+            "logo": "https://barvassi.com/apple-touch-icon.png",
+            "founder": {
+                "@type": "Person",
+                "name": "Nader",
+                "age": "18",
+                "birthPlace": "Aleppo",
+                "nationality": "Syrian",
+                "jobTitle": "Founder & Creative Director",
+                "url": "https://barvassi.com"
+            },
+            "foundingDate": "2026",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Aleppo",
+                "addressCountry": "SY"
+            }
+        }
+    </script>
+
+    <!-- ─── Existing Fonts & Scripts ─── -->
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
     <script src="config.js"></script>
     <script src="logo.js"></script>
     <script src="loginBG.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
+        /* ─── all existing styles remain unchanged ─── */
         * {
             margin: 0;
             padding: 0;
@@ -26,7 +75,6 @@
             overflow: hidden;
         }
 
-        /* ─── Page Transition Overlay ─── */
         .page-transition {
             position: fixed;
             inset: 0;
@@ -137,6 +185,8 @@
             max-width: 280px;
             text-align: left;
         }
+
+        /* Changed to h1 for SEO */
         .form-title {
             font-weight: 500;
             font-size: clamp(28px, 4vw, 40px);
@@ -336,14 +386,15 @@
         <div class="left-panel" id="leftPanel">
             <div class="overlay"></div>
             <div class="left-content">
-                <img id="leftLogo" src="" alt="Barvassi" class="left-logo" />
+                <img id="leftLogo" src="" alt="Barvassi – Ultra‑Luxury Brand" class="left-logo" />
                 <div id="logoFallback" class="left-logo-fallback">Barvassi</div>
             </div>
         </div>
 
         <div class="right-panel">
             <div class="form-container">
-                <div class="form-title" id="formTitle">Welcome back.</div>
+                <!-- Changed to <h1> for SEO -->
+                <h1 class="form-title" id="formTitle">Welcome back.</h1>
                 <div class="form-sub" id="formSub">Enter the vault.</div>
 
                 <div id="signupFields" style="display:none;">
@@ -391,9 +442,9 @@
     </div>
 
     <script>
+        // ─── all existing JavaScript remains exactly the same ───
         console.log("🚀 Index page loaded");
 
-        // ─── PAGE TRANSITION ──────────────────────────────────────────
         function hideTransition() {
             const overlay = document.getElementById('pageTransition');
             if (overlay) {
@@ -402,7 +453,6 @@
             }
         }
 
-        // ─── LOAD LOGO ────────────────────────────────────────────────
         function loadLogo() {
             const logoEl = document.getElementById('leftLogo');
             const fallback = document.getElementById('logoFallback');
@@ -416,7 +466,6 @@
             }
         }
 
-        // ─── LOAD BACKGROUND ──────────────────────────────────────────
         function loadBackground() {
             const panel = document.getElementById('leftPanel');
             if (typeof BG === 'string' && BG.startsWith('data:image')) {
@@ -426,7 +475,6 @@
             }
         }
 
-        // ─── SUPABASE CLIENT ──────────────────────────────────────────
         let supabaseClient = null;
         try {
             if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
@@ -444,7 +492,6 @@
             console.error('❌ Supabase init error:', e);
         }
 
-        // ─── SESSION CHECK ────────────────────────────────────────────
         async function checkSessionAndRedirect() {
             if (!supabaseClient) return;
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -464,12 +511,10 @@
                 console.log("🚫 No session, showing login form.");
                 document.getElementById('splitScreen').classList.add('visible');
                 document.getElementById('loadingOverlay').classList.add('hidden');
-                // Fade out transition overlay
                 hideTransition();
             }
         }
 
-        // ─── DOM REFS ──────────────────────────────────────────────────
         const mainBtn = document.getElementById('mainBtn');
         const btnText = document.getElementById('btnText');
         const signupFields = document.getElementById('signupFields');
@@ -601,10 +646,10 @@
             if (e.key === 'Enter') mainBtn.click();
         });
 
-        // ─── INIT ──────────────────────────────────────────────────────
         loadLogo();
         loadBackground();
         checkSessionAndRedirect();
     </script>
 </body>
+
 </html>
