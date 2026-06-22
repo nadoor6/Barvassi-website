@@ -51,7 +51,6 @@
         }
     </script>
 
-    <!-- ─── Existing Fonts & Scripts ─── -->
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
     <script src="config.js"></script>
     <script src="logo.js"></script>
@@ -59,7 +58,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* ─── all existing styles remain unchanged ─── */
         * {
             margin: 0;
             padding: 0;
@@ -84,9 +82,7 @@
             pointer-events: none;
             transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .page-transition.hidden {
-            opacity: 0;
-        }
+        .page-transition.hidden { opacity: 0; }
 
         .split-screen {
             display: none;
@@ -94,9 +90,7 @@
             height: 100vh;
             width: 100vw;
         }
-        .split-screen.visible {
-            display: flex;
-        }
+        .split-screen.visible { display: flex; }
 
         .loading-overlay {
             position: fixed;
@@ -110,20 +104,16 @@
             align-items: center;
             justify-content: center;
         }
-        .loading-overlay.hidden {
-            display: none;
-        }
+        .loading-overlay.hidden { display: none; }
         .loading-spinner {
             width: 30px;
             height: 30px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255,255,255,0.1);
             border-top-color: #fafafa;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .left-panel {
             flex: 2.5;
@@ -138,7 +128,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 10, 10, 0.55);
+            background: rgba(10,10,10,0.55);
             z-index: 1;
             pointer-events: none;
         }
@@ -162,7 +152,7 @@
         }
         .left-logo-fallback {
             display: none;
-            font-family: 'SF Pro Display', -apple-system, sans-serif;
+            font-family: 'SF Pro Display', sans-serif;
             font-size: 48px;
             font-weight: 400;
             color: #fafafa;
@@ -185,8 +175,6 @@
             max-width: 280px;
             text-align: left;
         }
-
-        /* Changed to h1 for SEO */
         .form-title {
             font-weight: 500;
             font-size: clamp(28px, 4vw, 40px);
@@ -198,25 +186,23 @@
         .form-sub {
             font-weight: 300;
             font-size: 14px;
-            color: rgba(26, 26, 26, 0.4);
+            color: rgba(26,26,26,0.4);
             margin-bottom: 32px;
         }
-        .form-group {
-            margin-bottom: 16px;
-        }
+        .form-group { margin-bottom: 16px; }
         .form-label {
             display: block;
             font-weight: 500;
             font-size: 10px;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            color: rgba(26, 26, 26, 0.5);
+            color: rgba(26,26,26,0.5);
             margin-bottom: 6px;
         }
         .form-input {
             width: 100%;
-            background: rgba(26, 26, 26, 0.04);
-            border: 1px solid rgba(26, 26, 26, 0.06);
+            background: rgba(26,26,26,0.04);
+            border: 1px solid rgba(26,26,26,0.06);
             border-radius: 12px;
             padding: 12px 16px;
             font-family: 'SF Pro Display', sans-serif;
@@ -227,8 +213,8 @@
             transition: all 0.5s ease;
         }
         .form-input:focus {
-            border-color: rgba(26, 26, 26, 0.2);
-            background: rgba(26, 26, 26, 0.06);
+            border-color: rgba(26,26,26,0.2);
+            background: rgba(26,26,26,0.06);
         }
 
         .btn1 {
@@ -255,20 +241,14 @@
             background: #2a2a2a;
             transform: scale(1.02);
         }
-        .btn1:active {
-            transform: scale(0.96);
-        }
+        .btn1:active { transform: scale(0.96); }
         .btn1.loading {
             pointer-events: none;
             background: #2a2a2a;
             transform: scale(1);
         }
-        .btn1 .btn-text {
-            transition: opacity 0.4s ease;
-        }
-        .btn1.loading .btn-text {
-            opacity: 0;
-        }
+        .btn1 .btn-text { transition: opacity 0.4s ease; }
+        .btn1.loading .btn-text { opacity: 0; }
         .btn1 .spinner {
             position: absolute;
             top: 50%;
@@ -283,49 +263,39 @@
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
         }
-        .spinner svg {
-            animation: spin 0.9s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        .spinner svg { animation: spin 0.9s linear infinite; }
 
         .error-msg {
             text-align: center;
             font-size: 11px;
-            color: rgba(180, 40, 40, 0.7);
+            color: rgba(180,40,40,0.7);
             margin-top: 12px;
             height: 18px;
             opacity: 0;
             transition: opacity 0.5s;
         }
-        .error-msg.visible {
-            opacity: 1;
-        }
+        .error-msg.visible { opacity: 1; }
 
         .toggle-text {
             text-align: center;
             margin-top: 16px;
             font-weight: 300;
             font-size: 12px;
-            color: rgba(26, 26, 26, 0.4);
+            color: rgba(26,26,26,0.4);
             cursor: pointer;
             transition: color 0.3s;
         }
-        .toggle-text:hover {
-            color: rgba(26, 26, 26, 0.7);
-        }
+        .toggle-text:hover { color: rgba(26,26,26,0.7); }
 
         .skip-btn {
             background: transparent;
-            border: 1px solid rgba(26, 26, 26, 0.06);
+            border: 1px solid rgba(26,26,26,0.06);
             border-radius: 12px;
             padding: 10px 14px;
             font-size: 10px;
             font-weight: 400;
             letter-spacing: 0.05em;
-            color: rgba(26, 26, 26, 0.4);
+            color: rgba(26,26,26,0.4);
             cursor: pointer;
             transition: all 0.3s ease;
             margin-left: 8px;
@@ -333,7 +303,7 @@
             font-family: 'SF Pro Display', sans-serif;
         }
         .skip-btn:hover {
-            border-color: rgba(26, 26, 26, 0.3);
+            border-color: rgba(26,26,26,0.3);
             color: #1a1a1a;
         }
 
@@ -342,46 +312,165 @@
             font-size: 9px;
             letter-spacing: 0.15em;
             text-transform: uppercase;
-            color: rgba(26, 26, 26, 0.15);
+            color: rgba(26,26,26,0.15);
             text-align: center;
             margin-top: 24px;
             padding-top: 16px;
-            border-top: 1px solid rgba(26, 26, 26, 0.04);
+            border-top: 1px solid rgba(26,26,26,0.04);
             width: 100%;
         }
 
+        .footer-links {
+            text-align: center;
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            color: rgba(26,26,26,0.15);
+            margin-top: 12px;
+        }
+        .footer-links a {
+            color: inherit;
+            text-decoration: none;
+            margin: 0 6px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover {
+            color: rgba(26,26,26,0.4);
+        }
+
         @media (max-width: 900px) {
-            .split-screen {
-                flex-direction: column;
-            }
-            .left-panel {
-                flex: none;
-                height: 35vh;
-                width: 100%;
-            }
-            .right-panel {
-                flex: none;
-                height: 65vh;
-                padding: 40px 24px;
-                width: 100%;
-            }
-            .form-container {
-                max-width: 300px;
-            }
+            .split-screen { flex-direction: column; }
+            .left-panel { flex: none; height: 35vh; width: 100%; }
+            .right-panel { flex: none; height: 65vh; padding: 40px 24px; width: 100%; }
+            .form-container { max-width: 300px; }
+        }
+
+        /* ─── Glass Modal ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-box {
+            background: rgba(20,20,20,0.8);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+            max-width: 680px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 40px 36px;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.8);
+            transform: translateY(-20px) scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+        }
+        .modal-overlay.active .modal-box {
+            transform: translateY(0) scale(1);
+        }
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.3);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s;
+            font-family: inherit;
+            line-height: 1;
+        }
+        .modal-close:hover {
+            color: rgba(255,255,255,0.7);
+        }
+        .modal-box h1 {
+            font-weight: 400;
+            font-size: 26px;
+            letter-spacing: 0.04em;
+            color: #f2f2f2;
+            margin-bottom: 4px;
+        }
+        .modal-box .sub {
+            font-weight: 300;
+            font-size: 13px;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 24px;
+        }
+        .modal-box h2 {
+            font-weight: 400;
+            font-size: 17px;
+            letter-spacing: 0.03em;
+            color: rgba(255,255,255,0.8);
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+        .modal-box p, .modal-box li {
+            font-weight: 300;
+            font-size: 14px;
+            line-height: 1.7;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 8px;
+        }
+        .modal-box ul {
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+        .modal-box li { margin-bottom: 4px; }
+        .modal-box hr {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            margin: 24px 0;
+        }
+        .modal-box .footer-note {
+            font-size: 12px;
+            color: rgba(255,255,255,0.15);
+            text-align: center;
+            margin-top: 24px;
+        }
+        .modal-box::-webkit-scrollbar {
+            width: 4px;
+        }
+        .modal-box::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.02);
+        }
+        .modal-box::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        @media (max-width: 600px) {
+            .modal-box { padding: 28px 20px; max-height: 90vh; }
+            .modal-box h1 { font-size: 22px; }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- ─── Page Transition Overlay ─── -->
+    <!-- Page Transition -->
     <div class="page-transition" id="pageTransition"></div>
 
-    <!-- Loading overlay -->
+    <!-- Loading -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
     </div>
 
+    <!-- Main Split Screen -->
     <div class="split-screen" id="splitScreen">
         <div class="left-panel" id="leftPanel">
             <div class="overlay"></div>
@@ -393,7 +482,6 @@
 
         <div class="right-panel">
             <div class="form-container">
-                <!-- Changed to <h1> for SEO -->
                 <h1 class="form-title" id="formTitle">Welcome back.</h1>
                 <div class="form-sub" id="formSub">Enter the vault.</div>
 
@@ -437,19 +525,159 @@
                 <div class="error-msg" id="errorMsg"></div>
                 <div class="toggle-text" id="toggleBtn">Don't have an account? Sign Up</div>
                 <div class="copyright-footer">© 2026 Barvassi. All rights reserved.</div>
-                <div style="margin-top: 12px; text-align: center; font-size: 9px; letter-spacing: 0.1em; color: rgba(26,26,26,0.15);">
-    <a href="/privacy" style="color: inherit; text-decoration: none; margin: 0 6px;">Privacy</a>
-    <span style="opacity:0.2;">·</span>
-    <a href="/terms" style="color: inherit; text-decoration: none; margin: 0 6px;">Terms</a>
-</div>
+                <div class="footer-links">
+                    <a onclick="openModal('privacy')">Privacy</a>
+                    <span style="opacity:0.2;">·</span>
+                    <a onclick="openModal('terms')">Terms</a>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- ─── Glass Modal ─── -->
+    <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
+        <div class="modal-box" id="modalBox">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
     <script>
-        // ─── all existing JavaScript remains exactly the same ───
         console.log("🚀 Index page loaded");
 
+        // ─── Modal Logic ──────────────────────────────────────────────
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalContent = document.getElementById('modalContent');
+
+        function openModal(type) {
+            let title, content;
+            if (type === 'privacy') {
+                title = 'Privacy Policy';
+                content = `
+                    <div class="sub">Last updated: June 22, 2026</div>
+                    <p><strong>Barvassi</strong> ("we", "our", "us") respects your privacy. This policy explains how we collect, use, disclose, and safeguard your information when you visit our website <strong>barvassi.com</strong> and use our services.</p>
+                    <h2>1. Information We Collect</h2>
+                    <h3>a. Information You Provide</h3>
+                    <ul>
+                        <li><strong>Account Details:</strong> Full name, email address, phone number, and password (encrypted).</li>
+                        <li><strong>Profile Information:</strong> Avatar images, Barvassi ID, verification status, subscription status.</li>
+                        <li><strong>Communications:</strong> Any messages or inquiries you send to us.</li>
+                    </ul>
+                    <h3>b. Automatically Collected Information</h3>
+                    <ul>
+                        <li><strong>Usage Data:</strong> IP address, browser type, device information, and interactions with our website.</li>
+                        <li><strong>Cookies & Local Storage:</strong> We use local storage to maintain your session securely. We do not use tracking cookies for advertising.</li>
+                    </ul>
+                    <h2>2. How We Use Your Information</h2>
+                    <ul>
+                        <li>To create and manage your Barvassi vault account.</li>
+                        <li>To authenticate your identity and protect your data.</li>
+                        <li>To process account upgrades and verification.</li>
+                        <li>To communicate important updates (security, policy changes).</li>
+                        <li>To improve our services and user experience.</li>
+                        <li>To comply with legal obligations.</li>
+                    </ul>
+                    <h2>3. Data Storage & Security</h2>
+                    <p>Your data is stored securely using <strong>Supabase</strong> (PostgreSQL) with robust encryption protocols. We treat your personal information like a sealed vault – accessible only to you and our core systems.</p>
+                    <ul>
+                        <li>Passwords are hashed and never stored in plain text.</li>
+                        <li>All connections are encrypted via HTTPS.</li>
+                        <li>Access to user data is strictly controlled.</li>
+                    </ul>
+                    <h2>4. Data Sharing & Third Parties</h2>
+                    <p>We do not sell, rent, or trade your personal information. We share data only with essential service providers:</p>
+                    <ul>
+                        <li><strong>Supabase</strong> – for authentication, database, and file storage (avatars).</li>
+                        <li><strong>Vercel</strong> – for website hosting and deployment.</li>
+                    </ul>
+                    <p>These providers are contractually bound to protect your data and comply with privacy regulations.</p>
+                    <h2>5. Your Rights</h2>
+                    <p>Depending on your location (e.g., GDPR, CCPA), you have the right to:</p>
+                    <ul>
+                        <li>Access the personal data we hold about you.</li>
+                        <li>Correct inaccurate data.</li>
+                        <li>Request deletion of your account and associated data.</li>
+                        <li>Withdraw consent for data processing.</li>
+                    </ul>
+                    <p>To exercise these rights, contact us at: <strong>contact@barvassi.com</strong></p>
+                    <h2>6. Data Retention</h2>
+                    <p>We retain your data as long as your account is active. If you delete your account, we will remove your personal information within 30 days, except where retention is required by law.</p>
+                    <h2>7. Children's Privacy</h2>
+                    <p>Barvassi is not intended for individuals under the age of 13. We do not knowingly collect data from children.</p>
+                    <h2>8. Updates to This Policy</h2>
+                    <p>We may update this policy periodically. We will notify you of significant changes via email or through a notice on the platform.</p>
+                    <h2>9. Contact</h2>
+                    <p><strong>Barvassi</strong><br />Founded by Nader, Aleppo<br />Email: <strong>contact@barvassi.com</strong></p>
+                    <hr />
+                    <div class="footer-note">© 2026 Barvassi. All rights reserved.</div>
+                `;
+            } else if (type === 'terms') {
+                title = 'Terms of Service';
+                content = `
+                    <div class="sub">Last updated: June 22, 2026</div>
+                    <p>Welcome to <strong>Barvassi</strong> – a cultural and political project founded by Nader, born in Aleppo. By using our platform, you agree to the following terms.</p>
+                    <h2>1. Acceptance of Terms</h2>
+                    <p>By creating an account or accessing <strong>barvassi.com</strong>, you agree to be bound by these Terms of Service. If you do not agree, please do not use our services.</p>
+                    <h2>2. Eligibility</h2>
+                    <ul>
+                        <li>You must be at least <strong>13 years old</strong> to use Barvassi.</li>
+                        <li>By using the platform, you represent that you have the legal capacity to enter into this agreement.</li>
+                    </ul>
+                    <h2>3. Account Responsibilities</h2>
+                    <ul>
+                        <li>You are responsible for maintaining the confidentiality of your login credentials.</li>
+                        <li>You agree to provide accurate and complete information.</li>
+                        <li>You are responsible for all activities that occur under your account.</li>
+                        <li>Notify us immediately of any unauthorized use.</li>
+                    </ul>
+                    <h2>4. User Conduct</h2>
+                    <p>You agree to use Barvassi respectfully and in alignment with its mission as a cultural sanctuary. You shall not:</p>
+                    <ul>
+                        <li>Use the platform for illegal, harmful, or discriminatory purposes.</li>
+                        <li>Impersonate others or provide false information.</li>
+                        <li>Attempt to breach security measures or access other users' accounts.</li>
+                        <li>Upload content that violates the rights of others.</li>
+                    </ul>
+                    <p><strong>Barvassi is a space of silence, memory, and resilience – please honor that.</strong></p>
+                    <h2>5. Intellectual Property</h2>
+                    <ul>
+                        <li>The Barvassi name, logo, design, and content are the exclusive property of Barvassi and Nader.</li>
+                        <li>You may not reproduce, distribute, or create derivative works without our explicit permission.</li>
+                    </ul>
+                    <h2>6. User-Generated Content</h2>
+                    <ul>
+                        <li>By uploading an avatar or profile information, you grant Barvassi a worldwide, non‑exclusive, royalty‑free license to store, display, and use it to provide our services.</li>
+                        <li>You retain ownership of your content.</li>
+                    </ul>
+                    <h2>7. Termination</h2>
+                    <p>We reserve the right to suspend or terminate your account if you violate these terms, engage in harmful behavior, or at our discretion. You may also delete your account at any time.</p>
+                    <h2>8. Disclaimers & Limitation of Liability</h2>
+                    <ul>
+                        <li>Barvassi is provided <strong>"as is"</strong> and <strong>"as available"</strong> without warranties of any kind.</li>
+                        <li>We do not guarantee that the platform will be error‑free or uninterrupted.</li>
+                        <li>To the fullest extent permitted by law, Barvassi is not liable for any indirect, incidental, or consequential damages arising from your use of the platform.</li>
+                    </ul>
+                    <h2>9. Governing Law</h2>
+                    <p>These terms are governed by the laws applicable to the jurisdiction of Aleppo and international principles of data protection. Users from other countries accept that their data may be stored and processed globally.</p>
+                    <h2>10. Changes to Terms</h2>
+                    <p>We may update these terms periodically. Continued use of the platform constitutes acceptance of the revised terms.</p>
+                    <h2>11. Contact</h2>
+                    <p><strong>Barvassi</strong><br />Email: <strong>contact@barvassi.com</strong></p>
+                    <hr />
+                    <div class="footer-note">© 2026 Barvassi. All rights reserved.</div>
+                `;
+            }
+            modalContent.innerHTML = `<h1>${title}</h1>${content}`;
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ─── Original JS ──────────────────────────────────────────────
         function hideTransition() {
             const overlay = document.getElementById('pageTransition');
             if (overlay) {
