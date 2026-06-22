@@ -518,21 +518,47 @@
         let userProfile = null;
         let selectedFile = null;
 
-        // ---- Auth state listener for persistence ----
+        // ---- Auth state listener for session restoration ----
+        let authInitialized = false;
+        let authTimeout = null;
+
         supabaseClient.auth.onAuthStateChange((event, session) => {
             console.log('🔄 Auth state changed:', event, session ? 'session exists' : 'no session');
             if (event === 'SIGNED_OUT') {
                 // Redirect to home on sign out
                 window.location.href = '/';
             }
-            if (event === 'TOKEN_REFRESHED') {
-                console.log('🔁 Token refreshed successfully');
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                if (!authInitialized) {
+                    authInitialized = true;
+                    if (authTimeout) clearTimeout(authTimeout);
+                    // Load profile now that we have a session
+                    loadProfile();
+                }
             }
         });
 
+        // ---- Check for existing session on page load ----
+        async function checkSessionAndLoad() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                authInitialized = true;
+                loadProfile();
+            } else {
+                // Wait for the auth state event, but set a timeout to avoid infinite waiting
+                authTimeout = setTimeout(() => {
+                    if (!authInitialized) {
+                        // No session after 3 seconds, redirect to home
+                        console.log("⏰ No session after timeout, redirecting.");
+                        window.location.href = '/';
+                    }
+                }, 3000);
+            }
+        }
+
         // ---- Profile loading ----
         async function loadProfile() {
-            console.log("⏳ Checking session...");
+            console.log("⏳ Loading profile...");
             const authResponse = await supabaseClient.auth.getSession();
             const session = authResponse.data.session;
             if (!session) {
@@ -953,8 +979,9 @@
             avatarInput.value = '';
         });
 
-        // ---- Start ----
-        loadProfile();
+        // ---- Start: Check session and load ----
+        // Call this after all listeners are set up
+        checkSessionAndLoad();
         loadBrandLogo();
     </script>
 </body>
