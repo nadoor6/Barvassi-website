@@ -58,6 +58,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+        /* ─── Reset & Base ─── */
         * {
             margin: 0;
             padding: 0;
@@ -73,6 +74,7 @@
             overflow: hidden;
         }
 
+        /* ─── Page Transition ─── */
         .page-transition {
             position: fixed;
             inset: 0;
@@ -82,15 +84,20 @@
             pointer-events: none;
             transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .page-transition.hidden { opacity: 0; }
+        .page-transition.hidden {
+            opacity: 0;
+        }
 
+        /* ─── Loading ─── */
         .split-screen {
             display: none;
             flex-direction: row;
             height: 100vh;
             width: 100vw;
         }
-        .split-screen.visible { display: flex; }
+        .split-screen.visible {
+            display: flex;
+        }
 
         .loading-overlay {
             position: fixed;
@@ -104,17 +111,24 @@
             align-items: center;
             justify-content: center;
         }
-        .loading-overlay.hidden { display: none; }
+        .loading-overlay.hidden {
+            display: none;
+        }
         .loading-spinner {
             width: 30px;
             height: 30px;
-            border: 2px solid rgba(255,255,255,0.1);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-top-color: #fafafa;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
+        /* ─── Left Panel (Image) ─── */
         .left-panel {
             flex: 2.5;
             position: relative;
@@ -128,7 +142,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10,10,10,0.55);
+            background: rgba(10, 10, 10, 0.55);
             z-index: 1;
             pointer-events: none;
         }
@@ -160,7 +174,7 @@
             letter-spacing: 0.15em;
         }
 
-        /* ── Right Panel – scrollable, with flex spacers ── */
+        /* ─── Right Panel (Form) – scrollable with flex spacers ─── */
         .right-panel {
             flex: 1.5;
             background: #fafafa;
@@ -173,7 +187,7 @@
             height: 100%;
         }
 
-        /* thin, dark scrollbar – luxury touch */
+        /* Thin, dark scrollbar – luxury touch */
         .right-panel::-webkit-scrollbar {
             width: 3px;
         }
@@ -200,10 +214,12 @@
             text-align: left;
         }
 
+        /* ─── Typography ─── */
         .form-title {
-            font-weight: 500;
+            font-weight: 400;
+            /* softer, more elegant */
             font-size: clamp(28px, 4vw, 40px);
-            letter-spacing: -0.02em;
+            letter-spacing: -0.01em;
             color: #1a1a1a;
             line-height: 1.1;
             margin-bottom: 4px;
@@ -211,23 +227,46 @@
         .form-sub {
             font-weight: 300;
             font-size: 14px;
-            color: rgba(26,26,26,0.4);
+            color: rgba(26, 26, 26, 0.4);
             margin-bottom: 32px;
         }
-        .form-group { margin-bottom: 16px; }
+
+        /* ─── Smooth Sign-up Fields Wrapper ─── */
+        .signup-fields-wrapper {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: max-height 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                margin 0.4s ease;
+            margin-bottom: 0;
+        }
+        .signup-fields-wrapper.open {
+            max-height: 300px;
+            opacity: 1;
+            transform: translateY(0);
+            margin-bottom: 8px;
+        }
+
+        /* ─── Form Elements ─── */
+        .form-group {
+            margin-bottom: 16px;
+        }
         .form-label {
             display: block;
             font-weight: 500;
             font-size: 10px;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            color: rgba(26,26,26,0.5);
+            color: rgba(26, 26, 26, 0.5);
             margin-bottom: 6px;
         }
         .form-input {
             width: 100%;
-            background: rgba(26,26,26,0.04);
-            border: 1px solid rgba(26,26,26,0.06);
+            background: rgba(26, 26, 26, 0.04);
+            border: 1px solid rgba(26, 26, 26, 0.06);
             border-radius: 12px;
             padding: 12px 16px;
             font-family: 'SF Pro Display', sans-serif;
@@ -235,13 +274,49 @@
             font-size: 14px;
             color: #1a1a1a;
             outline: none;
-            transition: all 0.5s ease;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .form-input:focus {
-            border-color: rgba(26,26,26,0.2);
-            background: rgba(26,26,26,0.06);
+            border-color: #1a1a1a;
+            background: #ffffff;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            transform: translateY(-1px);
+        }
+        .form-input::placeholder {
+            font-style: italic;
+            opacity: 0.6;
+            color: rgba(26, 26, 26, 0.35);
         }
 
+        /* ─── Text-style "Skip" link ─── */
+        .skip-link {
+            font-family: 'SF Pro Display', sans-serif;
+            font-size: 11px;
+            font-weight: 300;
+            color: rgba(26, 26, 26, 0.25);
+            cursor: pointer;
+            border-bottom: 1px dotted rgba(26, 26, 26, 0.1);
+            padding-bottom: 1px;
+            margin-left: 10px;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            letter-spacing: 0.04em;
+        }
+        .skip-link:hover {
+            color: rgba(26, 26, 26, 0.6);
+            border-bottom-color: rgba(26, 26, 26, 0.3);
+        }
+
+        .id-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .id-wrapper .form-input {
+            flex: 1;
+        }
+
+        /* ─── btn1 (unchanged, exact spec) ─── */
         .btn1 {
             width: 100%;
             background: #1a1a1a;
@@ -266,14 +341,20 @@
             background: #2a2a2a;
             transform: scale(1.02);
         }
-        .btn1:active { transform: scale(0.96); }
+        .btn1:active {
+            transform: scale(0.96);
+        }
         .btn1.loading {
             pointer-events: none;
             background: #2a2a2a;
             transform: scale(1);
         }
-        .btn1 .btn-text { transition: opacity 0.4s ease; }
-        .btn1.loading .btn-text { opacity: 0; }
+        .btn1 .btn-text {
+            transition: opacity 0.4s ease;
+        }
+        .btn1.loading .btn-text {
+            opacity: 0;
+        }
         .btn1 .spinner {
             position: absolute;
             top: 50%;
@@ -288,48 +369,58 @@
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
         }
-        .spinner svg { animation: spin 0.9s linear infinite; }
+        .spinner svg {
+            animation: spin 0.9s linear infinite;
+        }
 
+        /* ─── Error Message with gentle shake ─── */
         .error-msg {
             text-align: center;
             font-size: 11px;
-            color: rgba(180,40,40,0.7);
+            color: rgba(180, 40, 40, 0.7);
             margin-top: 12px;
             height: 18px;
             opacity: 0;
-            transition: opacity 0.5s;
+            transition: opacity 0.5s, transform 0.3s ease;
+            transform: translateX(0);
         }
-        .error-msg.visible { opacity: 1; }
+        .error-msg.visible {
+            opacity: 1;
+        }
+        .error-msg.shake {
+            animation: shake 0.4s ease;
+        }
+        @keyframes shake {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+            20% {
+                transform: translateX(-4px);
+            }
+            40% {
+                transform: translateX(4px);
+            }
+            60% {
+                transform: translateX(-2px);
+            }
+            80% {
+                transform: translateX(2px);
+            }
+        }
 
+        /* ─── Toggle, Footer ─── */
         .toggle-text {
             text-align: center;
             margin-top: 16px;
             font-weight: 300;
             font-size: 12px;
-            color: rgba(26,26,26,0.4);
+            color: rgba(26, 26, 26, 0.4);
             cursor: pointer;
             transition: color 0.3s;
         }
-        .toggle-text:hover { color: rgba(26,26,26,0.7); }
-
-        .skip-btn {
-            background: transparent;
-            border: 1px solid rgba(26,26,26,0.06);
-            border-radius: 12px;
-            padding: 10px 14px;
-            font-size: 10px;
-            font-weight: 400;
-            letter-spacing: 0.05em;
-            color: rgba(26,26,26,0.4);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-left: 8px;
-            white-space: nowrap;
-            font-family: 'SF Pro Display', sans-serif;
-        }
-        .skip-btn:hover {
-            border-color: rgba(26,26,26,0.3);
-            color: #1a1a1a;
+        .toggle-text:hover {
+            color: rgba(26, 26, 26, 0.7);
         }
 
         .copyright-footer {
@@ -337,11 +428,11 @@
             font-size: 9px;
             letter-spacing: 0.15em;
             text-transform: uppercase;
-            color: rgba(26,26,26,0.15);
+            color: rgba(26, 26, 26, 0.15);
             text-align: center;
             margin-top: 24px;
             padding-top: 16px;
-            border-top: 1px solid rgba(26,26,26,0.04);
+            border-top: 1px solid rgba(26, 26, 26, 0.04);
             width: 100%;
         }
 
@@ -349,7 +440,7 @@
             text-align: center;
             font-size: 9px;
             letter-spacing: 0.1em;
-            color: rgba(26,26,26,0.15);
+            color: rgba(26, 26, 26, 0.15);
             margin-top: 12px;
         }
         .footer-links a {
@@ -360,22 +451,36 @@
             transition: color 0.3s;
         }
         .footer-links a:hover {
-            color: rgba(26,26,26,0.4);
+            color: rgba(26, 26, 26, 0.4);
         }
 
+        /* ─── Responsive ─── */
         @media (max-width: 900px) {
-            .split-screen { flex-direction: column; }
-            .left-panel { flex: none; height: 35vh; width: 100%; }
-            .right-panel { flex: none; height: 65vh; padding: 32px 24px; width: 100%; }
-            .form-container { max-width: 300px; }
+            .split-screen {
+                flex-direction: column;
+            }
+            .left-panel {
+                flex: none;
+                height: 35vh;
+                width: 100%;
+            }
+            .right-panel {
+                flex: none;
+                height: 65vh;
+                padding: 32px 24px;
+                width: 100%;
+            }
+            .form-container {
+                max-width: 300px;
+            }
         }
 
-        /* ─── Glass Modal ─── */
+        /* ─── Glass Modal (unchanged, perfect) ─── */
         .modal-overlay {
             position: fixed;
             inset: 0;
             z-index: 10000;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             display: none;
@@ -390,17 +495,17 @@
             opacity: 1;
         }
         .modal-box {
-            background: rgba(20,20,20,0.8);
+            background: rgba(20, 20, 20, 0.8);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255,255,255,0.06);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 24px;
             max-width: 680px;
             width: 100%;
             max-height: 80vh;
             overflow-y: auto;
             padding: 40px 36px;
-            box-shadow: 0 32px 80px rgba(0,0,0,0.8);
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.8);
             transform: translateY(-20px) scale(0.95);
             transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
             position: relative;
@@ -414,7 +519,7 @@
             right: 20px;
             background: none;
             border: none;
-            color: rgba(255,255,255,0.3);
+            color: rgba(255, 255, 255, 0.3);
             font-size: 24px;
             cursor: pointer;
             transition: color 0.3s;
@@ -422,7 +527,7 @@
             line-height: 1;
         }
         .modal-close:hover {
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
         }
         .modal-box h1 {
             font-weight: 400;
@@ -434,37 +539,40 @@
         .modal-box .sub {
             font-weight: 300;
             font-size: 13px;
-            color: rgba(255,255,255,0.3);
+            color: rgba(255, 255, 255, 0.3);
             margin-bottom: 24px;
         }
         .modal-box h2 {
             font-weight: 400;
             font-size: 17px;
             letter-spacing: 0.03em;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             margin-top: 20px;
             margin-bottom: 8px;
         }
-        .modal-box p, .modal-box li {
+        .modal-box p,
+        .modal-box li {
             font-weight: 300;
             font-size: 14px;
             line-height: 1.7;
-            color: rgba(255,255,255,0.6);
+            color: rgba(255, 255, 255, 0.6);
             margin-bottom: 8px;
         }
         .modal-box ul {
             padding-left: 20px;
             margin-bottom: 12px;
         }
-        .modal-box li { margin-bottom: 4px; }
+        .modal-box li {
+            margin-bottom: 4px;
+        }
         .modal-box hr {
             border: none;
-            border-top: 1px solid rgba(255,255,255,0.04);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
             margin: 24px 0;
         }
         .modal-box .footer-note {
             font-size: 12px;
-            color: rgba(255,255,255,0.15);
+            color: rgba(255, 255, 255, 0.15);
             text-align: center;
             margin-top: 24px;
         }
@@ -472,15 +580,20 @@
             width: 4px;
         }
         .modal-box::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
         }
         .modal-box::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
         }
         @media (max-width: 600px) {
-            .modal-box { padding: 28px 20px; max-height: 90vh; }
-            .modal-box h1 { font-size: 22px; }
+            .modal-box {
+                padding: 28px 20px;
+                max-height: 90vh;
+            }
+            .modal-box h1 {
+                font-size: 22px;
+            }
         }
     </style>
 </head>
@@ -513,20 +626,23 @@
                 <h1 class="form-title" id="formTitle">Welcome back.</h1>
                 <div class="form-sub" id="formSub">Enter the vault.</div>
 
-                <div id="signupFields" style="display:none;">
-                    <div class="form-group">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" class="form-input" id="nameInput" placeholder="Your name" autocomplete="off" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Phone Number</label>
-                        <input type="text" class="form-input" id="phoneInput" placeholder="+963 99 123 4567" autocomplete="off" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">ID / Passport Number (Optional)</label>
-                        <div style="display:flex; align-items:center;">
-                            <input type="text" class="form-input" id="idInput" placeholder="Type your ID or Passport #" autocomplete="off" style="flex:1;" />
-                            <button class="skip-btn" id="skipIdBtn">Skip</button>
+                <!-- Smooth animated wrapper for signup fields -->
+                <div class="signup-fields-wrapper" id="signupFieldsWrapper">
+                    <div id="signupFields">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" id="nameInput" placeholder="Your name" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" class="form-input" id="phoneInput" placeholder="+963 99 123 4567" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ID / Passport Number (Optional)</label>
+                            <div class="id-wrapper">
+                                <input type="text" class="form-input" id="idInput" placeholder="Type your ID or Passport #" autocomplete="off" />
+                                <span class="skip-link" id="skipIdBtn">Skip</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -708,7 +824,7 @@
             document.body.style.overflow = '';
         }
 
-        // ─── Original JS ──────────────────────────────────────────────
+        // ─── Original JS (unchanged) ──────────────────────────────────
         function hideTransition() {
             const overlay = document.getElementById('pageTransition');
             if (overlay) {
@@ -781,7 +897,7 @@
 
         const mainBtn = document.getElementById('mainBtn');
         const btnText = document.getElementById('btnText');
-        const signupFields = document.getElementById('signupFields');
+        const signupFieldsWrapper = document.getElementById('signupFieldsWrapper');
         const nameInput = document.getElementById('nameInput');
         const phoneInput = document.getElementById('phoneInput');
         const idInput = document.getElementById('idInput');
@@ -795,6 +911,7 @@
 
         let isSigningUp = false;
 
+        // Skip link – now a <span>, but same logic
         skipIdBtn.addEventListener('click', function(e) {
             e.preventDefault();
             idInput.value = 'Skipped';
@@ -806,18 +923,19 @@
             e.preventDefault();
             isSigningUp = !isSigningUp;
             errorMsg.classList.remove('visible');
+            errorMsg.classList.remove('shake');
 
             if (isSigningUp) {
                 formTitle.innerText = 'Create an account.';
                 formSub.innerText = 'Enter the House.';
                 btnText.innerText = 'Sign Up';
-                signupFields.style.display = 'block';
+                signupFieldsWrapper.classList.add('open');
                 toggleBtn.innerText = 'Already have an account? Sign In';
             } else {
                 formTitle.innerText = 'Welcome back.';
                 formSub.innerText = 'Enter the vault.';
                 btnText.innerText = 'Sign In Here';
-                signupFields.style.display = 'none';
+                signupFieldsWrapper.classList.remove('open');
                 toggleBtn.innerText = "Don't have an account? Sign Up";
             }
         });
@@ -826,16 +944,19 @@
             if (!supabaseClient) {
                 errorMsg.innerText = 'Database connection error.';
                 errorMsg.classList.add('visible');
+                errorMsg.classList.add('shake');
                 return;
             }
 
             const email = emailInput.value.trim();
             const password = passInput.value.trim();
             errorMsg.classList.remove('visible');
+            errorMsg.classList.remove('shake');
 
             if (!email || !password) {
                 errorMsg.innerText = 'Please fill in all fields.';
                 errorMsg.classList.add('visible');
+                errorMsg.classList.add('shake');
                 return;
             }
 
@@ -858,12 +979,14 @@
                 if (error) {
                     errorMsg.innerText = error.message;
                     errorMsg.classList.add('visible');
+                    errorMsg.classList.add('shake');
                 } else {
                     const { data: idData, error: idError } = await supabaseClient.rpc('generate_barvassi_id');
                     if (idError) {
                         console.error("ID generation failed:", idError);
                         errorMsg.innerText = 'Could not generate account ID.';
                         errorMsg.classList.add('visible');
+                        errorMsg.classList.add('shake');
                         return;
                     }
                     const accountId = idData;
@@ -883,6 +1006,7 @@
                         console.error("Insert error:", insertError);
                         errorMsg.innerText = "Account created, but couldn't save extra data.";
                         errorMsg.classList.add('visible');
+                        errorMsg.classList.add('shake');
                     } else {
                         alert('Account created successfully!');
                         setTimeout(() => {
@@ -900,6 +1024,7 @@
                 if (error) {
                     errorMsg.innerText = 'Invalid credentials.';
                     errorMsg.classList.add('visible');
+                    errorMsg.classList.add('shake');
                 } else {
                     window.location.href = '/dashboard';
                 }
