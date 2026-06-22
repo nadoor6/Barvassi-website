@@ -433,6 +433,7 @@
 
         // Initialize Supabase client with explicit localStorage for session persistence
         let supabaseClient = null;
+        let isInitializing = true; // flag to prevent premature redirect on SIGNED_OUT
         let sessionRestored = false;
         let redirectTimeout = null;
 
@@ -521,16 +522,18 @@
         let userProfile = null;
         let selectedFile = null;
 
-        // ---- Auth state listener for session restoration ----
+        // ---- Auth state listener ----
         supabaseClient.auth.onAuthStateChange((event, session) => {
             console.log('🔄 Auth state changed:', event, session ? 'session exists' : 'no session');
             if (event === 'SIGNED_OUT') {
-                // Redirect to home on sign out
-                if (!sessionRestored) {
+                // Only redirect if we are not still initializing (i.e., the user was previously signed in)
+                // This prevents redirecting on page load when session is not yet restored.
+                if (!isInitializing) {
                     window.location.href = '/';
                 }
             }
             if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                isInitializing = false;
                 sessionRestored = true;
                 if (redirectTimeout) {
                     clearTimeout(redirectTimeout);
@@ -541,6 +544,10 @@
                     loadProfile();
                 }
             }
+            // Once we receive any event, we are no longer initializing
+            if (event !== '') {
+                isInitializing = false;
+            }
         });
 
         // ---- Check for existing session on page load ----
@@ -549,10 +556,10 @@
             const storedSession = localStorage.getItem('supabase.auth.token');
             if (storedSession) {
                 console.log("📦 Found session in localStorage, attempting restore...");
-                // Try to get session from Supabase
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session) {
                     sessionRestored = true;
+                    isInitializing = false;
                     loadProfile();
                     return;
                 }
@@ -566,6 +573,7 @@
                 supabaseClient.auth.getSession().then(({ data: { session } }) => {
                     if (session) {
                         sessionRestored = true;
+                        isInitializing = false;
                         loadProfile();
                     } else {
                         console.log("🚫 No session after timeout, redirecting.");
@@ -721,6 +729,8 @@
 
         // ---- Logout ----
         logoutBtn.addEventListener('click', async () => {
+            // Set initializing to false so that SIGNED_OUT event triggers redirect
+            isInitializing = false;
             await supabaseClient.auth.signOut();
             window.location.href = '/';
         });
@@ -735,6 +745,7 @@
             inactivityTimer = setTimeout(() => {
                 showNotification('Session expired. Logging out...');
                 setTimeout(() => {
+                    isInitializing = false;
                     supabaseClient.auth.signOut();
                     window.location.href = '/';
                 }, 1500);
@@ -1001,7 +1012,6 @@
         });
 
         // ---- Start: Check session and load ----
-        // Call this after all listeners are set up
         checkSessionAndLoad();
         loadBrandLogo();
     </script>
