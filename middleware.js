@@ -1,7 +1,5 @@
-import { NextResponse } from 'next/server';
-
 export function middleware(request) {
-  const url = request.nextUrl.clone();
+  const url = new URL(request.url);
   const path = url.pathname;
 
   // Only protect admin routes
@@ -18,11 +16,11 @@ export function middleware(request) {
       return new Response('Forbidden', { status: 403 });
     }
 
-    // Log successful access (visible in Vercel logs)
-    console.log(`✅ Admin access granted to IP: ${ip}`);
+    // ✅ If IP matches, do nothing – let the request continue
+    // (no return = proceed to the static file)
   }
 
-  return NextResponse.next();
+  // For all other routes, also do nothing – let them through
 }
 
 export const config = {
