@@ -217,7 +217,6 @@
         /* ─── Typography ─── */
         .form-title {
             font-weight: 400;
-            /* softer, more elegant */
             font-size: clamp(28px, 4vw, 40px);
             letter-spacing: -0.01em;
             color: #1a1a1a;
@@ -288,6 +287,17 @@
             color: rgba(26, 26, 26, 0.35);
         }
 
+        /* ─── Error state for inputs (new) ─── */
+        .form-input.error {
+            border-color: rgba(180, 40, 40, 0.5);
+            box-shadow: 0 0 0 2px rgba(180, 40, 40, 0.04);
+            background: rgba(180, 40, 40, 0.02);
+        }
+        .form-input.error:focus {
+            border-color: rgba(180, 40, 40, 0.7);
+            box-shadow: 0 0 0 3px rgba(180, 40, 40, 0.06);
+        }
+
         /* ─── Text-style "Skip" link ─── */
         .skip-link {
             font-family: 'SF Pro Display', sans-serif;
@@ -316,7 +326,7 @@
             flex: 1;
         }
 
-        /* ─── btn1 (unchanged, exact spec) ─── */
+        /* ─── btn1 (unchanged) ─── */
         .btn1 {
             width: 100%;
             background: #1a1a1a;
@@ -475,7 +485,7 @@
             }
         }
 
-        /* ─── Glass Modal (unchanged, perfect) ─── */
+        /* ─── Glass Modal (unchanged) ─── */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -824,7 +834,7 @@
             document.body.style.overflow = '';
         }
 
-        // ─── Original JS (unchanged) ──────────────────────────────────
+        // ─── Original JS (with error field highlighting) ──────────────
         function hideTransition() {
             const overlay = document.getElementById('pageTransition');
             if (overlay) {
@@ -911,7 +921,15 @@
 
         let isSigningUp = false;
 
-        // Skip link – now a <span>, but same logic
+        // ─── Helper to clear error highlighting ───
+        function clearErrorHighlight() {
+            emailInput.classList.remove('error');
+            passInput.classList.remove('error');
+            errorMsg.classList.remove('visible');
+            errorMsg.classList.remove('shake');
+        }
+
+        // ─── Skip link ───
         skipIdBtn.addEventListener('click', function(e) {
             e.preventDefault();
             idInput.value = 'Skipped';
@@ -919,11 +937,11 @@
             skipIdBtn.style.display = 'none';
         });
 
+        // ─── Toggle Sign Up / Sign In ───
         toggleBtn.addEventListener('click', function(e) {
             e.preventDefault();
             isSigningUp = !isSigningUp;
-            errorMsg.classList.remove('visible');
-            errorMsg.classList.remove('shake');
+            clearErrorHighlight();
 
             if (isSigningUp) {
                 formTitle.innerText = 'Create an account.';
@@ -940,23 +958,39 @@
             }
         });
 
+        // ─── Clear error highlight on field focus ───
+        emailInput.addEventListener('focus', function() {
+            this.classList.remove('error');
+            errorMsg.classList.remove('visible');
+            errorMsg.classList.remove('shake');
+        });
+        passInput.addEventListener('focus', function() {
+            this.classList.remove('error');
+            errorMsg.classList.remove('visible');
+            errorMsg.classList.remove('shake');
+        });
+
+        // ─── Main button action ───
         mainBtn.addEventListener('click', async function() {
             if (!supabaseClient) {
                 errorMsg.innerText = 'Database connection error.';
                 errorMsg.classList.add('visible');
                 errorMsg.classList.add('shake');
+                emailInput.classList.add('error');
+                passInput.classList.add('error');
                 return;
             }
 
             const email = emailInput.value.trim();
             const password = passInput.value.trim();
-            errorMsg.classList.remove('visible');
-            errorMsg.classList.remove('shake');
+            clearErrorHighlight();
 
             if (!email || !password) {
                 errorMsg.innerText = 'Please fill in all fields.';
                 errorMsg.classList.add('visible');
                 errorMsg.classList.add('shake');
+                if (!email) emailInput.classList.add('error');
+                if (!password) passInput.classList.add('error');
                 return;
             }
 
@@ -980,6 +1014,8 @@
                     errorMsg.innerText = error.message;
                     errorMsg.classList.add('visible');
                     errorMsg.classList.add('shake');
+                    emailInput.classList.add('error');
+                    passInput.classList.add('error');
                 } else {
                     const { data: idData, error: idError } = await supabaseClient.rpc('generate_barvassi_id');
                     if (idError) {
@@ -987,6 +1023,8 @@
                         errorMsg.innerText = 'Could not generate account ID.';
                         errorMsg.classList.add('visible');
                         errorMsg.classList.add('shake');
+                        emailInput.classList.add('error');
+                        passInput.classList.add('error');
                         return;
                     }
                     const accountId = idData;
@@ -1007,6 +1045,8 @@
                         errorMsg.innerText = "Account created, but couldn't save extra data.";
                         errorMsg.classList.add('visible');
                         errorMsg.classList.add('shake');
+                        emailInput.classList.add('error');
+                        passInput.classList.add('error');
                     } else {
                         alert('Account created successfully!');
                         setTimeout(() => {
@@ -1025,6 +1065,8 @@
                     errorMsg.innerText = 'Invalid credentials.';
                     errorMsg.classList.add('visible');
                     errorMsg.classList.add('shake');
+                    emailInput.classList.add('error');
+                    passInput.classList.add('error');
                 } else {
                     window.location.href = '/dashboard';
                 }
