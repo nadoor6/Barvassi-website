@@ -740,23 +740,25 @@
 
         /* ─── Glass Modal (sleek, notification-style animation) ─── */
         .modal-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 10000;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            opacity: 0;
-            transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .modal-overlay.active {
-            display: flex;
-            opacity: 1;
-        }
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0.5s;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    display: flex;
+}
+.modal-overlay.active {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0s;
+}
         .modal-box {
             background: rgba(16,16,16,0.85);
             backdrop-filter: blur(28px);
