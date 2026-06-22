@@ -281,11 +281,9 @@
             background: transparent; color: #f2f2f2;
         }
         .cropper-actions button:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.02); }
-        /* Cancel button stays as is */
         .cropper-actions .btn1 {
-            /* btn1 styles override; we keep only the specific ones */
-            border: none; /* remove border from the generic rule */
-            margin-top: 0; /* override the 8px margin from btn1 */
+            border: none;
+            margin-top: 0;
         }
 
         @media (max-width: 600px) {
@@ -640,7 +638,7 @@
         resetTimer();
 
         // ================================================================
-        // ===== CROPPER LOGIC (with btn1 loading state) =====
+        // ===== CROPPER LOGIC (fixed loading state) =====
         // ================================================================
 
         let cropX = 0,
@@ -767,17 +765,16 @@
             selectedFile = null;
         });
 
-        // ---- CROPPER DONE with btn1 loading state ----
+        // ---- CROPPER DONE with proper loading state ----
         cropperDone.addEventListener('click', async function() {
             if (!selectedFile || !currentUser) return;
 
-            // Add loading state
+            // Show loading state immediately
             this.classList.add('loading');
             this.disabled = true;
 
             try {
                 const img = cropperImage;
-
                 if (!img || !img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) {
                     showNotification('Image not loaded properly. Try again.', 'error');
                     return;
@@ -796,7 +793,6 @@
                 const scaleX = naturalWidth / displayWidth;
                 const scaleY = naturalHeight / displayHeight;
                 const naturalCropSize = circleSize * ((scaleX + scaleY) / 2);
-
                 if (naturalCropSize <= 0) {
                     showNotification('Calculated crop size is invalid.', 'error');
                     return;
@@ -825,49 +821,53 @@
                     finalSize, finalSize
                 );
 
-                canvas.toBlob(async (blob) => {
-                    if (!blob) {
-                        showNotification('Failed to process image (Empty blob).', 'error');
-                        return;
-                    }
+                // Convert canvas to blob with a Promise so we can await it
+                const blob = await new Promise((resolve) => {
+                    canvas.toBlob(resolve, 'image/png');
+                });
 
-                    const fileName = `${currentUser.id}.png`;
-                    const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(fileName, blob, {
-                        upsert: true,
-                        contentType: 'image/png'
-                    });
+                if (!blob) {
+                    showNotification('Failed to process image (Empty blob).', 'error');
+                    return;
+                }
 
-                    if (uploadError) {
-                        console.error('❌ Upload error:', uploadError);
-                        showNotification('Failed to upload avatar.', 'error');
-                        return;
-                    }
+                const fileName = `${currentUser.id}.png`;
+                const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(fileName, blob, {
+                    upsert: true,
+                    contentType: 'image/png'
+                });
 
-                    const publicUrlData = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
-                    const publicUrl = publicUrlData.data.publicUrl;
-                    const uploadTimestamp = Date.now();
-                    localStorage.setItem('barvassi_avatar_timestamp', uploadTimestamp);
+                if (uploadError) {
+                    console.error('❌ Upload error:', uploadError);
+                    showNotification('Failed to upload avatar.', 'error');
+                    return;
+                }
 
-                    const { error: updateError } = await supabaseClient.from('clients').update({ avatar_url: publicUrl })
-                        .eq('id', currentUser.id);
+                const publicUrlData = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
+                const publicUrl = publicUrlData.data.publicUrl;
+                const uploadTimestamp = Date.now();
+                localStorage.setItem('barvassi_avatar_timestamp', uploadTimestamp);
 
-                    if (updateError) {
-                        console.error('❌ Update error:', updateError);
-                        showNotification('Failed to save avatar URL.', 'error');
-                        return;
-                    }
+                const { error: updateError } = await supabaseClient.from('clients').update({ avatar_url: publicUrl })
+                    .eq('id', currentUser.id);
 
-                    userProfile.avatar_url = publicUrl;
-                    renderProfile();
-                    cropperModal.classList.remove('open');
-                    showNotification('Avatar updated!');
-                    selectedFile = null;
-                }, 'image/png');
+                if (updateError) {
+                    console.error('❌ Update error:', updateError);
+                    showNotification('Failed to save avatar URL.', 'error');
+                    return;
+                }
+
+                userProfile.avatar_url = publicUrl;
+                renderProfile();
+                cropperModal.classList.remove('open');
+                showNotification('Avatar updated!');
+                selectedFile = null;
+
             } catch (err) {
                 console.error('Cropper error:', err);
                 showNotification('An error occurred.', 'error');
             } finally {
-                // Remove loading state
+                // Remove loading state and re-enable button
                 this.classList.remove('loading');
                 this.disabled = false;
             }
