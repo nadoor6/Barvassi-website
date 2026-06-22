@@ -11,7 +11,6 @@
     <script src="loginBG.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* ... (all CSS remains the same as your original) ... */
         * {
             margin: 0;
             padding: 0;
@@ -27,13 +26,26 @@
             overflow: hidden;
         }
 
+        /* ─── Page Transition Overlay ─── */
+        .page-transition {
+            position: fixed;
+            inset: 0;
+            background: #0c0c0c;
+            z-index: 9999;
+            opacity: 1;
+            pointer-events: none;
+            transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .page-transition.hidden {
+            opacity: 0;
+        }
+
         .split-screen {
             display: none;
             flex-direction: row;
             height: 100vh;
             width: 100vw;
         }
-
         .split-screen.visible {
             display: flex;
         }
@@ -45,7 +57,7 @@
             width: 100%;
             height: 100%;
             background: #0c0c0c;
-            z-index: 9999;
+            z-index: 9998;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -56,7 +68,7 @@
         .loading-spinner {
             width: 30px;
             height: 30px;
-            border: 2px solid rgba(255,255,255,0.1);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-top-color: #fafafa;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
@@ -72,7 +84,6 @@
             background-size: cover;
             background-position: center;
         }
-
         .overlay {
             position: absolute;
             top: 0;
@@ -83,7 +94,6 @@
             z-index: 1;
             pointer-events: none;
         }
-
         .left-content {
             position: relative;
             z-index: 2;
@@ -94,7 +104,6 @@
             height: 100%;
             padding: 40px;
         }
-
         .left-logo {
             max-width: 45%;
             max-height: 120px;
@@ -103,7 +112,6 @@
             object-fit: contain;
             opacity: 0.9;
         }
-
         .left-logo-fallback {
             display: none;
             font-family: 'SF Pro Display', -apple-system, sans-serif;
@@ -124,13 +132,11 @@
             padding: 40px 32px;
             position: relative;
         }
-
         .form-container {
             width: 100%;
             max-width: 280px;
             text-align: left;
         }
-
         .form-title {
             font-weight: 500;
             font-size: clamp(28px, 4vw, 40px);
@@ -139,18 +145,15 @@
             line-height: 1.1;
             margin-bottom: 4px;
         }
-
         .form-sub {
             font-weight: 300;
             font-size: 14px;
             color: rgba(26, 26, 26, 0.4);
             margin-bottom: 32px;
         }
-
         .form-group {
             margin-bottom: 16px;
         }
-
         .form-label {
             display: block;
             font-weight: 500;
@@ -160,7 +163,6 @@
             color: rgba(26, 26, 26, 0.5);
             margin-bottom: 6px;
         }
-
         .form-input {
             width: 100%;
             background: rgba(26, 26, 26, 0.04);
@@ -174,7 +176,6 @@
             outline: none;
             transition: all 0.5s ease;
         }
-
         .form-input:focus {
             border-color: rgba(26, 26, 26, 0.2);
             background: rgba(26, 26, 26, 0.06);
@@ -200,30 +201,24 @@
             align-items: center;
             position: relative;
         }
-
         .btn1:hover {
             background: #2a2a2a;
             transform: scale(1.02);
         }
-
         .btn1:active {
             transform: scale(0.96);
         }
-
         .btn1.loading {
             pointer-events: none;
             background: #2a2a2a;
             transform: scale(1);
         }
-
         .btn1 .btn-text {
             transition: opacity 0.4s ease;
         }
-
         .btn1.loading .btn-text {
             opacity: 0;
         }
-
         .btn1 .spinner {
             position: absolute;
             top: 50%;
@@ -234,16 +229,13 @@
             width: 22px;
             height: 22px;
         }
-
         .btn1.loading .spinner {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
         }
-
         .spinner svg {
             animation: spin 0.9s linear infinite;
         }
-
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -258,7 +250,6 @@
             opacity: 0;
             transition: opacity 0.5s;
         }
-
         .error-msg.visible {
             opacity: 1;
         }
@@ -272,7 +263,6 @@
             cursor: pointer;
             transition: color 0.3s;
         }
-
         .toggle-text:hover {
             color: rgba(26, 26, 26, 0.7);
         }
@@ -292,24 +282,23 @@
             white-space: nowrap;
             font-family: 'SF Pro Display', sans-serif;
         }
-
         .skip-btn:hover {
             border-color: rgba(26, 26, 26, 0.3);
             color: #1a1a1a;
         }
 
         .copyright-footer {
-    font-weight: 300;
-    font-size: 9px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: rgba(26, 26, 26, 0.15);
-    text-align: center;
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid rgba(26, 26, 26, 0.04);
-    width: 100%;
-}
+            font-weight: 300;
+            font-size: 9px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(26, 26, 26, 0.15);
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(26, 26, 26, 0.04);
+            width: 100%;
+        }
 
         @media (max-width: 900px) {
             .split-screen {
@@ -334,6 +323,10 @@
 </head>
 
 <body>
+
+    <!-- ─── Page Transition Overlay ─── -->
+    <div class="page-transition" id="pageTransition"></div>
+
     <!-- Loading overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
@@ -394,14 +387,22 @@
                 <div class="toggle-text" id="toggleBtn">Don't have an account? Sign Up</div>
                 <div class="copyright-footer">© 2026 Barvassi. All rights reserved.</div>
             </div>
-            
         </div>
     </div>
 
     <script>
         console.log("🚀 Index page loaded");
 
-        // ---- Load Logo from logo.js ----
+        // ─── PAGE TRANSITION ──────────────────────────────────────────
+        function hideTransition() {
+            const overlay = document.getElementById('pageTransition');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                setTimeout(() => overlay.style.display = 'none', 800);
+            }
+        }
+
+        // ─── LOAD LOGO ────────────────────────────────────────────────
         function loadLogo() {
             const logoEl = document.getElementById('leftLogo');
             const fallback = document.getElementById('logoFallback');
@@ -409,27 +410,23 @@
                 logoEl.src = BARVASSI_LOGO;
                 logoEl.style.display = 'block';
                 fallback.style.display = 'none';
-                console.log("✅ Logo loaded from logo.js");
             } else {
-                console.warn("⚠️ BARVASSI_LOGO not found. Using fallback.");
                 logoEl.style.display = 'none';
                 fallback.style.display = 'block';
             }
         }
 
-        // ---- Load Background Image from loginBG.js ----
+        // ─── LOAD BACKGROUND ──────────────────────────────────────────
         function loadBackground() {
             const panel = document.getElementById('leftPanel');
             if (typeof BG === 'string' && BG.startsWith('data:image')) {
                 panel.style.backgroundImage = `url(${BG})`;
-                console.log("✅ Background loaded from loginBG.js");
             } else {
-                console.warn("⚠️ BG not found, using fallback background image.");
                 panel.style.backgroundImage = "url('abstract-dark-8k-ua.jpg')";
             }
         }
 
-        // ---- Supabase client ----
+        // ─── SUPABASE CLIENT ──────────────────────────────────────────
         let supabaseClient = null;
         try {
             if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
@@ -440,7 +437,6 @@
                         persistSession: true,
                     }
                 });
-                console.log("✅ Supabase Client Created");
             } else {
                 console.error("❌ Keys are missing!");
             }
@@ -448,7 +444,7 @@
             console.error('❌ Supabase init error:', e);
         }
 
-        // ---- Check session and redirect if logged in ----
+        // ─── SESSION CHECK ────────────────────────────────────────────
         async function checkSessionAndRedirect() {
             if (!supabaseClient) return;
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -458,7 +454,6 @@
                 return;
             }
 
-            // If no session immediately, wait a short moment (200ms) for async restore
             console.log("⏳ No immediate session, waiting 200ms for possible restore...");
             await new Promise(resolve => setTimeout(resolve, 200));
             const { data: { session: session2 } } = await supabaseClient.auth.getSession();
@@ -469,10 +464,12 @@
                 console.log("🚫 No session, showing login form.");
                 document.getElementById('splitScreen').classList.add('visible');
                 document.getElementById('loadingOverlay').classList.add('hidden');
+                // Fade out transition overlay
+                hideTransition();
             }
         }
 
-        // ---- DOM refs and logic ----
+        // ─── DOM REFS ──────────────────────────────────────────────────
         const mainBtn = document.getElementById('mainBtn');
         const btnText = document.getElementById('btnText');
         const signupFields = document.getElementById('signupFields');
@@ -544,9 +541,7 @@
                     email: email,
                     password: password,
                     options: {
-                        data: {
-                            full_name: name
-                        }
+                        data: { full_name: name }
                     }
                 });
                 this.classList.remove('loading');
@@ -606,11 +601,10 @@
             if (e.key === 'Enter') mainBtn.click();
         });
 
-        // ---- Initialize ----
+        // ─── INIT ──────────────────────────────────────────────────────
         loadLogo();
         loadBackground();
         checkSessionAndRedirect();
     </script>
 </body>
-
 </html>
