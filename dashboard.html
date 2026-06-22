@@ -316,7 +316,6 @@
                 <div class="cropper-circle" id="cropperCircle"></div>
             </div>
 
-            <!-- RESIZE SLIDER -->
             <div class="cropper-resize">
                 <input type="range" id="cropSizeSlider" min="20" max="400" step="1" value="200" />
             </div>
@@ -573,7 +572,7 @@
         resetTimer();
 
         // ================================================================
-        // ===== FIXED CROPPER LOGIC – circle now reaches the image edges =
+        // ===== FIXED CROPPER – uses natural dimensions and wrapper size =
         // ================================================================
 
         let cropX = 0,
@@ -590,50 +589,51 @@
             reader.onload = (e) => {
                 cropperImage.src = e.target.result;
                 cropperImage.onload = () => {
-                    // Use requestAnimationFrame to ensure the browser has laid out the image
+                    // Use requestAnimationFrame to ensure layout is settled
                     requestAnimationFrame(() => {
-                        const imgRect = cropperImage.getBoundingClientRect();
                         const wrapperRect = cropperWrapper.getBoundingClientRect();
 
-                        // --- KEY FIX: use the image's actual rendered size, not the wrapper ---
-                        // The image is displayed with object-fit:contain, so it may be smaller
-                        // than the wrapper. Using the image's rendered dimensions ensures the
-                        // circle can scale to touch the actual image edges.
-                        let imgDisplayWidth = imgRect.width;
-                        let imgDisplayHeight = imgRect.height;
-
-                        // Fallback: if the image hasn't rendered yet, use the wrapper size
-                        if (imgDisplayWidth === 0 || imgDisplayHeight === 0 || !isFinite(imgDisplayWidth) || !isFinite(
-                                imgDisplayHeight)) {
-                            imgDisplayWidth = wrapperRect.width;
-                            imgDisplayHeight = wrapperRect.height;
+                        // Get natural image dimensions
+                        const naturalW = cropperImage.naturalWidth;
+                        const naturalH = cropperImage.naturalHeight;
+                        if (naturalW === 0 || naturalH === 0) {
+                            showNotification('Invalid image dimensions.', 'error');
+                            return;
                         }
 
-                        // Max circle size = the smaller of the image's displayed dimensions
-                        // This makes the circle touch all four edges for square images,
-                        // and touch two opposite edges for rectangular images.
-                        let rawMax = Math.min(imgDisplayWidth, imgDisplayHeight);
+                        // Compute display size under object-fit:contain
+                        const wrapperW = wrapperRect.width;
+                        const wrapperH = wrapperRect.height;
+                        let scale = 1;
+                        if (naturalW / naturalH > wrapperW / wrapperH) {
+                            // Image wider than wrapper: fit by width
+                            scale = wrapperW / naturalW;
+                        } else {
+                            // Image taller than wrapper: fit by height
+                            scale = wrapperH / naturalH;
+                        }
+                        const displayW = naturalW * scale;
+                        const displayH = naturalH * scale;
 
-                        // Sanity check – never let it go below 20px or above a reasonable limit
+                        // Max circle size = smaller of display dimensions
+                        let rawMax = Math.min(displayW, displayH);
+                        // Clamp to reasonable limits
                         if (rawMax < 20) rawMax = 200;
-                        if (rawMax > 800) rawMax = 800; // safety cap
-
+                        if (rawMax > 800) rawMax = 800;
                         maxCircleSize = rawMax;
 
                         // Set slider range
                         cropSizeSlider.min = 20;
                         cropSizeSlider.max = maxCircleSize;
-
-                        // Start the circle at full size (touching the edges)
+                        // Start at max size
                         circleSize = maxCircleSize;
                         cropSizeSlider.value = circleSize;
 
-                        // Apply circle size
+                        // Apply size
                         cropperCircle.style.width = circleSize + 'px';
                         cropperCircle.style.height = circleSize + 'px';
 
-                        // Center the circle on the image (the image is centered in the wrapper via flex)
-                        // We use the wrapper's center because the image is centered inside it.
+                        // Center circle in wrapper (image is centered via flex)
                         cropX = wrapperRect.width / 2;
                         cropY = wrapperRect.height / 2;
 
@@ -650,7 +650,7 @@
             cropperCircle.style.top = cropY + 'px';
         }
 
-        // ===== RESIZE LISTENER =====
+        // ---- Resize ----
         cropSizeSlider.addEventListener('input', (e) => {
             const newSize = parseFloat(e.target.value);
             if (isNaN(newSize) || newSize < 1) return;
@@ -658,7 +658,6 @@
             cropperCircle.style.width = circleSize + 'px';
             cropperCircle.style.height = circleSize + 'px';
 
-            // Constrain the circle position so it doesn't go outside the wrapper
             const rect = cropperWrapper.getBoundingClientRect();
             const half = circleSize / 2;
             cropX = Math.max(half, Math.min(rect.width - half, cropX));
@@ -666,7 +665,7 @@
             updateCirclePosition();
         });
 
-        // ===== DRAG LISTENERS =====
+        // ---- Drag ----
         function startDrag(e) {
             const clientX = e.clientX || e.touches?.[0]?.clientX;
             const clientY = e.clientY || e.touches?.[0]?.clientY;
@@ -712,7 +711,7 @@
             selectedFile = null;
         });
 
-        // ---- CROPPER DONE ----
+        // ---- Done ----
         cropperDone.addEventListener('click', async () => {
             if (!selectedFile || !currentUser) return;
             const img = cropperImage;
@@ -806,7 +805,7 @@
             }, 'image/png');
         });
 
-        // ---- Trigger cropper ----
+        // ---- Trigger ----
         dropAvatar.addEventListener('click', () => avatarInput.click());
         avatarInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
