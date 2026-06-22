@@ -572,7 +572,7 @@
         resetTimer();
 
         // ================================================================
-        // ===== FIXED CROPPER – uses natural dimensions and wrapper size =
+        // ===== CROPPER FIX: max size = min(wrapper width, height) =====
         // ================================================================
 
         let cropX = 0,
@@ -593,30 +593,11 @@
                     requestAnimationFrame(() => {
                         const wrapperRect = cropperWrapper.getBoundingClientRect();
 
-                        // Get natural image dimensions
-                        const naturalW = cropperImage.naturalWidth;
-                        const naturalH = cropperImage.naturalHeight;
-                        if (naturalW === 0 || naturalH === 0) {
-                            showNotification('Invalid image dimensions.', 'error');
-                            return;
-                        }
+                        // --- KEY: max circle size = smallest side of the wrapper ---
+                        // This makes the circle touch the top/bottom or left/right edges
+                        // of the image placeholder (wrapper) at max slider.
+                        let rawMax = Math.min(wrapperRect.width, wrapperRect.height);
 
-                        // Compute display size under object-fit:contain
-                        const wrapperW = wrapperRect.width;
-                        const wrapperH = wrapperRect.height;
-                        let scale = 1;
-                        if (naturalW / naturalH > wrapperW / wrapperH) {
-                            // Image wider than wrapper: fit by width
-                            scale = wrapperW / naturalW;
-                        } else {
-                            // Image taller than wrapper: fit by height
-                            scale = wrapperH / naturalH;
-                        }
-                        const displayW = naturalW * scale;
-                        const displayH = naturalH * scale;
-
-                        // Max circle size = smaller of display dimensions
-                        let rawMax = Math.min(displayW, displayH);
                         // Clamp to reasonable limits
                         if (rawMax < 20) rawMax = 200;
                         if (rawMax > 800) rawMax = 800;
@@ -633,7 +614,7 @@
                         cropperCircle.style.width = circleSize + 'px';
                         cropperCircle.style.height = circleSize + 'px';
 
-                        // Center circle in wrapper (image is centered via flex)
+                        // Center the circle in the wrapper
                         cropX = wrapperRect.width / 2;
                         cropY = wrapperRect.height / 2;
 
