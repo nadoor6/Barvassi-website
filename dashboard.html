@@ -188,7 +188,6 @@
         }
         .cropper-circle:active { cursor: grabbing; }
 
-        /* ===== SLEEK RESIZE SLIDER ===== */
         .cropper-resize {
             width: 100%; max-width: 500px; display: flex; align-items: center; justify-content: center;
             padding: 0 20px; margin-bottom: 8px;
@@ -526,7 +525,7 @@
         resetTimer();
 
         // ================================================================
-        // ===== CROPPER LOGIC (RESIZE + DRAG) =====
+        // ===== CROPPER LOGIC (RESIZE TO THE EXACT EDGES) =====
         // ================================================================
 
         let cropX = 0, cropY = 0;
@@ -541,13 +540,14 @@
                 cropperImage.src = e.target.result;
                 cropperImage.onload = () => {
                     const imgRect = cropperImage.getBoundingClientRect();
-                    let minDim = Math.min(imgRect.width, imgRect.height);
-                    if (minDim === 0) { minDim = 200; }
+                    // Max size equals the smallest side of the image container
+                    let maxSize = Math.min(imgRect.width, imgRect.height);
+                    if (maxSize === 0) { maxSize = 200; }
                     
-                    // Set initial circle size and slider bounds
-                    circleSize = minDim * 0.9;
+                    // Set circle to touch 4 edges (100% of the max size)
+                    circleSize = maxSize; 
                     cropSizeSlider.min = 20;
-                    cropSizeSlider.max = minDim;
+                    cropSizeSlider.max = maxSize;
                     cropSizeSlider.value = circleSize;
 
                     cropperCircle.style.width = circleSize + 'px';
@@ -573,7 +573,6 @@
             cropperCircle.style.width = circleSize + 'px';
             cropperCircle.style.height = circleSize + 'px';
 
-            // Constrain position after resize so the circle doesn't break outside the bounds
             const rect = cropperWrapper.getBoundingClientRect();
             const half = circleSize / 2;
             cropX = Math.max(half, Math.min(rect.width - half, cropX));
