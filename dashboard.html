@@ -29,6 +29,7 @@
         }
         .brand { font-weight: 500; font-size: 20px; letter-spacing: 0.1em; display: flex; align-items: center; gap: 12px; }
         .brand img { height: 28px; width: auto; }
+        .brand-text-fallback { display: none; font-weight: 500; font-size: 20px; color: #f2f2f2; letter-spacing: 0.1em; }
         .top-right { display: flex; align-items: center; gap: 20px; }
         .avatar-btn {
             width: 44px; height: 44px; border-radius: 50%;
@@ -165,8 +166,9 @@
     <div class="dashboard-container">
         <header class="top-bar">
             <div class="brand">
-                <!-- PLACEHOLDER: Replace src="logo.png" with your Base64 string later -->
-                <img src="logoBase64.txt" alt="Barvassi" />
+                <!-- Auto-loaded from logoBase64.txt -->
+                <img id="brandLogo" src="logo.png" alt="Barvassi" onerror="this.style.display='none'; document.getElementById('brandTextFallback').style.display='block';" />
+                <span id="brandTextFallback" class="brand-text-fallback">Barvassi</span>
                 <span style="font-weight:300; font-size:14px; opacity:0.4;">· The Vault</span>
             </div>
             <div class="top-right">
@@ -245,6 +247,26 @@
                 console.log("✅ Supabase Client Created");
             } else { console.error("❌ Keys are missing!"); }
         } catch (e) { console.error('❌ Supabase init error:', e); }
+
+        // ===== DYNAMIC LOGO LOADER (Reads your text file) =====
+        async function loadBrandLogo() {
+            try {
+                const response = await fetch('logoBase64.txt');
+                if (response.ok) {
+                    const base64String = await response.text();
+                    const cleanBase64 = base64String.trim(); // Remove any accidental white spaces
+                    document.getElementById('brandLogo').src = cleanBase64;
+                } else {
+                    console.warn("logoBase64.txt not found, using fallback text.");
+                    document.getElementById('brandLogo').style.display = 'none';
+                    document.getElementById('brandTextFallback').style.display = 'block';
+                }
+            } catch (e) {
+                console.warn("Error fetching logoBase64.txt. Using fallback text.");
+                document.getElementById('brandLogo').style.display = 'none';
+                document.getElementById('brandTextFallback').style.display = 'block';
+            }
+        }
 
         // ===== NOTIFICATION SYSTEM =====
         const toast = document.getElementById('toast');
@@ -388,7 +410,9 @@
         let inactivityTimer; function resetTimer() { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { showNotification('Session expired. Logging out...'); setTimeout(() => { supabaseClient.auth.signOut(); window.location.href = 'index.html'; }, 1500); }, 3600000); }
         document.addEventListener('mousemove', resetTimer); document.addEventListener('mousedown', resetTimer); document.addEventListener('keypress', resetTimer); resetTimer();
 
-        loadProfile();
+        // ===== START THE APP =====
+        loadProfile();      // Load the user data
+        loadBrandLogo();    // Load your logo from logoBase64.txt
     </script>
 </body>
 </html>
