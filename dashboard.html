@@ -170,15 +170,17 @@
             display: flex; justify-content: center; align-items: center;
             touch-action: none;
         }
+        /* ===== FIX: Disable pointer-events on the image so it cannot be dragged ===== */
         .cropper-image-wrapper img {
             max-width: 100%; max-height: 60vh; object-fit: contain;
             display: block; user-select: none; -webkit-user-drag: none;
+            pointer-events: none;
         }
         .cropper-circle {
             position: absolute;
             border: 2px solid rgba(255,255,255,0.8);
             border-radius: 50%;
-            pointer-events: none;
+            pointer-events: auto;   /* Ensure circle itself can be grabbed */
             box-shadow: 0 0 0 9999px rgba(0,0,0,0.6);
             width: 160px; height: 160px;
             transform: translate(-50%, -50%);
@@ -210,7 +212,7 @@
             .brand-text-fallback { font-size: 18px; }
             .avatar-btn { width: 40px; height: 40px; }
             .cropper-container { padding: 20px; }
-            .cropper-circle { width: 120px; height: 120px; }
+            .cropper-circle { width: 120px; height: 120px; } /* This will be overridden by JS anyway */
         }
     </style>
 </head>
@@ -493,7 +495,7 @@
         resetTimer();
 
         // ================================================================
-        // ===== CROPPER LOGIC (BULLETPROOFED) =====
+        // ===== CROPPER LOGIC (MASSIVE CIRCLE + LOCKED IMAGE) =====
         // ================================================================
 
         let cropX = 0, cropY = 0;
@@ -508,8 +510,10 @@
                 cropperImage.src = e.target.result;
                 cropperImage.onload = () => {
                     const rect = cropperWrapper.getBoundingClientRect();
+                    // ===== FIX: Large circle that nearly fills the container (90% of the smallest side) =====
                     const minDim = Math.min(rect.width, rect.height);
-                    circleSize = Math.min(160, Math.max(40, minDim * 0.6));
+                    circleSize = minDim * 0.9; 
+                    
                     cropperCircle.style.width = circleSize + 'px';
                     cropperCircle.style.height = circleSize + 'px';
                     cropX = rect.width / 2;
@@ -569,7 +573,7 @@
             selectedFile = null;
         });
 
-        // ---- CROPPER DONE (FIXED SAFETY CHECKS) ----
+        // ---- CROPPER DONE (BULLETPROOF) ----
         cropperDone.addEventListener('click', async () => {
             if (!selectedFile || !currentUser) return;
             const img = cropperImage;
@@ -585,16 +589,14 @@
             const displayWidth = img.clientWidth;
             const displayHeight = img.clientHeight;
 
-            // Prevent division by zero if display dimensions are 0
             if (displayWidth === 0 || displayHeight === 0) {
                 showNotification('Display size error. Try refreshing.', 'error');
                 return;
             }
 
-            // Calculate scale accurately
             const scaleX = naturalWidth / displayWidth;
             const scaleY = naturalHeight / displayHeight;
-            const naturalCropSize = circleSize * ((scaleX + scaleY) / 2); // Average scale
+            const naturalCropSize = circleSize * ((scaleX + scaleY) / 2);
 
             if (naturalCropSize <= 0) {
                 showNotification('Calculated crop size is invalid.', 'error');
