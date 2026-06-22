@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +8,12 @@
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'SF Pro Display', -apple-system, sans-serif;
             background: #0c0c0c;
@@ -18,25 +24,29 @@
             justify-content: center;
             align-items: flex-start;
         }
+        
         .container {
             max-width: 720px;
             width: 100%;
             margin: 0 auto;
             padding: 20px;
         }
+        
         .brand-link {
             display: inline-block;
             font-size: 14px;
             letter-spacing: 0.12em;
             text-transform: uppercase;
-            color: rgba(255,255,255,0.3);
+            color: rgba(255, 255, 255, 0.3);
             text-decoration: none;
             margin-bottom: 32px;
             transition: color 0.3s;
         }
+        
         .brand-link:hover {
-            color: rgba(255,255,255,0.6);
+            color: rgba(255, 255, 255, 0.6);
         }
+        
         h1 {
             font-weight: 400;
             font-size: 28px;
@@ -44,63 +54,81 @@
             margin-bottom: 8px;
             color: #f2f2f2;
         }
+        
         .sub {
             font-weight: 300;
             font-size: 13px;
-            color: rgba(255,255,255,0.3);
+            color: rgba(255, 255, 255, 0.3);
             margin-bottom: 32px;
             letter-spacing: 0.02em;
         }
+        
         h2 {
             font-weight: 400;
             font-size: 18px;
             letter-spacing: 0.04em;
             margin-top: 28px;
             margin-bottom: 12px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
         }
-        p, li {
+        
+        p,
+        li {
             font-weight: 300;
             font-size: 14px;
             line-height: 1.7;
-            color: rgba(255,255,255,0.6);
+            color: rgba(255, 255, 255, 0.6);
             margin-bottom: 12px;
         }
+        
         ul {
             padding-left: 20px;
             margin-bottom: 16px;
         }
+        
         li {
             margin-bottom: 6px;
         }
+        
         hr {
             border: none;
-            border-top: 1px solid rgba(255,255,255,0.04);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
             margin: 32px 0;
         }
+        
         .footer-note {
             font-size: 12px;
-            color: rgba(255,255,255,0.15);
+            color: rgba(255, 255, 255, 0.15);
             text-align: center;
             margin-top: 40px;
             letter-spacing: 0.05em;
         }
+        
         .footer-note a {
-            color: rgba(255,255,255,0.2);
+            color: rgba(255, 255, 255, 0.2);
             text-decoration: none;
             margin: 0 8px;
             transition: color 0.3s;
         }
+        
         .footer-note a:hover {
-            color: rgba(255,255,255,0.4);
+            color: rgba(255, 255, 255, 0.4);
         }
+        
         @media (max-width: 600px) {
-            body { padding: 20px 12px; }
-            .container { padding: 0; }
-            h1 { font-size: 24px; }
+            body {
+                padding: 20px 12px;
+            }
+            .container {
+                padding: 0;
+            }
+            h1 {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <a href="/" class="brand-link">← Barvassi</a>
@@ -157,7 +185,7 @@
             <li>Request deletion of your account and associated data.</li>
             <li>Withdraw consent for data processing.</li>
         </ul>
-        <p>To exercise these rights, contact us at: <strong>privacy@barvassi.com</strong></p>
+        <p>To exercise these rights, contact us at: <strong>contact@barvassi.com</strong></p>
 
         <h2>6. Data Retention</h2>
         <p>We retain your data as long as your account is active. If you delete your account, we will remove your personal information within 30 days, except where retention is required by law.</p>
@@ -169,17 +197,15 @@
         <p>We may update this policy periodically. We will notify you of significant changes via email or through a notice on the platform.</p>
 
         <h2>9. Contact</h2>
-        <p><strong>Barvassi</strong><br />
-        Founded by Nader, Aleppo<br />
-        Email: <strong>privacy@barvassi.com</strong></p>
+        <p><strong>Barvassi</strong><br /> Founded by Nader, Aleppo<br /> Email: <strong>contact@barvassi.com</strong></p>
 
         <hr />
 
         <div class="footer-note">
             <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a>
-            <br />
-            © 2026 Barvassi. All rights reserved.
+            <br /> © 2026 Barvassi. All rights reserved.
         </div>
     </div>
 </body>
+
 </html>
