@@ -56,7 +56,10 @@
             z-index: 1;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 24px 32px 80px;
+            padding: 24px 32px 60px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         /* ── Top Bar ── */
@@ -122,6 +125,7 @@
         .main-content {
             margin-top: 32px;
             text-align: center;
+            flex-shrink: 0;
         }
         .main-content h2 {
             font-weight: 400;
@@ -698,7 +702,7 @@
             overflow: hidden !important;
         }
 
-        /* ── Copyright Footer ── */
+        /* ── Copyright Footer (fixed) ── */
         .copyright-footer {
             position: fixed;
             bottom: 24px;
@@ -714,13 +718,14 @@
             z-index: 5;
         }
 
-        /* ── Footer Links ── */
+        /* ── Footer Links (pushed to bottom) ── */
         .footer-links {
-            margin-top: 40px;
+            margin-top: auto;
             text-align: center;
             font-size: 9px;
             letter-spacing: 0.1em;
             color: rgba(255,255,255,0.10);
+            padding-bottom: 20px;
         }
         .footer-links a {
             color: inherit;
@@ -733,7 +738,7 @@
             color: rgba(255,255,255,0.25);
         }
 
-        /* ─── Glass Modal (same as index) ─── */
+        /* ─── Glass Modal ─── */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -848,7 +853,7 @@
 
         /* ── Responsive ── */
         @media (max-width: 600px) {
-            .dashboard-container { padding: 16px 16px 80px; }
+            .dashboard-container { padding: 16px 16px 60px; }
             .top-bar { flex-wrap: wrap; gap: 12px; }
             .brand { font-size: 18px; }
             .brand img { height: 24px; }
@@ -889,7 +894,7 @@
             }
             .stat-card { padding: 12px 8px; }
             .stat-value { font-size: 14px; }
-            .footer-links { margin-top: 30px; }
+            .footer-links { padding-bottom: 12px; }
         }
     </style>
 </head>
@@ -1025,14 +1030,14 @@
             </div>
         </div>
 
-        <!-- Footer Links (above copyright) -->
+        <!-- Footer Links (pushed to bottom) -->
         <div class="footer-links">
             <a onclick="openModal('privacy')">Privacy</a>
             <span style="opacity:0.2;">·</span>
             <a onclick="openModal('terms')">Terms</a>
         </div>
 
-        <!-- Copyright -->
+        <!-- Copyright (fixed) -->
         <div class="copyright-footer">© 2026 Barvassi. All rights reserved.</div>
     </div>
 
@@ -1178,6 +1183,12 @@
             modalOverlay.classList.remove('active');
             document.body.style.overflow = '';
         }
+
+        // ─── (rest of your existing JavaScript – unchanged) ───
+        // [All your existing Supabase client, logo, notification, DOM refs, 
+        // loadProfile, renderProfile, dropdown, phone edit, verify/upgrade, 
+        // logout, inactivity timer, cropper logic, particles, transition, 
+        // and initialization code remains exactly as before]
 
         // ─── Supabase Client ────────────────────────────────────────────
         let supabaseClient = null;
