@@ -511,7 +511,7 @@
             console.log("⏳ Checking session...");
             const authResponse = await supabaseClient.auth.getSession();
             const session = authResponse.data.session;
-            if (!session) { console.log("🚫 No session, redirecting."); window.location.href = 'index.html'; return; }
+            if (!session) { console.log("🚫 No session, redirecting."); window.location.href = '/'; return; }
             currentUser = session.user;
             console.log("✅ User ID:", currentUser.id);
 
@@ -638,11 +638,11 @@
         });
 
         // ---- Logout ----
-        logoutBtn.addEventListener('click', async () => { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; });
+        logoutBtn.addEventListener('click', async () => { await supabaseClient.auth.signOut(); window.location.href = '/'; });
 
         // ---- Inactivity ----
         let inactivityTimer;
-        function resetTimer() { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { showNotification('Session expired. Logging out...'); setTimeout(() => { supabaseClient.auth.signOut(); window.location.href = 'index.html'; }, 1500); }, 3600000); }
+        function resetTimer() { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { showNotification('Session expired. Logging out...'); setTimeout(() => { supabaseClient.auth.signOut(); window.location.href = '/'; }, 1500); }, 3600000); }
         document.addEventListener('mousemove', resetTimer);
         document.addEventListener('mousedown', resetTimer);
         document.addEventListener('keypress', resetTimer);
