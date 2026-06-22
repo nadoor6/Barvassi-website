@@ -187,6 +187,32 @@
             touch-action: none;
         }
         .cropper-circle:active { cursor: grabbing; }
+
+        /* ===== SLEEK RESIZE SLIDER ===== */
+        .cropper-resize {
+            width: 100%; max-width: 500px; display: flex; align-items: center; justify-content: center;
+            padding: 0 20px; margin-bottom: 8px;
+        }
+        .cropper-resize input[type="range"] {
+            -webkit-appearance: none; appearance: none;
+            width: 100%; height: 2px; background: rgba(255,255,255,0.2);
+            border-radius: 2px; outline: none; transition: background 0.3s;
+            cursor: pointer; touch-action: none;
+        }
+        .cropper-resize input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 14px; height: 14px; border-radius: 50%;
+            background: #f2f2f2; border: 2px solid #1a1a1a;
+            cursor: pointer; box-shadow: 0 0 15px rgba(0,0,0,0.8);
+            transition: transform 0.2s;
+        }
+        .cropper-resize input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
+        .cropper-resize input[type="range"]::-moz-range-thumb {
+            width: 14px; height: 14px; border-radius: 50%;
+            background: #f2f2f2; border: 2px solid #1a1a1a;
+            cursor: pointer; box-shadow: 0 0 15px rgba(0,0,0,0.8);
+        }
+
         .cropper-actions {
             display: flex; gap: 16px; width: 100%; max-width: 500px;
         }
@@ -211,7 +237,6 @@
             .brand-text-fallback { font-size: 18px; }
             .avatar-btn { width: 40px; height: 40px; }
             .cropper-container { padding: 20px; }
-            .cropper-circle { width: 120px; height: 120px; }
         }
     </style>
 </head>
@@ -290,6 +315,12 @@
                 <img id="cropperImage" src="" alt="Crop" />
                 <div class="cropper-circle" id="cropperCircle"></div>
             </div>
+            
+            <!-- ===== RESIZE SLIDER ===== -->
+            <div class="cropper-resize">
+                <input type="range" id="cropSizeSlider" min="20" max="400" step="1" value="200" />
+            </div>
+
             <div class="cropper-actions">
                 <button id="cropperCancel">Cancel</button>
                 <button class="done-btn" id="cropperDone">Done</button>
@@ -375,6 +406,7 @@
         const cropperWrapper = document.getElementById('cropperWrapper');
         const cropperCancel = document.getElementById('cropperCancel');
         const cropperDone = document.getElementById('cropperDone');
+        const cropSizeSlider = document.getElementById('cropSizeSlider');
 
         let currentUser = null;
         let userProfile = null;
@@ -494,7 +526,7 @@
         resetTimer();
 
         // ================================================================
-        // ===== CROPPER LOGIC (FIXED CALCULATION) =====
+        // ===== CROPPER LOGIC (RESIZE + DRAG) =====
         // ================================================================
 
         let cropX = 0, cropY = 0;
@@ -508,16 +540,16 @@
             reader.onload = (e) => {
                 cropperImage.src = e.target.result;
                 cropperImage.onload = () => {
-                    // ✅ FIX 1: Use the IMAGE's dimensions (not the wrapper). Much more reliable.
                     const imgRect = cropperImage.getBoundingClientRect();
                     let minDim = Math.min(imgRect.width, imgRect.height);
-
-                    // ✅ FIX 2: Absolute fallback if browser computed dimensions are 0
-                    if (minDim === 0) {
-                        minDim = 200; // Safe default size
-                    }
-
+                    if (minDim === 0) { minDim = 200; }
+                    
+                    // Set initial circle size and slider bounds
                     circleSize = minDim * 0.9;
+                    cropSizeSlider.min = 20;
+                    cropSizeSlider.max = minDim;
+                    cropSizeSlider.value = circleSize;
+
                     cropperCircle.style.width = circleSize + 'px';
                     cropperCircle.style.height = circleSize + 'px';
                     cropX = imgRect.width / 2;
@@ -534,6 +566,22 @@
             cropperCircle.style.top = cropY + 'px';
         }
 
+        // ===== RESIZE LISTENER =====
+        cropSizeSlider.addEventListener('input', (e) => {
+            const newSize = parseInt(e.target.value, 10);
+            circleSize = newSize;
+            cropperCircle.style.width = circleSize + 'px';
+            cropperCircle.style.height = circleSize + 'px';
+
+            // Constrain position after resize so the circle doesn't break outside the bounds
+            const rect = cropperWrapper.getBoundingClientRect();
+            const half = circleSize / 2;
+            cropX = Math.max(half, Math.min(rect.width - half, cropX));
+            cropY = Math.max(half, Math.min(rect.height - half, cropY));
+            updateCirclePosition();
+        });
+
+        // ===== DRAG LISTENERS =====
         function startDrag(e) {
             const clientX = e.clientX || e.touches?.[0]?.clientX;
             const clientY = e.clientY || e.touches?.[0]?.clientY;
@@ -577,7 +625,7 @@
             selectedFile = null;
         });
 
-        // ---- CROPPER DONE (BULLETPROOF) ----
+        // ---- CROPPER DONE ----
         cropperDone.addEventListener('click', async () => {
             if (!selectedFile || !currentUser) return;
             const img = cropperImage;
