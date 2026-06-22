@@ -430,13 +430,25 @@
 
     <script>
         console.log("✅ Dashboard Script Loaded");
+
+        // Initialize Supabase client with explicit localStorage for session persistence
         let supabaseClient = null;
         try {
             if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
-                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log("✅ Supabase Client Created");
-            } else { console.error("❌ Keys are missing!"); }
-        } catch (e) { console.error('❌ Supabase init error:', e); }
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: {
+                        storage: localStorage,
+                        autoRefreshToken: true,
+                        persistSession: true,
+                    }
+                });
+                console.log("✅ Supabase Client Created with localStorage persistence");
+            } else {
+                console.error("❌ Keys are missing!");
+            }
+        } catch (e) {
+            console.error('❌ Supabase init error:', e);
+        }
 
         // ---- LOGO ----
         function loadBrandLogo() {
@@ -506,17 +518,37 @@
         let userProfile = null;
         let selectedFile = null;
 
+        // ---- Auth state listener for persistence ----
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            console.log('🔄 Auth state changed:', event, session ? 'session exists' : 'no session');
+            if (event === 'SIGNED_OUT') {
+                // Redirect to home on sign out
+                window.location.href = '/';
+            }
+            if (event === 'TOKEN_REFRESHED') {
+                console.log('🔁 Token refreshed successfully');
+            }
+        });
+
         // ---- Profile loading ----
         async function loadProfile() {
             console.log("⏳ Checking session...");
             const authResponse = await supabaseClient.auth.getSession();
             const session = authResponse.data.session;
-            if (!session) { console.log("🚫 No session, redirecting."); window.location.href = '/'; return; }
+            if (!session) {
+                console.log("🚫 No session, redirecting.");
+                window.location.href = '/';
+                return;
+            }
             currentUser = session.user;
             console.log("✅ User ID:", currentUser.id);
 
             const { data, error } = await supabaseClient.from('clients').select('*').eq('id', currentUser.id).maybeSingle();
-            if (error) { console.error('❌ Profile fetch error:', error); dropName.textContent = 'Error'; return; }
+            if (error) {
+                console.error('❌ Profile fetch error:', error);
+                dropName.textContent = 'Error';
+                return;
+            }
 
             if (!data) {
                 console.warn("⚠️ Profile missing. Auto-creating...");
@@ -527,7 +559,10 @@
                 const { error: insertError } = await supabaseClient.from('clients').insert([
                     { id: currentUser.id, full_name: name, email: currentUser.email, account_id: accountId }
                 ]);
-                if (insertError) { console.error("❌ Failed to auto-create profile", insertError); return; }
+                if (insertError) {
+                    console.error("❌ Failed to auto-create profile", insertError);
+                    return;
+                }
                 const { data: newData, error: newError } = await supabaseClient.from('clients').select('*').eq('id', currentUser.id).single();
                 userProfile = newData;
                 renderProfile();
@@ -638,7 +673,10 @@
         });
 
         // ---- Logout ----
-        logoutBtn.addEventListener('click', async () => { await supabaseClient.auth.signOut(); window.location.href = '/'; });
+        logoutBtn.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = '/';
+        });
 
         // ---- Inactivity Timer ----
         // Set to 100 hours = 360,000,000 ms
