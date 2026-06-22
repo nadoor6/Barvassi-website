@@ -433,9 +433,6 @@
 
         // Initialize Supabase client with explicit localStorage for session persistence
         let supabaseClient = null;
-        let isInitializing = true; // flag to prevent premature redirect on SIGNED_OUT
-        let sessionRestored = false;
-        let redirectTimeout = null;
 
         try {
             if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
@@ -522,76 +519,24 @@
         let userProfile = null;
         let selectedFile = null;
 
-        // ---- Auth state listener ----
+        // ---- Auth state listener (just for logging; NO redirect here) ----
         supabaseClient.auth.onAuthStateChange((event, session) => {
             console.log('🔄 Auth state changed:', event, session ? 'session exists' : 'no session');
-            if (event === 'SIGNED_OUT') {
-                // Only redirect if we are not still initializing (i.e., the user was previously signed in)
-                // This prevents redirecting on page load when session is not yet restored.
-                if (!isInitializing) {
-                    window.location.href = '/';
-                }
-            }
             if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-                isInitializing = false;
-                sessionRestored = true;
-                if (redirectTimeout) {
-                    clearTimeout(redirectTimeout);
-                    redirectTimeout = null;
-                }
-                // Load profile now that we have a session
-                if (!userProfile) {
+                // If we have a session and profile isn't loaded, load it
+                if (!userProfile && session) {
                     loadProfile();
                 }
             }
-            // Once we receive any event, we are no longer initializing
-            if (event !== '') {
-                isInitializing = false;
-            }
+            // We do NOT redirect on SIGNED_OUT here; loadProfile() will handle it.
         });
 
-        // ---- Check for existing session on page load ----
-        async function checkSessionAndLoad() {
-            // First, check if there's a session in localStorage directly (fast)
-            const storedSession = localStorage.getItem('supabase.auth.token');
-            if (storedSession) {
-                console.log("📦 Found session in localStorage, attempting restore...");
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                if (session) {
-                    sessionRestored = true;
-                    isInitializing = false;
-                    loadProfile();
-                    return;
-                }
-            }
-
-            // If we reach here, either no session or not restored yet.
-            // We'll wait for the auth state event, but set a timeout to avoid infinite waiting.
-            console.log("⏳ No immediate session, waiting for auth state...");
-            redirectTimeout = setTimeout(() => {
-                // Check again if session is now available
-                supabaseClient.auth.getSession().then(({ data: { session } }) => {
-                    if (session) {
-                        sessionRestored = true;
-                        isInitializing = false;
-                        loadProfile();
-                    } else {
-                        console.log("🚫 No session after timeout, redirecting.");
-                        window.location.href = '/';
-                    }
-                }).catch(() => {
-                    window.location.href = '/';
-                });
-            }, 3000);
-        }
-
-        // ---- Profile loading ----
+        // ---- Check for existing session and load profile ----
         async function loadProfile() {
             console.log("⏳ Loading profile...");
-            const authResponse = await supabaseClient.auth.getSession();
-            const session = authResponse.data.session;
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) {
-                console.log("🚫 No session, redirecting.");
+                console.log("🚫 No session, redirecting to login.");
                 window.location.href = '/';
                 return;
             }
@@ -729,8 +674,6 @@
 
         // ---- Logout ----
         logoutBtn.addEventListener('click', async () => {
-            // Set initializing to false so that SIGNED_OUT event triggers redirect
-            isInitializing = false;
             await supabaseClient.auth.signOut();
             window.location.href = '/';
         });
@@ -745,7 +688,6 @@
             inactivityTimer = setTimeout(() => {
                 showNotification('Session expired. Logging out...');
                 setTimeout(() => {
-                    isInitializing = false;
                     supabaseClient.auth.signOut();
                     window.location.href = '/';
                 }, 1500);
@@ -1011,8 +953,9 @@
             avatarInput.value = '';
         });
 
-        // ---- Start: Check session and load ----
-        checkSessionAndLoad();
+        // ---- Start: Load profile ----
+        // We call loadProfile directly; it will check session and redirect if none.
+        loadProfile();
         loadBrandLogo();
     </script>
 </body>
