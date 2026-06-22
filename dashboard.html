@@ -519,44 +519,8 @@
         let userProfile = null;
         let selectedFile = null;
 
-        // ---- Auth state listener (just for logging and triggering profile load) ----
-        let authStateResolve = null;
-        let authStatePromise = new Promise(resolve => { authStateResolve = resolve; });
-
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            console.log('🔄 Auth state changed:', event, session ? 'session exists' : 'no session');
-            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-                if (authStateResolve) {
-                    authStateResolve(session);
-                    authStateResolve = null;
-                }
-                // If profile isn't loaded yet, load it
-                if (!userProfile && session) {
-                    loadProfile();
-                }
-            }
-            // We don't redirect on SIGNED_OUT here; loadProfile handles it.
-        });
-
-        // ---- Wait for session restoration ----
-        async function waitForSession(timeoutMs = 3000) {
-            // First, check if session already exists
-            const { data: { session: existing } } = await supabaseClient.auth.getSession();
-            if (existing) return existing;
-
-            // Otherwise, wait for auth state event or timeout
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Timeout waiting for session')), timeoutMs);
-            });
-
-            try {
-                const session = await Promise.race([authStatePromise, timeoutPromise]);
-                return session;
-            } catch (e) {
-                // Timeout or error
-                return null;
-            }
-        }
+        // ---- Auth state listener (just for logging and fallback) ----
+        let authStateUnsubscribe = null;
 
         // ---- Profile loading ----
         async function loadProfile() {
@@ -980,19 +944,58 @@
             avatarInput.value = '';
         });
 
-        // ---- Start: Wait for session and load profile ----
-        async function init() {
-            const session = await waitForSession(4000); // wait up to 4 seconds
+        // ================================================================
+        // ===== ROBUST SESSION INITIALIZATION =====
+        // ================================================================
+
+        async function initializeSession() {
+            console.log("🔄 Initializing session...");
+
+            // Step 1: Wait a tiny bit for Supabase to restore session from localStorage
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Step 2: Check for existing session directly
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
+                console.log("✅ Session found immediately, loading profile.");
                 await loadProfile();
-            } else {
-                // No session after timeout, redirect to login
-                console.log("🚫 Session not restored, redirecting to login.");
+                return;
+            }
+
+            console.log("⏳ No immediate session, waiting for auth state change or timeout...");
+
+            // Step 3: Set up a promise that resolves on SIGNED_IN or TOKEN_REFRESHED
+            let authResolved = false;
+            const authPromise = new Promise((resolve) => {
+                const unsubscribe = supabaseClient.auth.onAuthStateChange((event, session) => {
+                    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                        if (!authResolved) {
+                            authResolved = true;
+                            unsubscribe();
+                            resolve(session);
+                        }
+                    }
+                });
+            });
+
+            // Step 4: Race the auth promise against a timeout (3 seconds)
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Timeout')), 3000);
+            });
+
+            try {
+                const session = await Promise.race([authPromise, timeoutPromise]);
+                console.log("✅ Session restored via auth event, loading profile.");
+                await loadProfile();
+            } catch (e) {
+                // No session after timeout – redirect to login
+                console.log("🚫 No session after timeout, redirecting to login.");
                 window.location.href = '/';
             }
         }
 
-        init();
+        // ---- Start ----
+        initializeSession();
         loadBrandLogo();
     </script>
 </body>
