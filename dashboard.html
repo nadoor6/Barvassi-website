@@ -519,8 +519,10 @@
         let userProfile = null;
         let selectedFile = null;
 
-        // ---- Auth state listener (just for logging and fallback) ----
-        let authStateUnsubscribe = null;
+        // ---- Auth state listener (only for logging) ----
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            console.log('🔄 Auth state changed:', event, session ? 'session exists' : 'no session');
+        });
 
         // ---- Profile loading ----
         async function loadProfile() {
@@ -945,57 +947,70 @@
         });
 
         // ================================================================
-        // ===== ROBUST SESSION INITIALIZATION =====
+        // ===== ULTIMATE SESSION RESTORATION =====
         // ================================================================
 
-        async function initializeSession() {
-            console.log("🔄 Initializing session...");
+        async function restoreSession() {
+            console.log("🔍 Checking localStorage for session token...");
+            // Supabase stores session under key 'supabase.auth.token'
+            const tokenKey = 'supabase.auth.token';
+            const stored = localStorage.getItem(tokenKey);
+            console.log("📦 Raw stored token:", stored ? 'found' : 'not found');
 
-            // Step 1: Wait a tiny bit for Supabase to restore session from localStorage
-            await new Promise(resolve => setTimeout(resolve, 500));
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    console.log("🔑 Parsed token:", parsed);
 
-            // Step 2: Check for existing session directly
+                    // If we have a refresh token, use setSession to restore
+                    if (parsed && parsed.currentSession && parsed.currentSession.refresh_token) {
+                        console.log("🔄 Attempting to restore session with refresh token...");
+                        const { data, error } = await supabaseClient.auth.setSession({
+                            refresh_token: parsed.currentSession.refresh_token,
+                            access_token: parsed.currentSession.access_token || '',
+                        });
+                        if (error) {
+                            console.error('❌ Failed to restore session:', error);
+                            // fallback to normal getSession
+                        } else {
+                            console.log('✅ Session restored via setSession!', data);
+                            // Session restored, now load profile
+                            await loadProfile();
+                            return;
+                        }
+                    } else {
+                        console.warn('⚠️ Stored token missing refresh_token, trying getSession...');
+                    }
+                } catch (e) {
+                    console.error('❌ Error parsing stored token:', e);
+                }
+            }
+
+            // If we reach here, either no token or setSession failed.
+            console.log("⏳ Falling back to getSession...");
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                console.log("✅ Session found immediately, loading profile.");
+                console.log('✅ Session found via getSession, loading profile.');
                 await loadProfile();
                 return;
             }
 
-            console.log("⏳ No immediate session, waiting for auth state change or timeout...");
-
-            // Step 3: Set up a promise that resolves on SIGNED_IN or TOKEN_REFRESHED
-            let authResolved = false;
-            const authPromise = new Promise((resolve) => {
-                const unsubscribe = supabaseClient.auth.onAuthStateChange((event, session) => {
-                    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-                        if (!authResolved) {
-                            authResolved = true;
-                            unsubscribe();
-                            resolve(session);
-                        }
-                    }
-                });
-            });
-
-            // Step 4: Race the auth promise against a timeout (3 seconds)
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Timeout')), 3000);
-            });
-
-            try {
-                const session = await Promise.race([authPromise, timeoutPromise]);
-                console.log("✅ Session restored via auth event, loading profile.");
+            console.log("⏳ No session found. Waiting 2 seconds for possible async restoration...");
+            // Wait a bit more and try again
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            const { data: { session: session2 } } = await supabaseClient.auth.getSession();
+            if (session2) {
+                console.log('✅ Session found after delay, loading profile.');
                 await loadProfile();
-            } catch (e) {
-                // No session after timeout – redirect to login
-                console.log("🚫 No session after timeout, redirecting to login.");
-                window.location.href = '/';
+                return;
             }
+
+            console.log("🚫 No session after all attempts. Redirecting to login.");
+            window.location.href = '/';
         }
 
         // ---- Start ----
-        initializeSession();
+        restoreSession();
         loadBrandLogo();
     </script>
 </body>
