@@ -572,7 +572,7 @@
         resetTimer();
 
         // ================================================================
-        // ===== CROPPER FIX: max size = min(wrapper width, height) =====
+        // ===== DEFINITIVE CROPPER FIX – uses offset dimensions =====
         // ================================================================
 
         let cropX = 0,
@@ -589,37 +589,43 @@
             reader.onload = (e) => {
                 cropperImage.src = e.target.result;
                 cropperImage.onload = () => {
-                    // Use requestAnimationFrame to ensure layout is settled
+                    // Use a double requestAnimationFrame to ensure layout is fully done
                     requestAnimationFrame(() => {
-                        const wrapperRect = cropperWrapper.getBoundingClientRect();
+                        requestAnimationFrame(() => {
+                            const wrapper = cropperWrapper;
+                            const w = wrapper.offsetWidth;
+                            const h = wrapper.offsetHeight;
 
-                        // --- KEY: max circle size = smallest side of the wrapper ---
-                        // This makes the circle touch the top/bottom or left/right edges
-                        // of the image placeholder (wrapper) at max slider.
-                        let rawMax = Math.min(wrapperRect.width, wrapperRect.height);
+                            if (w === 0 || h === 0) {
+                                showNotification('Could not determine image dimensions.', 'error');
+                                return;
+                            }
 
-                        // Clamp to reasonable limits
-                        if (rawMax < 20) rawMax = 200;
-                        if (rawMax > 800) rawMax = 800;
-                        maxCircleSize = rawMax;
+                            // Max circle size = smallest side of the wrapper
+                            let rawMax = Math.min(w, h);
+                            // Clamp to reasonable limits
+                            if (rawMax < 20) rawMax = 20;
+                            if (rawMax > 800) rawMax = 800;
+                            maxCircleSize = rawMax;
 
-                        // Set slider range
-                        cropSizeSlider.min = 20;
-                        cropSizeSlider.max = maxCircleSize;
-                        // Start at max size
-                        circleSize = maxCircleSize;
-                        cropSizeSlider.value = circleSize;
+                            // Set slider range
+                            cropSizeSlider.min = 20;
+                            cropSizeSlider.max = maxCircleSize;
+                            // Start at max
+                            circleSize = maxCircleSize;
+                            cropSizeSlider.value = circleSize;
 
-                        // Apply size
-                        cropperCircle.style.width = circleSize + 'px';
-                        cropperCircle.style.height = circleSize + 'px';
+                            // Apply size
+                            cropperCircle.style.width = circleSize + 'px';
+                            cropperCircle.style.height = circleSize + 'px';
 
-                        // Center the circle in the wrapper
-                        cropX = wrapperRect.width / 2;
-                        cropY = wrapperRect.height / 2;
+                            // Center the circle in the wrapper
+                            cropX = w / 2;
+                            cropY = h / 2;
 
-                        updateCirclePosition();
-                        cropperModal.classList.add('open');
+                            updateCirclePosition();
+                            cropperModal.classList.add('open');
+                        });
                     });
                 };
             };
