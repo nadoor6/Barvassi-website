@@ -450,7 +450,6 @@
         document.addEventListener('mousedown', resetAdminTimer);
         document.addEventListener('keypress', resetAdminTimer);
         document.addEventListener('touchstart', resetAdminTimer);
-        // Initial start after login
 
         // ─── Gatekeeper ──────────────────────────────────────────────────
         async function checkAdminAccess() {
@@ -473,22 +472,15 @@
 
             currentAdminId = profile.id;
             console.log("✅ CM Access Granted for:", profile.full_name);
-
-            // Start admin session timer
             resetAdminTimer();
 
             loadingState.style.display = 'none';
             adminContent.style.display = 'block';
             document.getElementById('userIp').textContent = window.location.hostname;
 
-            // Set up event listeners
             setupEventListeners();
-
-            // Load data
             await loadDashboardData();
             await loadAuditLogs();
-
-            // Start real-time subscription
             setupRealtimeSubscription();
         }
 
@@ -589,8 +581,15 @@
             tbody.innerHTML = users.map(u => {
                 const isSelf = u.id === currentAdminId;
                 const isDeleted = u.deleted_at !== null;
-                const statusClass = u.verification_status === 'verified' || u.verification_status === 'pro' ? 'verified' : 'unverified';
-                if (u.verification_status === 'pro') statusClass = 'pro';
+                // FIX: use 'let' instead of 'const' so we can reassign
+                let statusClass = 'unverified';
+                if (isDeleted) {
+                    statusClass = 'deleted';
+                } else if (u.verification_status === 'pro') {
+                    statusClass = 'pro';
+                } else if (u.verification_status === 'verified') {
+                    statusClass = 'verified';
+                }
                 const statusDisplay = isDeleted ? 'Deleted' : (u.verification_status || 'unverified');
 
                 return `
@@ -656,7 +655,7 @@
 
             for (const id of ids) {
                 try {
-                    await fn(id, true); // silent mode
+                    await fn(id, true);
                     success++;
                 } catch (e) {
                     failed++;
@@ -728,7 +727,6 @@
                 if (name !== 'DELETE') return;
             }
             try {
-                // Soft-delete: set deleted_at
                 const { error } = await supabaseClient
                     .from('clients')
                     .update({ deleted_at: new Date().toISOString() })
@@ -805,6 +803,7 @@
 
             } catch (err) {
                 console.error("❌ Failed to load logs:", err);
+                document.getElementById('logContainer').innerHTML = `<div style="text-align:center; opacity:0.3; padding:20px 0;">Error loading logs.</div>`;
             }
         }
 
