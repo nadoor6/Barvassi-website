@@ -1035,7 +1035,7 @@
             }
             try {
                 const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-                    redirectTo: 'https://barvassi.com/dashboard'
+                    redirectTo: 'https://barvassi.com/reset-password'
                 });
                 if (error) {
                     errorMsg.innerText = error.message;
