@@ -619,9 +619,9 @@
             });
 
             // Re-bind select all
-            const selectAll = document.getElementById('selectAll');
-            const checkboxes = document.querySelectorAll('.user-checkbox:not(:disabled)');
-            selectAll.checked = checkboxes.length > 0 && checkboxes.every(cb => cb.checked);
+const selectAll = document.getElementById('selectAll');
+const checkboxes = Array.from(document.querySelectorAll('.user-checkbox:not(:disabled)'));
+selectAll.checked = checkboxes.length > 0 && checkboxes.every(cb => cb.checked);
         }
 
         // ─── Bulk Selection ─────────────────────────────────────────────
