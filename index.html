@@ -1043,7 +1043,8 @@
                     errorMsg.classList.add('shake');
                     emailInput.classList.add('error');
                 } else {
-                    alert('Password reset link sent to your email.');
+                    // ─── Replaced alert with toast ───
+                    showToast('Password reset link sent to your email.');
                     clearErrorHighlight();
                 }
             } catch (err) {
@@ -1175,7 +1176,6 @@
                         emailInput.classList.add('error');
                         passInput.classList.add('error');
                     } else {
-                        // ─── Use toast instead of alert ───
                         showToast('Account created successfully! 🎉');
                         setTimeout(() => {
                             window.location.href = '/dashboard';
