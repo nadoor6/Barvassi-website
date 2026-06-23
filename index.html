@@ -12,7 +12,7 @@
     <meta name="author" content="Nader" />
     <link rel="canonical" href="https://barvassi.com/" />
 
-    <!-- ─── Open Graph (Social Sharing) ─── -->
+    <!-- ─── Open Graph ─── -->
     <meta property="og:title" content="Barvassi – The Vault" />
     <meta property="og:description" content="Ultra‑luxury brand founded by Nader (18, Aleppo). Enter the silent vault of cold minimalism." />
     <meta property="og:type" content="website" />
@@ -24,7 +24,7 @@
     <meta name="twitter:title" content="Barvassi – The Vault" />
     <meta name="twitter:description" content="Ultra‑luxury brand founded by Nader (18, Aleppo)." />
 
-    <!-- ─── JSON‑LD Structured Data ─── -->
+    <!-- ─── JSON‑LD ─── -->
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
@@ -51,7 +51,7 @@
         }
     </script>
 
-    <!-- ─── Preconnect for Performance (#8) ─── -->
+    <!-- ─── Preconnect for Performance ─── -->
     <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 
@@ -132,7 +132,7 @@
             }
         }
 
-        /* ─── Left Panel (Image) ─── */
+        /* ─── Left Panel ─── */
         .left-panel {
             flex: 2.5;
             position: relative;
@@ -178,7 +178,7 @@
             letter-spacing: 0.15em;
         }
 
-        /* ─── Right Panel (Form) – scrollable with flex spacers ─── */
+        /* ─── Right Panel ─── */
         .right-panel {
             flex: 1.5;
             background: #fafafa;
@@ -191,7 +191,6 @@
             height: 100%;
         }
 
-        /* Thin, dark scrollbar – luxury touch */
         .right-panel::-webkit-scrollbar {
             width: 3px;
         }
@@ -235,7 +234,7 @@
             transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
-        /* ─── Smooth Sign-up Fields Wrapper ─── */
+        /* ─── Sign-up Fields ─── */
         .signup-fields-wrapper {
             overflow: hidden;
             max-height: 0;
@@ -291,8 +290,6 @@
             opacity: 0.6;
             color: rgba(26, 26, 26, 0.35);
         }
-
-        /* ─── Error state for inputs ─── */
         .form-input.error {
             border-color: rgba(180, 40, 40, 0.5);
             box-shadow: 0 0 0 2px rgba(180, 40, 40, 0.04);
@@ -303,7 +300,7 @@
             box-shadow: 0 0 0 3px rgba(180, 40, 40, 0.06);
         }
 
-        /* ─── Password toggle button (#10) ─── */
+        /* ─── Password Toggle ─── */
         .password-wrapper {
             position: relative;
         }
@@ -331,7 +328,7 @@
             color: rgba(26, 26, 26, 0.6);
         }
 
-        /* ─── Text-style "Skip" link – pill (#4) ─── */
+        /* ─── Skip Link (Pill) ─── */
         .skip-link {
             font-size: 9px;
             font-family: 'SF Pro Display', sans-serif;
@@ -420,7 +417,7 @@
             animation: spin 0.9s linear infinite;
         }
 
-        /* ─── Error Message with gentle shake ─── */
+        /* ─── Error Message ─── */
         .error-msg {
             text-align: center;
             font-size: 11px;
@@ -456,7 +453,7 @@
             }
         }
 
-        /* ─── Forgot Password link ─── */
+        /* ─── Forgot Password ─── */
         .forgot-link {
             display: inline-block;
             font-size: 11px;
@@ -472,7 +469,7 @@
             color: rgba(26, 26, 26, 0.6);
         }
 
-        /* ─── Toggle, Footer ─── */
+        /* ─── Toggle & Footer (NEW: unified opacity) ─── */
         .toggle-text {
             text-align: center;
             margin-top: 16px;
@@ -491,7 +488,7 @@
             font-size: 9px;
             letter-spacing: 0.15em;
             text-transform: uppercase;
-            color: rgba(26, 26, 26, 0.15);
+            color: rgba(26, 26, 26, 0.4);          /* ← matched to toggle */
             text-align: center;
             margin-top: 24px;
             padding-top: 16px;
@@ -503,7 +500,7 @@
             text-align: center;
             font-size: 9px;
             letter-spacing: 0.1em;
-            color: rgba(26, 26, 26, 0.15);
+            color: rgba(26, 26, 26, 0.4);          /* ← matched to toggle */
             margin-top: 12px;
         }
         .footer-links a {
@@ -514,10 +511,10 @@
             transition: color 0.3s;
         }
         .footer-links a:hover {
-            color: rgba(26, 26, 26, 0.4);
+            color: rgba(26, 26, 26, 0.7);          /* ← consistent hover */
         }
 
-        /* ─── Toast (matching dashboard) ─── */
+        /* ─── Toast ─── */
         #toast-container {
             position: fixed;
             top: 20px;
@@ -555,7 +552,7 @@
             background: rgba(30, 10, 10, 0.8);
         }
 
-        /* ─── Glass Modal (matching dashboard) ─── */
+        /* ─── Glass Modal ─── */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -682,7 +679,6 @@
             }
         }
 
-        /* ─── Responsive ─── */
         @media (max-width: 900px) {
             .split-screen {
                 flex-direction: column;
@@ -720,20 +716,19 @@
         <div class="left-panel" id="leftPanel">
             <div class="overlay"></div>
             <div class="left-content">
-                <img id="leftLogo" src="" alt="Barvassi – Ultra‑Luxury Brand" class="left-logo" />
+                <img id="leftLogo" src="" alt="Barvassi" class="left-logo" />
                 <div id="logoFallback" class="left-logo-fallback">Barvassi</div>
             </div>
         </div>
 
         <div class="right-panel">
-            <!-- Spacer (top) -->
             <div class="flex-spacer"></div>
 
             <div class="form-container">
                 <h1 class="form-title" id="formTitle">Welcome back.</h1>
                 <div class="form-sub" id="formSub">Been waiting for your return.</div>
 
-                <!-- Smooth animated wrapper for signup fields -->
+                <!-- Sign-up fields -->
                 <div class="signup-fields-wrapper" id="signupFieldsWrapper">
                     <div id="signupFields">
                         <div class="form-group">
@@ -745,7 +740,7 @@
                             <input type="text" class="form-input" id="phoneInput" placeholder="+963 99 123 4567" autocomplete="off" />
                         </div>
                         <div class="form-group">
-                            <label class="form-label">ID / Passport Number (Optional)</label>
+                            <label class="form-label">ID / Passport (Optional)</label>
                             <div class="id-wrapper">
                                 <input type="text" class="form-input" id="idInput" placeholder="Type your ID or Passport #" autocomplete="off" />
                                 <span class="skip-link" id="skipIdBtn">Skip</span>
@@ -765,7 +760,6 @@
                         <input type="password" class="form-input" id="passInput" placeholder="••••••••" autocomplete="off" />
                         <button type="button" class="toggle-pass-btn" id="togglePassBtn">Show</button>
                     </div>
-                    <!-- ─── Forgot Password Link ─── -->
                     <div style="text-align:right; margin-top:4px;">
                         <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
                     </div>
@@ -791,7 +785,6 @@
                 </div>
             </div>
 
-            <!-- Spacer (bottom) -->
             <div class="flex-spacer"></div>
         </div>
     </div>
@@ -946,27 +939,61 @@
             document.body.style.overflow = '';
         }
 
-        // ─── Toast ──────────────────────────────────────────────────────
+        // ─── Toast (Smooth Queue) ──────────────────────────────────────
         const toast = document.getElementById('toast');
         const toastMsg = document.getElementById('toast-message');
-        let toastTimeout;
+        let toastQueue = [];
+        let toastProcessing = false;
+        let toastHideTimeout = null;
 
         function showToast(message, type = 'success') {
-            clearTimeout(toastTimeout);
+            toastQueue.push({ message, type });
+            if (!toastProcessing) {
+                processToastQueue();
+            }
+        }
+
+        function processToastQueue() {
+            if (toastQueue.length === 0) {
+                toastProcessing = false;
+                return;
+            }
+            toastProcessing = true;
+            const { message, type } = toastQueue.shift();
+
+            // Clear any pending hide timer
+            clearTimeout(toastHideTimeout);
+
+            // If toast is currently visible, fade it out first
+            if (toast.classList.contains('show')) {
+                toast.classList.remove('show');
+                // Wait for fade-out transition (0.4s) then show next
+                setTimeout(() => {
+                    showToastContent(message, type);
+                }, 400);
+            } else {
+                // Not visible – show immediately
+                showToastContent(message, type);
+            }
+        }
+
+        function showToastContent(message, type) {
             toastMsg.textContent = message;
             toast.classList.remove('error');
             if (type === 'error') toast.classList.add('error');
             toast.classList.add('show');
-            toastTimeout = setTimeout(() => {
+
+            // Auto-hide after 5s
+            toastHideTimeout = setTimeout(() => {
                 toast.classList.remove('show');
+                // After fade-out, process next in queue
+                setTimeout(() => {
+                    processToastQueue();
+                }, 400);
             }, 5000);
         }
 
-        function hideToast() {
-            toast.classList.remove('show');
-        }
-
-        // ─── Original JS (with error field highlighting) ──────────────
+        // ─── Page Logic ──────────────────────────────────────────────
         function hideTransition() {
             const overlay = document.getElementById('pageTransition');
             if (overlay) {
@@ -1034,7 +1061,6 @@
                 document.getElementById('splitScreen').classList.add('visible');
                 document.getElementById('loadingOverlay').classList.add('hidden');
                 hideTransition();
-                // Auto-focus first field (UX enhancement)
                 setTimeout(() => emailInput.focus(), 300);
             }
         }
@@ -1054,7 +1080,7 @@
         const formSub = document.getElementById('formSub');
         const forgotLink = document.getElementById('forgotLink');
 
-        // ─── Password Toggle (#10) ────────────────────────────────────
+        // ─── Password Toggle ─────────────────────────────────────────
         const togglePassBtn = document.getElementById('togglePassBtn');
         togglePassBtn.addEventListener('click', () => {
             const isPass = passInput.type === 'password';
@@ -1064,7 +1090,6 @@
 
         let isSigningUp = false;
 
-        // ─── Helper to clear error highlighting ───
         function clearErrorHighlight() {
             emailInput.classList.remove('error');
             passInput.classList.remove('error');
@@ -1072,7 +1097,7 @@
             errorMsg.classList.remove('shake');
         }
 
-        // ─── Forgot Password ────────────────────────────────────────────
+        // ─── Forgot Password ──────────────────────────────────────────
         forgotLink.addEventListener('click', async function(e) {
             e.preventDefault();
             const email = emailInput.value.trim();
@@ -1103,7 +1128,7 @@
             }
         });
 
-        // ─── Skip link ───
+        // ─── Skip ID ──────────────────────────────────────────────────
         skipIdBtn.addEventListener('click', function(e) {
             e.preventDefault();
             idInput.value = 'Skipped';
@@ -1111,13 +1136,12 @@
             skipIdBtn.style.display = 'none';
         });
 
-        // ─── Toggle Sign Up / Sign In (with smooth subtitle transition #3) ───
+        // ─── Toggle Sign Up / Sign In ────────────────────────────────
         toggleBtn.addEventListener('click', function(e) {
             e.preventDefault();
             isSigningUp = !isSigningUp;
             clearErrorHighlight();
 
-            // Smooth subtitle transition
             formSub.style.opacity = '0';
             formSub.style.transform = 'translateY(4px)';
 
@@ -1141,14 +1165,12 @@
                 formSub.style.transform = 'translateY(0)';
             }, 200);
 
-            // Focus first field after toggle
             setTimeout(() => {
                 if (isSigningUp) nameInput.focus();
                 else emailInput.focus();
             }, 350);
         });
 
-        // ─── Clear error highlight on field focus ───
         emailInput.addEventListener('focus', function() {
             this.classList.remove('error');
             errorMsg.classList.remove('visible');
@@ -1160,7 +1182,7 @@
             errorMsg.classList.remove('shake');
         });
 
-        // ─── Debounce utility (#14) ────────────────────────────────────
+        // ─── Debounce ──────────────────────────────────────────────────
         function debounce(fn, delay = 300) {
             let timer;
             return function(...args) {
@@ -1169,7 +1191,6 @@
             };
         }
 
-        // ─── Main button action (wrapped with debounce) ──────────────
         const handleMainAction = async function() {
             if (!supabaseClient) {
                 errorMsg.innerText = 'Database connection error.';
@@ -1203,9 +1224,7 @@
                 const { data, error } = await supabaseClient.auth.signUp({
                     email: email,
                     password: password,
-                    options: {
-                        data: { full_name: name }
-                    }
+                    options: { data: { full_name: name } }
                 });
                 this.classList.remove('loading');
 
@@ -1272,7 +1291,6 @@
             }
         };
 
-        // Apply debounce to the click handler
         mainBtn.addEventListener('click', debounce(handleMainAction, 300));
 
         document.addEventListener('keydown', function(e) {
