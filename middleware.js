@@ -11,18 +11,19 @@ export function middleware(request) {
 
     const allowedIP = process.env.ADMIN_ALLOWED_IP;
 
-    // Block if IP doesn't match
-    if (ip !== allowedIP) {
-      return new Response('Forbidden', { status: 403 });
-    }
-
-    // ✅ If IP matches, do nothing – let the request continue
-    // (no return = proceed to the static file)
+    // 🔍 DEBUG: Show what's happening (remove after testing)
+    return new Response(
+      `🔍 Diagnostic\n` +
+      `Your IP: ${ip}\n` +
+      `Allowed IP: ${allowedIP || 'NOT SET'}\n` +
+      `Match: ${ip === allowedIP ? '✅ YES' : '❌ NO'}\n\n` +
+      `(This is a diagnostic page. Remove this middleware after testing.)`,
+      { status: 200 }
+    );
   }
 
-  // For all other routes, also do nothing – let them through
+  // For all other routes, let them through
 }
-
 export const config = {
-  matcher: ['/admin', '/admin.html', '/admin/:path*'],
+matcher: ['/admin', '/admin.html', '/admin/:path*'],
 };
