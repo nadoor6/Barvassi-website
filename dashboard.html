@@ -470,7 +470,7 @@
             color: rgba(255,255,255,0.6);
         }
 
-        /* ── Toast ── */
+        /* ── Toast (Smooth Queue) ── */
         #toast-container {
             position: fixed;
             top: 20px;
@@ -494,7 +494,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             opacity: 0;
             transform: translateY(-20px) scale(0.95);
-            transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
             pointer-events: none;
             white-space: nowrap;
         }
@@ -738,27 +738,27 @@
             color: rgba(255,255,255,0.25);
         }
 
-        /* ─── Glass Modal (sleek, notification-style animation) ─── */
+        /* ─── Glass Modal ─── */
         .modal-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 10000;
-    background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0.5s;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    display: flex;
-}
-.modal-overlay.active {
-    visibility: visible;
-    opacity: 1;
-    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0s;
-}
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0.5s;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            display: flex;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0s;
+        }
         .modal-box {
             background: rgba(16,16,16,0.85);
             backdrop-filter: blur(28px);
@@ -1190,25 +1190,63 @@
             document.body.style.overflow = '';
         }
 
-        // ─── (rest of your existing JavaScript – unchanged) ───
+        // ─── Toast (Smooth Queue) ──────────────────────────────────────
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toast-message');
+        let toastQueue = [];
+        let toastProcessing = false;
+        let toastHideTimeout = null;
+
+        function showToast(message, type = 'success') {
+            toastQueue.push({ message, type });
+            if (!toastProcessing) {
+                processToastQueue();
+            }
+        }
+
+        function processToastQueue() {
+            if (toastQueue.length === 0) {
+                toastProcessing = false;
+                return;
+            }
+            toastProcessing = true;
+            const { message, type } = toastQueue.shift();
+
+            clearTimeout(toastHideTimeout);
+
+            if (toast.classList.contains('show')) {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    showToastContent(message, type);
+                }, 400);
+            } else {
+                showToastContent(message, type);
+            }
+        }
+
+        function showToastContent(message, type) {
+            toastMsg.textContent = message;
+            toast.classList.remove('error');
+            if (type === 'error') toast.classList.add('error');
+            toast.classList.add('show');
+
+            toastHideTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    processToastQueue();
+                }, 400);
+            }, 5000);
+        }
+
         // ─── Supabase Client ────────────────────────────────────────────
         let supabaseClient = null;
         try {
             if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                    auth: {
-                        storage: localStorage,
-                        autoRefreshToken: true,
-                        persistSession: true,
-                    }
+                    auth: { storage: localStorage, autoRefreshToken: true, persistSession: true }
                 });
-                console.log("✅ Supabase Client Created");
-            } else {
-                console.error("❌ Keys are missing!");
             }
-        } catch (e) {
-            console.error('❌ Supabase init error:', e);
-        }
+        } catch (e) { console.error('❌ Init error:', e); }
 
         // ─── LOGO ────────────────────────────────────────────────────────
         function loadBrandLogo() {
@@ -1222,19 +1260,6 @@
                 logoEl.style.display = 'none';
                 textFallback.style.display = 'block';
             }
-        }
-
-        // ─── NOTIFICATION ──────────────────────────────────────────────
-        const toast = document.getElementById('toast');
-        const toastMsg = document.getElementById('toast-message');
-        let toastTimeout;
-        function showNotification(message, type = 'success') {
-            clearTimeout(toastTimeout);
-            toastMsg.textContent = message;
-            toast.classList.remove('error');
-            if (type === 'error') toast.classList.add('error');
-            toast.classList.add('show');
-            toastTimeout = setTimeout(() => toast.classList.remove('show'), 5000);
         }
 
         // ─── DOM REFS ──────────────────────────────────────────────────
@@ -1263,13 +1288,11 @@
         const dropdown = document.getElementById('dropdown');
         const avatarInput = document.getElementById('avatarInput');
 
-        // Stats cards
         const statStatus = document.getElementById('statStatus');
         const statSubscription = document.getElementById('statSubscription');
         const statMemberSince = document.getElementById('statMemberSince');
         const statId = document.getElementById('statId');
 
-        // Cropper refs
         const cropperModal = document.getElementById('cropper-modal');
         const cropperImage = document.getElementById('cropperImage');
         const cropperCircle = document.getElementById('cropperCircle');
@@ -1469,14 +1492,14 @@
             const newPhone = phoneInputEdit.value.trim();
             const { error } = await supabaseClient.from('clients').update({ phone: newPhone }).eq('id', currentUser.id);
             if (error) {
-                showNotification('Failed to update phone.', 'error');
+                showToast('Failed to update phone.', 'error');
             } else {
                 userProfile.phone = newPhone;
                 dropPhoneText.textContent = newPhone || '—';
                 dropPhoneEdit.style.display = 'none';
                 dropPhoneText.style.display = 'inline';
                 phoneEditBtn.style.display = 'inline-block';
-                showNotification('Phone number updated.');
+                showToast('Phone number updated.');
                 renderProfile();
             }
         });
@@ -1484,21 +1507,21 @@
         // ─── VERIFY & UPGRADE ──────────────────────────────────────────
         verifyBtn.addEventListener('click', async () => {
             if (!userProfile || userProfile.verification_status !== 'unverified') {
-                showNotification('Already verified or pro.', 'error');
+                showToast('Already verified or pro.', 'error');
                 return;
             }
             const { error } = await supabaseClient.from('clients').update({ verification_status: 'verified' }).eq('id', currentUser.id);
             if (error) {
-                showNotification('Verification failed: ' + error.message, 'error');
+                showToast('Verification failed: ' + error.message, 'error');
             } else {
                 userProfile.verification_status = 'verified';
                 renderProfile();
-                showNotification('Identity verified!');
+                showToast('Identity verified!');
             }
         });
         upgradeBtn.addEventListener('click', async () => {
             if (!userProfile || userProfile.verification_status !== 'verified') {
-                showNotification('Please verify your identity first.', 'error');
+                showToast('Please verify your identity first.', 'error');
                 return;
             }
             const { error } = await supabaseClient.from('clients').update({
@@ -1506,12 +1529,12 @@
                 subscription_status: 'pro'
             }).eq('id', currentUser.id);
             if (error) {
-                showNotification('Upgrade failed: ' + error.message, 'error');
+                showToast('Upgrade failed: ' + error.message, 'error');
             } else {
                 userProfile.verification_status = 'pro';
                 userProfile.subscription_status = 'pro';
                 renderProfile();
-                showNotification('Welcome to Pro!');
+                showToast('Welcome to Pro!');
             }
         });
 
@@ -1527,7 +1550,7 @@
         function resetTimer() {
             clearTimeout(inactivityTimer);
             inactivityTimer = setTimeout(() => {
-                showNotification('Session expired. Logging out...');
+                showToast('Session expired. Logging out...');
                 setTimeout(() => {
                     supabaseClient.auth.signOut();
                     window.location.href = '/';
@@ -1564,7 +1587,7 @@
                                 const rect = wrapper.getBoundingClientRect();
                                 const w2 = rect.width, h2 = rect.height;
                                 if (w2 === 0 || h2 === 0) {
-                                    showNotification('Could not determine image dimensions.', 'error');
+                                    showToast('Could not determine image dimensions.', 'error');
                                     maxCircleSize = 200;
                                 } else {
                                     let rawMax = Math.min(w2, h2);
@@ -1660,7 +1683,7 @@
             if (!selectedFile || !currentUser) return;
             const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif', 'image/bmp'];
             if (!allowedTypes.includes(selectedFile.type)) {
-                showNotification('Unsupported file format.', 'error');
+                showToast('Unsupported file format.', 'error');
                 return;
             }
             this.classList.add('loading');
@@ -1668,19 +1691,19 @@
             try {
                 const img = cropperImage;
                 if (!img || !img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) {
-                    showNotification('Image not loaded properly.', 'error');
+                    showToast('Image not loaded properly.', 'error');
                     return;
                 }
                 const naturalWidth = img.naturalWidth, naturalHeight = img.naturalHeight;
                 const displayWidth = img.clientWidth, displayHeight = img.clientHeight;
                 if (displayWidth === 0 || displayHeight === 0) {
-                    showNotification('Display size error.', 'error');
+                    showToast('Display size error.', 'error');
                     return;
                 }
                 const scaleX = naturalWidth / displayWidth, scaleY = naturalHeight / displayHeight;
                 const naturalCropSize = circleSize * ((scaleX + scaleY) / 2);
                 if (naturalCropSize <= 0) {
-                    showNotification('Calculated crop size is invalid.', 'error');
+                    showToast('Calculated crop size is invalid.', 'error');
                     return;
                 }
                 const naturalCropX = cropX * scaleX, naturalCropY = cropY * scaleY;
@@ -1689,7 +1712,7 @@
                 canvas.width = finalSize;
                 canvas.height = finalSize;
                 if (canvas.width === 0 || canvas.height === 0) {
-                    showNotification('Canvas size calculation failed.', 'error');
+                    showToast('Canvas size calculation failed.', 'error');
                     return;
                 }
                 const ctx = canvas.getContext('2d');
@@ -1703,7 +1726,7 @@
                 );
                 const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
                 if (!blob) {
-                    showNotification('Failed to process image (Empty blob).', 'error');
+                    showToast('Failed to process image (Empty blob).', 'error');
                     return;
                 }
                 const fileName = `${currentUser.id}.png`;
@@ -1712,7 +1735,7 @@
                     contentType: 'image/png'
                 });
                 if (uploadError) {
-                    showNotification('Failed to upload avatar.', 'error');
+                    showToast('Failed to upload avatar.', 'error');
                     return;
                 }
                 const publicUrl = supabaseClient.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
@@ -1721,17 +1744,17 @@
                 const { error: updateError } = await supabaseClient.from('clients').update({ avatar_url: publicUrl })
                     .eq('id', currentUser.id);
                 if (updateError) {
-                    showNotification('Failed to save avatar URL.', 'error');
+                    showToast('Failed to save avatar URL.', 'error');
                     return;
                 }
                 userProfile.avatar_url = publicUrl;
                 renderProfile();
                 cropperModal.classList.remove('open');
-                showNotification('Avatar updated!');
+                showToast('Avatar updated!');
                 selectedFile = null;
             } catch (err) {
                 console.error('Cropper error:', err);
-                showNotification('An error occurred.', 'error');
+                showToast('An error occurred.', 'error');
             } finally {
                 this.classList.remove('loading');
                 this.disabled = false;
@@ -1753,7 +1776,7 @@
 
             const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif', 'image/bmp'];
             if (!allowedTypes.includes(file.type)) {
-                showNotification('Please select a valid image (JPG, PNG, WebP, GIF, BMP).', 'error');
+                showToast('Please select a valid image (JPG, PNG, WebP, GIF, BMP).', 'error');
                 avatarInput.value = '';
                 return;
             }
