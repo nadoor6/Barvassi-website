@@ -480,25 +480,42 @@
             color: rgba(26, 26, 26, 0.4);
         }
 
-        /* ─── Responsive ─── */
-        @media (max-width: 900px) {
-            .split-screen {
-                flex-direction: column;
-            }
-            .left-panel {
-                flex: none;
-                height: 35vh;
-                width: 100%;
-            }
-            .right-panel {
-                flex: none;
-                height: 65vh;
-                padding: 32px 24px;
-                width: 100%;
-            }
-            .form-container {
-                max-width: 300px;
-            }
+        /* ─── Toast (matching dashboard) ─── */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            pointer-events: none;
+        }
+        #toast {
+            background: rgba(12,12,12,0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 14px 28px;
+            color: #f2f2f2;
+            font-family: 'SF Pro Display', sans-serif;
+            font-weight: 300;
+            font-size: 14px;
+            letter-spacing: 0.05em;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        #toast.error {
+            border-color: rgba(180,40,40,0.3);
+            background: rgba(30,10,10,0.8);
         }
 
         /* ─── Glass Modal (matching dashboard) ─── */
@@ -627,6 +644,27 @@
                 font-size: 22px;
             }
         }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 900px) {
+            .split-screen {
+                flex-direction: column;
+            }
+            .left-panel {
+                flex: none;
+                height: 35vh;
+                width: 100%;
+            }
+            .right-panel {
+                flex: none;
+                height: 65vh;
+                padding: 32px 24px;
+                width: 100%;
+            }
+            .form-container {
+                max-width: 300px;
+            }
+        }
     </style>
 </head>
 
@@ -723,6 +761,13 @@
         <div class="modal-box" id="modalBox">
             <button class="modal-close" onclick="closeModal()">✕</button>
             <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- ─── Toast ─── -->
+    <div id="toast-container">
+        <div id="toast">
+            <span id="toast-message">Success</span>
         </div>
     </div>
 
@@ -859,6 +904,26 @@
         function closeModal() {
             modalOverlay.classList.remove('active');
             document.body.style.overflow = '';
+        }
+
+        // ─── Toast ──────────────────────────────────────────────────────
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toast-message');
+        let toastTimeout;
+
+        function showToast(message, type = 'success') {
+            clearTimeout(toastTimeout);
+            toastMsg.textContent = message;
+            toast.classList.remove('error');
+            if (type === 'error') toast.classList.add('error');
+            toast.classList.add('show');
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);
+        }
+
+        function hideToast() {
+            toast.classList.remove('show');
         }
 
         // ─── Original JS (with error field highlighting) ──────────────
@@ -1110,10 +1175,11 @@
                         emailInput.classList.add('error');
                         passInput.classList.add('error');
                     } else {
-                        alert('Account created successfully!');
+                        // ─── Use toast instead of alert ───
+                        showToast('Account created successfully! 🎉');
                         setTimeout(() => {
                             window.location.href = '/dashboard';
-                        }, 1000);
+                        }, 2000);
                     }
                 }
             } else {
