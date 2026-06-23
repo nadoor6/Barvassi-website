@@ -51,6 +51,10 @@
         }
     </script>
 
+    <!-- ─── Preconnect for Performance (#8) ─── -->
+    <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
     <script src="config.js"></script>
     <script src="logo.js"></script>
@@ -142,7 +146,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 10, 10, 0.55);
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.7) 0%, rgba(10, 10, 10, 0.3) 100%);
             z-index: 1;
             pointer-events: none;
         }
@@ -228,6 +232,7 @@
             font-size: 14px;
             color: rgba(26, 26, 26, 0.4);
             margin-bottom: 32px;
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
         /* ─── Smooth Sign-up Fields Wrapper ─── */
@@ -298,24 +303,56 @@
             box-shadow: 0 0 0 3px rgba(180, 40, 40, 0.06);
         }
 
-        /* ─── Text-style "Skip" link ─── */
-        .skip-link {
-            font-family: 'SF Pro Display', sans-serif;
-            font-size: 11px;
-            font-weight: 300;
+        /* ─── Password toggle button (#10) ─── */
+        .password-wrapper {
+            position: relative;
+        }
+        .password-wrapper .form-input {
+            padding-right: 52px;
+        }
+        .toggle-pass-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
             color: rgba(26, 26, 26, 0.25);
-            cursor: pointer;
-            border-bottom: 1px dotted rgba(26, 26, 26, 0.1);
-            padding-bottom: 1px;
-            margin-left: 10px;
-            white-space: nowrap;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
+            font-size: 11px;
+            font-family: 'SF Pro Display', sans-serif;
+            font-weight: 300;
             letter-spacing: 0.04em;
+            cursor: pointer;
+            padding: 4px 6px;
+            transition: color 0.3s;
+            text-transform: uppercase;
+        }
+        .toggle-pass-btn:hover {
+            color: rgba(26, 26, 26, 0.6);
+        }
+
+        /* ─── Text-style "Skip" link – pill (#4) ─── */
+        .skip-link {
+            font-size: 9px;
+            font-family: 'SF Pro Display', sans-serif;
+            font-weight: 300;
+            padding: 4px 12px;
+            border-radius: 50px;
+            border: 1px solid rgba(26, 26, 26, 0.08);
+            background: rgba(26, 26, 26, 0.02);
+            color: rgba(26, 26, 26, 0.35);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 8px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            letter-spacing: 0.06em;
+            text-transform: none;
         }
         .skip-link:hover {
-            color: rgba(26, 26, 26, 0.6);
-            border-bottom-color: rgba(26, 26, 26, 0.3);
+            background: rgba(26, 26, 26, 0.06);
+            border-color: rgba(26, 26, 26, 0.2);
+            color: rgba(26, 26, 26, 0.7);
         }
 
         .id-wrapper {
@@ -490,10 +527,10 @@
             pointer-events: none;
         }
         #toast {
-            background: rgba(12,12,12,0.8);
+            background: rgba(12, 12, 12, 0.8);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 12px;
             padding: 14px 28px;
             color: #f2f2f2;
@@ -501,7 +538,7 @@
             font-weight: 300;
             font-size: 14px;
             letter-spacing: 0.05em;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             opacity: 0;
             transform: translateY(-20px) scale(0.95);
             transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
@@ -514,8 +551,8 @@
             pointer-events: auto;
         }
         #toast.error {
-            border-color: rgba(180,40,40,0.3);
-            background: rgba(30,10,10,0.8);
+            border-color: rgba(180, 40, 40, 0.3);
+            background: rgba(30, 10, 10, 0.8);
         }
 
         /* ─── Glass Modal (matching dashboard) ─── */
@@ -724,7 +761,10 @@
 
                 <div class="form-group">
                     <label class="form-label">Password</label>
-                    <input type="password" class="form-input" id="passInput" placeholder="••••••••" autocomplete="off" />
+                    <div class="password-wrapper">
+                        <input type="password" class="form-input" id="passInput" placeholder="••••••••" autocomplete="off" />
+                        <button type="button" class="toggle-pass-btn" id="togglePassBtn">Show</button>
+                    </div>
                     <!-- ─── Forgot Password Link ─── -->
                     <div style="text-align:right; margin-top:4px;">
                         <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
@@ -994,6 +1034,8 @@
                 document.getElementById('splitScreen').classList.add('visible');
                 document.getElementById('loadingOverlay').classList.add('hidden');
                 hideTransition();
+                // Auto-focus first field (UX enhancement)
+                setTimeout(() => emailInput.focus(), 300);
             }
         }
 
@@ -1011,6 +1053,14 @@
         const formTitle = document.getElementById('formTitle');
         const formSub = document.getElementById('formSub');
         const forgotLink = document.getElementById('forgotLink');
+
+        // ─── Password Toggle (#10) ────────────────────────────────────
+        const togglePassBtn = document.getElementById('togglePassBtn');
+        togglePassBtn.addEventListener('click', () => {
+            const isPass = passInput.type === 'password';
+            passInput.type = isPass ? 'text' : 'password';
+            togglePassBtn.textContent = isPass ? 'Hide' : 'Show';
+        });
 
         let isSigningUp = false;
 
@@ -1043,7 +1093,6 @@
                     errorMsg.classList.add('shake');
                     emailInput.classList.add('error');
                 } else {
-                    // ─── Replaced alert with toast ───
                     showToast('Password reset link sent to your email.');
                     clearErrorHighlight();
                 }
@@ -1062,28 +1111,41 @@
             skipIdBtn.style.display = 'none';
         });
 
-        // ─── Toggle Sign Up / Sign In ───
+        // ─── Toggle Sign Up / Sign In (with smooth subtitle transition #3) ───
         toggleBtn.addEventListener('click', function(e) {
             e.preventDefault();
             isSigningUp = !isSigningUp;
             clearErrorHighlight();
 
-            if (isSigningUp) {
-                formTitle.innerText = 'Create an account.';
-                formSub.innerText = 'Enter the House.';
-                btnText.innerText = 'Sign Up';
-                signupFieldsWrapper.classList.add('open');
-                toggleBtn.innerText = 'Already have an account? Sign In';
-                // Hide forgot link during sign-up
-                forgotLink.style.display = 'none';
-            } else {
-                formTitle.innerText = 'Welcome back.';
-                formSub.innerText = 'Been waiting for your return';
-                btnText.innerText = 'Sign In Here';
-                signupFieldsWrapper.classList.remove('open');
-                toggleBtn.innerText = "Don't have an account? Sign Up";
-                forgotLink.style.display = 'inline-block';
-            }
+            // Smooth subtitle transition
+            formSub.style.opacity = '0';
+            formSub.style.transform = 'translateY(4px)';
+
+            setTimeout(() => {
+                if (isSigningUp) {
+                    formTitle.innerText = 'Create an account.';
+                    formSub.innerText = 'Enter the House.';
+                    btnText.innerText = 'Sign Up';
+                    signupFieldsWrapper.classList.add('open');
+                    toggleBtn.innerText = 'Already have an account? Sign In';
+                    forgotLink.style.display = 'none';
+                } else {
+                    formTitle.innerText = 'Welcome back.';
+                    formSub.innerText = 'Been waiting for your return.';
+                    btnText.innerText = 'Sign In Here';
+                    signupFieldsWrapper.classList.remove('open');
+                    toggleBtn.innerText = "Don't have an account? Sign Up";
+                    forgotLink.style.display = 'inline-block';
+                }
+                formSub.style.opacity = '1';
+                formSub.style.transform = 'translateY(0)';
+            }, 200);
+
+            // Focus first field after toggle
+            setTimeout(() => {
+                if (isSigningUp) nameInput.focus();
+                else emailInput.focus();
+            }, 350);
         });
 
         // ─── Clear error highlight on field focus ───
@@ -1098,8 +1160,17 @@
             errorMsg.classList.remove('shake');
         });
 
-        // ─── Main button action ───
-        mainBtn.addEventListener('click', async function() {
+        // ─── Debounce utility (#14) ────────────────────────────────────
+        function debounce(fn, delay = 300) {
+            let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn.apply(this, args), delay);
+            };
+        }
+
+        // ─── Main button action (wrapped with debounce) ──────────────
+        const handleMainAction = async function() {
             if (!supabaseClient) {
                 errorMsg.innerText = 'Database connection error.';
                 errorMsg.classList.add('visible');
@@ -1176,7 +1247,7 @@
                         emailInput.classList.add('error');
                         passInput.classList.add('error');
                     } else {
-                        showToast('Account created successfully!');
+                        showToast('Account created successfully! 🎉');
                         setTimeout(() => {
                             window.location.href = '/dashboard';
                         }, 2000);
@@ -1199,7 +1270,10 @@
                     window.location.href = '/dashboard';
                 }
             }
-        });
+        };
+
+        // Apply debounce to the click handler
+        mainBtn.addEventListener('click', debounce(handleMainAction, 300));
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') mainBtn.click();
