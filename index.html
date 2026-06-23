@@ -419,6 +419,22 @@
             }
         }
 
+        /* ─── Forgot Password link ─── */
+        .forgot-link {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 300;
+            color: rgba(26, 26, 26, 0.3);
+            text-decoration: none;
+            transition: color 0.3s;
+            letter-spacing: 0.05em;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+        .forgot-link:hover {
+            color: rgba(26, 26, 26, 0.6);
+        }
+
         /* ─── Toggle, Footer ─── */
         .toggle-text {
             text-align: center;
@@ -640,7 +656,6 @@
 
             <div class="form-container">
                 <h1 class="form-title" id="formTitle">Welcome back.</h1>
-                <!-- Default sub heading – updated to your new text -->
                 <div class="form-sub" id="formSub">Been waiting for your return.</div>
 
                 <!-- Smooth animated wrapper for signup fields -->
@@ -668,9 +683,14 @@
                     <label class="form-label">Email Address</label>
                     <input type="email" class="form-input" id="emailInput" placeholder="name@domain.com" autocomplete="off" />
                 </div>
+
                 <div class="form-group">
                     <label class="form-label">Password</label>
                     <input type="password" class="form-input" id="passInput" placeholder="••••••••" autocomplete="off" />
+                    <!-- ─── Forgot Password Link ─── -->
+                    <div style="text-align:right; margin-top:4px;">
+                        <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
+                    </div>
                 </div>
 
                 <button class="btn1" id="mainBtn">
@@ -925,6 +945,7 @@
         const toggleBtn = document.getElementById('toggleBtn');
         const formTitle = document.getElementById('formTitle');
         const formSub = document.getElementById('formSub');
+        const forgotLink = document.getElementById('forgotLink');
 
         let isSigningUp = false;
 
@@ -935,6 +956,37 @@
             errorMsg.classList.remove('visible');
             errorMsg.classList.remove('shake');
         }
+
+        // ─── Forgot Password ────────────────────────────────────────────
+        forgotLink.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const email = emailInput.value.trim();
+            if (!email) {
+                errorMsg.innerText = 'Please enter your email address first.';
+                errorMsg.classList.add('visible');
+                errorMsg.classList.add('shake');
+                emailInput.classList.add('error');
+                return;
+            }
+            try {
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: 'https://barvassi.com/dashboard'
+                });
+                if (error) {
+                    errorMsg.innerText = error.message;
+                    errorMsg.classList.add('visible');
+                    errorMsg.classList.add('shake');
+                    emailInput.classList.add('error');
+                } else {
+                    alert('Password reset link sent to your email.');
+                    clearErrorHighlight();
+                }
+            } catch (err) {
+                errorMsg.innerText = 'Something went wrong. Please try again.';
+                errorMsg.classList.add('visible');
+                errorMsg.classList.add('shake');
+            }
+        });
 
         // ─── Skip link ───
         skipIdBtn.addEventListener('click', function(e) {
@@ -956,12 +1008,15 @@
                 btnText.innerText = 'Sign Up';
                 signupFieldsWrapper.classList.add('open');
                 toggleBtn.innerText = 'Already have an account? Sign In';
+                // Hide forgot link during sign-up
+                forgotLink.style.display = 'none';
             } else {
                 formTitle.innerText = 'Welcome back.';
                 formSub.innerText = 'Been waiting for your return';
                 btnText.innerText = 'Sign In Here';
                 signupFieldsWrapper.classList.remove('open');
                 toggleBtn.innerText = "Don't have an account? Sign Up";
+                forgotLink.style.display = 'inline-block';
             }
         });
 

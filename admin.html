@@ -14,19 +14,15 @@
             background: #0c0c0c;
             color: #f2f2f2;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             padding: 40px;
         }
         .container {
             max-width: 1200px;
-            width: 100%;
+            margin: 0 auto;
             background: rgba(255,255,255,0.02);
             border: 1px solid rgba(255,255,255,0.04);
             border-radius: 24px;
             padding: 48px;
-            backdrop-filter: blur(8px);
         }
         .header {
             display: flex;
@@ -35,6 +31,7 @@
             padding-bottom: 24px;
             border-bottom: 1px solid rgba(255,255,255,0.04);
             margin-bottom: 32px;
+            flex-wrap: wrap;
         }
         .header h1 {
             font-weight: 400;
@@ -122,9 +119,9 @@
             color: #fafafa;
             border: none;
             border-radius: 50px;
-            padding: 8px 20px;
+            padding: 6px 14px;
             font-weight: 400;
-            font-size: 11px;
+            font-size: 10px;
             letter-spacing: 0.08em;
             text-transform: uppercase;
             cursor: pointer;
@@ -143,6 +140,19 @@
         .btn1.danger:hover {
             background: rgba(180,40,40,0.3);
         }
+        .btn1.success {
+            background: rgba(40,180,40,0.2);
+            color: rgba(100,255,100,0.7);
+            border: 1px solid rgba(40,180,40,0.2);
+        }
+        .btn1.success:hover {
+            background: rgba(40,180,40,0.3);
+        }
+        .btn1:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none !important;
+        }
         .loading-spinner {
             display: flex;
             align-items: center;
@@ -152,21 +162,86 @@
             color: rgba(255,255,255,0.2);
             letter-spacing: 0.1em;
         }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(12,12,12,0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 14px 28px;
+            color: #f2f2f2;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        .toast.error {
+            border-color: rgba(180,40,40,0.3);
+            background: rgba(30,10,10,0.85);
+        }
+        .toast.success {
+            border-color: rgba(40,180,40,0.3);
+            background: rgba(10,30,10,0.85);
+        }
         @media (max-width: 700px) {
             .container { padding: 24px; }
             .stats-grid { grid-template-columns: 1fr 1fr; }
             .user-table { font-size: 12px; }
+            .header { flex-direction: column; align-items: flex-start; gap: 12px; }
         }
+        /* Logs section */
+        .log-entry {
+            font-family: monospace;
+            font-size: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            color: rgba(255,255,255,0.5);
+        }
+        .log-entry .time { color: rgba(255,255,255,0.2); }
+        .log-entry .admin { color: #f5c518; }
+        .log-entry .action { color: #4a90e2; }
+        .log-entry .target { color: #f2f2f2; }
+        .log-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 12px;
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        .log-container::-webkit-scrollbar { width: 4px; }
+        .log-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
     </style>
 </head>
 <body>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"><span id="toastMsg">Success</span></div>
+
     <div class="container" id="adminApp">
         <div id="loadingState" class="loading-spinner">🔒 Opening the vault...</div>
         
         <div id="adminContent" style="display:none;">
             <div class="header">
                 <h1>⚡ Admin Vault</h1>
-                <span class="role-badge" id="roleBadge">CM</span>
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <span class="role-badge" id="roleBadge">CM</span>
+                    <button class="btn1" id="refreshBtn" style="padding:4px 14px; font-size:10px;">⟳ Refresh</button>
+                    <button class="btn1 danger" id="logoutBtn" style="padding:4px 14px; font-size:10px;">Logout</button>
+                </div>
             </div>
 
             <div class="stats-grid" id="statsGrid">
@@ -198,7 +273,7 @@
                             <th>ID</th>
                             <th>Role</th>
                             <th>Status</th>
-                            <th style="text-align:right;">Action</th>
+                            <th style="text-align:right;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="userTableBody">
@@ -206,6 +281,17 @@
                     </tbody>
                 </table>
             </div>
+
+            <div style="margin-top: 32px;">
+                <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Audit Logs</span>
+                    <button class="btn1" id="refreshLogsBtn" style="padding:4px 14px; font-size:10px;">⟳ Refresh Logs</button>
+                </div>
+                <div class="log-container" id="logContainer">
+                    <div style="text-align:center; opacity:0.3; padding:20px 0;">No logs yet.</div>
+                </div>
+            </div>
+
             <div style="margin-top: 24px; text-align:right; opacity:0.2; font-size:11px; letter-spacing:0.05em;">
                 Secure Vault · Barvassi CM Access
             </div>
@@ -214,6 +300,21 @@
 
     <script>
         console.log("🔐 Admin Vault Initializing...");
+
+        // ─── Toast ──────────────────────────────────────────────────────
+        const toastEl = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+        let toastTimeout;
+
+        function showToast(message, type = 'success') {
+            clearTimeout(toastTimeout);
+            toastMsg.textContent = message;
+            toastEl.className = 'toast';
+            if (type === 'error') toastEl.classList.add('error');
+            else if (type === 'success') toastEl.classList.add('success');
+            toastEl.classList.add('show');
+            toastTimeout = setTimeout(() => toastEl.classList.remove('show'), 4000);
+        }
 
         // ─── Supabase Client ────────────────────────────────────────────
         let supabaseClient = null;
@@ -229,6 +330,7 @@
 
         const loadingState = document.getElementById('loadingState');
         const adminContent = document.getElementById('adminContent');
+        let currentAdminId = null;
 
         // ─── Gatekeeper ──────────────────────────────────────────────────
         async function checkAdminAccess() {
@@ -243,10 +345,9 @@
                 return;
             }
 
-            // Fetch user profile from clients
             const { data: profile, error } = await supabaseClient
                 .from('clients')
-                .select('role, full_name, email')
+                .select('id, role, full_name, email')
                 .eq('id', session.user.id)
                 .maybeSingle();
 
@@ -256,22 +357,33 @@
                 return;
             }
 
-            // ✅ Access granted
+            currentAdminId = profile.id;
             console.log("✅ CM Access Granted for:", profile.full_name);
             loadingState.style.display = 'none';
             adminContent.style.display = 'block';
 
-            // Display IP (just for info)
             document.getElementById('userIp').textContent = window.location.hostname;
 
-            // Load dashboard data
-            loadDashboardData();
+            // Load data
+            await loadDashboardData();
+            await loadAuditLogs();
+
+            // Set up refresh buttons
+            document.getElementById('refreshBtn').addEventListener('click', async () => {
+                await loadDashboardData();
+                await loadAuditLogs();
+                showToast('Refreshed', 'success');
+            });
+            document.getElementById('refreshLogsBtn').addEventListener('click', loadAuditLogs);
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                await supabaseClient.auth.signOut();
+                window.location.href = '/';
+            });
         }
 
-        // ─── Load Data ──────────────────────────────────────────────────
+        // ─── Load Dashboard Data ────────────────────────────────────────
         async function loadDashboardData() {
             try {
-                // Fetch all users (only CM can do this due to RLS)
                 const { data: users, error } = await supabaseClient
                     .from('clients')
                     .select('full_name, email, account_id, role, verification_status, subscription_status, id')
@@ -279,7 +391,6 @@
 
                 if (error) throw error;
 
-                // Stats
                 const total = users.length;
                 const verified = users.filter(u => u.verification_status === 'verified' || u.verification_status === 'pro').length;
                 const pro = users.filter(u => u.subscription_status === 'pro').length;
@@ -287,43 +398,188 @@
                 document.getElementById('verifiedUsers').textContent = verified;
                 document.getElementById('proUsers').textContent = pro;
 
-                // Table
                 const tbody = document.getElementById('userTableBody');
                 if (users.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; opacity:0.3; padding:40px 0;">No users yet.</td></tr>`;
                     return;
                 }
 
-                tbody.innerHTML = users.map(u => `
-                    <tr>
-                        <td>${u.full_name || '—'}</td>
-                        <td>${u.email}</td>
-                        <td style="font-family: monospace; font-size:12px; opacity:0.6;">${u.account_id || '—'}</td>
-                        <td><span class="badge-role ${u.role === 'cm' ? 'cm' : ''}">${u.role || 'client'}</span></td>
-                        <td>${u.verification_status || 'unverified'}</td>
-                        <td style="text-align:right;">
-                            <button class="btn1" style="padding:4px 12px; font-size:10px;" onclick="promoteUser('${u.id}')">Promote</button>
-                            <button class="btn1 danger" style="padding:4px 12px; font-size:10px; margin-left:4px;" onclick="deleteUser('${u.id}')">Delete</button>
-                        </td>
-                    </tr>
-                `).join('');
+                // Store user data for actions
+                window._users = users;
+
+                tbody.innerHTML = users.map(u => {
+                    const isSelf = u.id === currentAdminId;
+                    return `
+                        <tr>
+                            <td>${u.full_name || '—'}</td>
+                            <td>${u.email}</td>
+                            <td style="font-family: monospace; font-size:12px; opacity:0.6;">${u.account_id || '—'}</td>
+                            <td><span class="badge-role ${u.role === 'cm' ? 'cm' : ''}">${u.role || 'client'}</span></td>
+                            <td>${u.verification_status || 'unverified'}</td>
+                            <td style="text-align:right; white-space:nowrap;">
+                                ${u.role !== 'cm' ? `<button class="btn1" style="padding:4px 10px; font-size:9px;" onclick="promoteUser('${u.id}')">Promote</button>` : 
+                                                  `<button class="btn1 danger" style="padding:4px 10px; font-size:9px;" onclick="demoteUser('${u.id}')">Demote</button>`}
+                                ${u.verification_status !== 'verified' && u.verification_status !== 'pro' ? 
+                                    `<button class="btn1 success" style="padding:4px 10px; font-size:9px; margin-left:4px;" onclick="verifyUser('${u.id}')">Verify</button>` : ''}
+                                ${!isSelf ? `<button class="btn1 danger" style="padding:4px 10px; font-size:9px; margin-left:4px;" onclick="deleteUser('${u.id}')">Delete</button>` : 
+                                            `<span style="font-size:9px; opacity:0.3; margin-left:8px;">(you)</span>`}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
 
             } catch (err) {
                 console.error("❌ Failed to load data:", err);
-                document.getElementById('userTableBody').innerHTML = `<tr><td colspan="6" style="text-align:center; color:rgba(180,40,40,0.5); padding:40px 0;">Error loading users.</td></tr>`;
+                showToast('Error loading users', 'error');
             }
         }
 
-        // ─── Actions (Placeholder) ──────────────────────────────────────
-        window.promoteUser = function(userId) {
-            if (confirm("Promote this user to CM? (This is irreversible without DB edit)")) {
-                alert("Feature coming soon – promote via Supabase SQL for now.");
+        // ─── Load Audit Logs ────────────────────────────────────────────
+        async function loadAuditLogs() {
+            try {
+                const { data: logs, error } = await supabaseClient
+                    .from('admin_logs')
+                    .select(`
+                        id,
+                        action,
+                        details,
+                        ip,
+                        created_at,
+                        admin_id,
+                        admin:clients!admin_id(full_name),
+                        target_user:clients!target_user_id(full_name)
+                    `)
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                if (error) throw error;
+
+                const container = document.getElementById('logContainer');
+                if (!logs || logs.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; opacity:0.3; padding:20px 0;">No logs yet.</div>`;
+                    return;
+                }
+
+                container.innerHTML = logs.map(log => {
+                    const time = new Date(log.created_at).toLocaleString();
+                    const adminName = log.admin?.full_name || 'Unknown';
+                    const targetName = log.target_user?.full_name || '—';
+                    const action = log.action || 'action';
+                    const details = log.details ? JSON.stringify(log.details) : '';
+                    return `
+                        <div class="log-entry">
+                            <span class="time">${time}</span>
+                            <span class="admin">${adminName}</span>
+                            <span class="action">${action}</span>
+                            ${targetName !== '—' ? `<span class="target">→ ${targetName}</span>` : ''}
+                            ${details ? `<span style="opacity:0.4; font-size:10px;"> ${details}</span>` : ''}
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error("❌ Failed to load logs:", err);
+                document.getElementById('logContainer').innerHTML = `<div style="text-align:center; opacity:0.3; padding:20px 0;">Error loading logs.</div>`;
+            }
+        }
+
+        // ─── Helper: Log Action ────────────────────────────────────────
+        async function logAction(action, targetUserId = null, details = null) {
+            if (!currentAdminId) return;
+            try {
+                const ip = await fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => d.ip).catch(() => 'unknown');
+                await supabaseClient
+                    .from('admin_logs')
+                    .insert([{
+                        admin_id: currentAdminId,
+                        action: action,
+                        target_user_id: targetUserId,
+                        details: details,
+                        ip: ip || 'unknown'
+                    }]);
+            } catch (e) { console.warn('Logging failed:', e); }
+        }
+
+        // ─── Admin Actions ──────────────────────────────────────────────
+
+        // Promote user to CM
+        window.promoteUser = async function(userId) {
+            if (!confirm('Promote this user to Creative Manager (CM)?')) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('clients')
+                    .update({ role: 'cm' })
+                    .eq('id', userId);
+                if (error) throw error;
+                await logAction('promote_user', userId, { new_role: 'cm' });
+                showToast('User promoted to CM', 'success');
+                await loadDashboardData();
+                await loadAuditLogs();
+            } catch (err) {
+                showToast('Failed: ' + err.message, 'error');
             }
         };
 
-        window.deleteUser = function(userId) {
-            if (confirm("Are you sure you want to delete this user? This action is logged.")) {
-                alert("Feature coming soon – delete via Supabase SQL for now.");
+        // Demote user to client
+        window.demoteUser = async function(userId) {
+            if (!confirm('Demote this CM to regular client?')) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('clients')
+                    .update({ role: 'client' })
+                    .eq('id', userId);
+                if (error) throw error;
+                await logAction('demote_user', userId, { new_role: 'client' });
+                showToast('User demoted to client', 'success');
+                await loadDashboardData();
+                await loadAuditLogs();
+            } catch (err) {
+                showToast('Failed: ' + err.message, 'error');
+            }
+        };
+
+        // Verify user
+        window.verifyUser = async function(userId) {
+            if (!confirm('Verify this user\'s identity?')) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('clients')
+                    .update({ verification_status: 'verified' })
+                    .eq('id', userId);
+                if (error) throw error;
+                await logAction('verify_user', userId, { new_status: 'verified' });
+                showToast('User verified', 'success');
+                await loadDashboardData();
+                await loadAuditLogs();
+            } catch (err) {
+                showToast('Failed: ' + err.message, 'error');
+            }
+        };
+
+        // Delete user (hard delete – careful)
+        window.deleteUser = async function(userId) {
+            if (!confirm('⚠️ Permanently delete this user? This cannot be undone.')) return;
+            const name = prompt('Type "DELETE" to confirm:');
+            if (name !== 'DELETE') return;
+            try {
+                // First, get user email for log
+                const { data: user } = await supabaseClient
+                    .from('clients')
+                    .select('email')
+                    .eq('id', userId)
+                    .single();
+                const email = user?.email || 'unknown';
+                const { error } = await supabaseClient
+                    .from('clients')
+                    .delete()
+                    .eq('id', userId);
+                if (error) throw error;
+                await logAction('delete_user', userId, { email: email });
+                showToast('User deleted', 'success');
+                await loadDashboardData();
+                await loadAuditLogs();
+            } catch (err) {
+                showToast('Failed: ' + err.message, 'error');
             }
         };
 
