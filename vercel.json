@@ -1,13 +1,13 @@
 {
   "redirects": [
-    { "source": "/dashboard.html", "destination": "/dashboard", "permanent": true },
-    { "source": "/index.html", "destination": "/", "permanent": true }
+    { "source": "/dashboard.html", "destination": "/", "permanent": true },
+    { "source": "/index.html", "destination": "/login", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/", "destination": "/dashboard.html" },
+    { "source": "/login", "destination": "/index.html" },
     { "source": "/privacy", "destination": "/privacy.html" },
     { "source": "/terms", "destination": "/terms.html" },
-    { "source": "/", "destination": "/index.html" },
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/reset-password", "destination": "/reset-password.html" }
   ]
