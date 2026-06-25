@@ -5,8 +5,55 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Barvassi · Authentication</title>
-    <meta name="description" content="Sign in or create your Barvassi vault account." />
+    <!-- ─── SEO & Brand Identity ─── -->
+    <title>Barvassi – by Nader</title>
+    <meta name="description" content="Barvassi is an ultra‑luxury brand founded by Nader (18, Aleppo). Experience the silent vault of cold minimalism and timeless elegance." />
+    <meta name="keywords" content="Barvassi, luxury brand, Nader, Aleppo, vault, minimalism, cold marble, dark romantic" />
+    <meta name="author" content="Nader" />
+    <link rel="canonical" href="https://barvassi.com/" />
+
+    <!-- ─── Open Graph ─── -->
+    <meta property="og:title" content="Barvassi – The Vault" />
+    <meta property="og:description" content="Ultra‑luxury brand founded by Nader (18, Aleppo). Enter the silent vault of cold minimalism." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://barvassi.com/" />
+    <meta property="og:image" content="https://barvassi.com/apple-touch-icon.png" />
+    <meta property="og:image:width" content="180" />
+    <meta property="og:image:height" content="180" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Barvassi – The Vault" />
+    <meta name="twitter:description" content="Ultra‑luxury brand founded by Nader (18, Aleppo)." />
+
+    <!-- ─── JSON‑LD ─── -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Barvassi",
+            "description": "Ultra‑luxury brand founded by Nader, offering a silent vault experience of cold minimalism.",
+            "url": "https://barvassi.com",
+            "logo": "https://barvassi.com/apple-touch-icon.png",
+            "founder": {
+                "@type": "Person",
+                "name": "Nader",
+                "age": "18",
+                "birthPlace": "Aleppo",
+                "nationality": "Syrian",
+                "jobTitle": "Founder & Creative Director",
+                "url": "https://barvassi.com"
+            },
+            "foundingDate": "2026",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Aleppo",
+                "addressCountry": "SY"
+            }
+        }
+    </script>
+
+    <!-- ─── Preconnect for Performance ─── -->
+    <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
     <script src="config.js"></script>
@@ -422,7 +469,7 @@
             color: rgba(26, 26, 26, 0.6);
         }
 
-        /* ─── Toggle & Footer ─── */
+        /* ─── Toggle & Footer (NEW: unified opacity) ─── */
         .toggle-text {
             text-align: center;
             margin-top: 16px;
@@ -441,7 +488,7 @@
             font-size: 9px;
             letter-spacing: 0.15em;
             text-transform: uppercase;
-            color: rgba(26, 26, 26, 0.4);
+            color: rgba(26, 26, 26, 0.4);          /* ← matched to toggle */
             text-align: center;
             margin-top: 24px;
             padding-top: 16px;
@@ -453,7 +500,7 @@
             text-align: center;
             font-size: 9px;
             letter-spacing: 0.1em;
-            color: rgba(26, 26, 26, 0.4);
+            color: rgba(26, 26, 26, 0.4);          /* ← matched to toggle */
             margin-top: 12px;
         }
         .footer-links a {
@@ -464,23 +511,7 @@
             transition: color 0.3s;
         }
         .footer-links a:hover {
-            color: rgba(26, 26, 26, 0.7);
-        }
-
-        /* ─── Back to Vault Link ─── */
-        .back-link {
-            display: inline-block;
-            margin-top: 12px;
-            font-size: 11px;
-            font-weight: 300;
-            color: rgba(26, 26, 26, 0.25);
-            text-decoration: none;
-            transition: color 0.3s;
-            letter-spacing: 0.05em;
-            cursor: pointer;
-        }
-        .back-link:hover {
-            color: rgba(26, 26, 26, 0.6);
+            color: rgba(26, 26, 26, 0.7);          /* ← consistent hover */
         }
 
         /* ─── Toast ─── */
@@ -648,7 +679,6 @@
             }
         }
 
-        /* ─── Responsive ─── */
         @media (max-width: 900px) {
             .split-screen {
                 flex-direction: column;
@@ -747,10 +777,6 @@
 
                 <div class="error-msg" id="errorMsg"></div>
                 <div class="toggle-text" id="toggleBtn">Don't have an account? Sign Up</div>
-
-                <!-- ─── Back to Vault ─── -->
-                <a href="/" class="back-link">← Back to the Vault</a>
-
                 <div class="copyright-footer">© 2026 Barvassi. All rights reserved.</div>
                 <div class="footer-links">
                     <a onclick="openModal('privacy')">Privacy</a>
@@ -779,7 +805,7 @@
     </div>
 
     <script>
-        console.log("🚀 Auth page loaded");
+        console.log("🚀 Index page loaded");
 
         // ─── Modal Logic ──────────────────────────────────────────────
         const modalOverlay = document.getElementById('modalOverlay');
@@ -790,118 +816,118 @@
             if (type === 'privacy') {
                 title = 'Privacy Policy';
                 content = `
-                        <div class="sub">Last updated: June 22, 2026</div>
-                        <p><strong>Barvassi</strong> ("we", "our", "us") respects your privacy. This policy explains how we collect, use, disclose, and safeguard your information when you visit our website <strong>barvassi.com</strong> and use our services.</p>
-                        <h2>1. Information We Collect</h2>
-                        <h3>a. Information You Provide</h3>
-                        <ul>
-                            <li><strong>Account Details:</strong> Full name, email address, phone number, and password (encrypted).</li>
-                            <li><strong>Profile Information:</strong> Avatar images, Barvassi ID, verification status, subscription status.</li>
-                            <li><strong>Communications:</strong> Any messages or inquiries you send to us.</li>
-                        </ul>
-                        <h3>b. Automatically Collected Information</h3>
-                        <ul>
-                            <li><strong>Usage Data:</strong> IP address, browser type, device information, and interactions with our website.</li>
-                            <li><strong>Cookies & Local Storage:</strong> We use local storage to maintain your session securely. We do not use tracking cookies for advertising.</li>
-                        </ul>
-                        <h2>2. How We Use Your Information</h2>
-                        <ul>
-                            <li>To create and manage your Barvassi vault account.</li>
-                            <li>To authenticate your identity and protect your data.</li>
-                            <li>To process account upgrades and verification.</li>
-                            <li>To communicate important updates (security, policy changes).</li>
-                            <li>To improve our services and user experience.</li>
-                            <li>To comply with legal obligations.</li>
-                        </ul>
-                        <h2>3. Data Storage & Security</h2>
-                        <p>Your data is stored securely using <strong>Supabase</strong> (PostgreSQL) with robust encryption protocols. We treat your personal information like a sealed vault – accessible only to you and our core systems.</p>
-                        <ul>
-                            <li>Passwords are hashed and never stored in plain text.</li>
-                            <li>All connections are encrypted via HTTPS.</li>
-                            <li>Access to user data is strictly controlled.</li>
-                        </ul>
-                        <h2>4. Data Sharing & Third Parties</h2>
-                        <p>We do not sell, rent, or trade your personal information. We share data only with essential service providers:</p>
-                        <ul>
-                            <li><strong>Supabase</strong> – for authentication, database, and file storage (avatars).</li>
-                            <li><strong>Vercel</strong> – for website hosting and deployment.</li>
-                        </ul>
-                        <p>These providers are contractually bound to protect your data and comply with privacy regulations.</p>
-                        <h2>5. Your Rights</h2>
-                        <p>Depending on your location (e.g., GDPR, CCPA), you have the right to:</p>
-                        <ul>
-                            <li>Access the personal data we hold about you.</li>
-                            <li>Correct inaccurate data.</li>
-                            <li>Request deletion of your account and associated data.</li>
-                            <li>Withdraw consent for data processing.</li>
-                        </ul>
-                        <p>To exercise these rights, contact us at: <strong>contact@barvassi.com</strong></p>
-                        <h2>6. Data Retention</h2>
-                        <p>We retain your data as long as your account is active. If you delete your account, we will remove your personal information within 30 days, except where retention is required by law.</p>
-                        <h2>7. Children's Privacy</h2>
-                        <p>Barvassi is not intended for individuals under the age of 13. We do not knowingly collect data from children.</p>
-                        <h2>8. Updates to This Policy</h2>
-                        <p>We may update this policy periodically. We will notify you of significant changes via email or through a notice on the platform.</p>
-                        <h2>9. Contact</h2>
-                        <p><strong>Barvassi</strong><br />Founded by Nader, Aleppo<br />Email: <strong>contact@barvassi.com</strong></p>
-                        <hr />
-                        <div class="footer-note">© 2026 Barvassi. All rights reserved.</div>
-                    `;
+                    <div class="sub">Last updated: June 22, 2026</div>
+                    <p><strong>Barvassi</strong> ("we", "our", "us") respects your privacy. This policy explains how we collect, use, disclose, and safeguard your information when you visit our website <strong>barvassi.com</strong> and use our services.</p>
+                    <h2>1. Information We Collect</h2>
+                    <h3>a. Information You Provide</h3>
+                    <ul>
+                        <li><strong>Account Details:</strong> Full name, email address, phone number, and password (encrypted).</li>
+                        <li><strong>Profile Information:</strong> Avatar images, Barvassi ID, verification status, subscription status.</li>
+                        <li><strong>Communications:</strong> Any messages or inquiries you send to us.</li>
+                    </ul>
+                    <h3>b. Automatically Collected Information</h3>
+                    <ul>
+                        <li><strong>Usage Data:</strong> IP address, browser type, device information, and interactions with our website.</li>
+                        <li><strong>Cookies & Local Storage:</strong> We use local storage to maintain your session securely. We do not use tracking cookies for advertising.</li>
+                    </ul>
+                    <h2>2. How We Use Your Information</h2>
+                    <ul>
+                        <li>To create and manage your Barvassi vault account.</li>
+                        <li>To authenticate your identity and protect your data.</li>
+                        <li>To process account upgrades and verification.</li>
+                        <li>To communicate important updates (security, policy changes).</li>
+                        <li>To improve our services and user experience.</li>
+                        <li>To comply with legal obligations.</li>
+                    </ul>
+                    <h2>3. Data Storage & Security</h2>
+                    <p>Your data is stored securely using <strong>Supabase</strong> (PostgreSQL) with robust encryption protocols. We treat your personal information like a sealed vault – accessible only to you and our core systems.</p>
+                    <ul>
+                        <li>Passwords are hashed and never stored in plain text.</li>
+                        <li>All connections are encrypted via HTTPS.</li>
+                        <li>Access to user data is strictly controlled.</li>
+                    </ul>
+                    <h2>4. Data Sharing & Third Parties</h2>
+                    <p>We do not sell, rent, or trade your personal information. We share data only with essential service providers:</p>
+                    <ul>
+                        <li><strong>Supabase</strong> – for authentication, database, and file storage (avatars).</li>
+                        <li><strong>Vercel</strong> – for website hosting and deployment.</li>
+                    </ul>
+                    <p>These providers are contractually bound to protect your data and comply with privacy regulations.</p>
+                    <h2>5. Your Rights</h2>
+                    <p>Depending on your location (e.g., GDPR, CCPA), you have the right to:</p>
+                    <ul>
+                        <li>Access the personal data we hold about you.</li>
+                        <li>Correct inaccurate data.</li>
+                        <li>Request deletion of your account and associated data.</li>
+                        <li>Withdraw consent for data processing.</li>
+                    </ul>
+                    <p>To exercise these rights, contact us at: <strong>contact@barvassi.com</strong></p>
+                    <h2>6. Data Retention</h2>
+                    <p>We retain your data as long as your account is active. If you delete your account, we will remove your personal information within 30 days, except where retention is required by law.</p>
+                    <h2>7. Children's Privacy</h2>
+                    <p>Barvassi is not intended for individuals under the age of 13. We do not knowingly collect data from children.</p>
+                    <h2>8. Updates to This Policy</h2>
+                    <p>We may update this policy periodically. We will notify you of significant changes via email or through a notice on the platform.</p>
+                    <h2>9. Contact</h2>
+                    <p><strong>Barvassi</strong><br />Founded by Nader, Aleppo<br />Email: <strong>contact@barvassi.com</strong></p>
+                    <hr />
+                    <div class="footer-note">© 2026 Barvassi. All rights reserved.</div>
+                `;
             } else if (type === 'terms') {
                 title = 'Terms of Service';
                 content = `
-                        <div class="sub">Last updated: June 22, 2026</div>
-                        <p>Welcome to <strong>Barvassi</strong> – a cultural and political project founded by Nader, born in Aleppo. By using our platform, you agree to the following terms.</p>
-                        <h2>1. Acceptance of Terms</h2>
-                        <p>By creating an account or accessing <strong>barvassi.com</strong>, you agree to be bound by these Terms of Service. If you do not agree, please do not use our services.</p>
-                        <h2>2. Eligibility</h2>
-                        <ul>
-                            <li>You must be at least <strong>13 years old</strong> to use Barvassi.</li>
-                            <li>By using the platform, you represent that you have the legal capacity to enter into this agreement.</li>
-                        </ul>
-                        <h2>3. Account Responsibilities</h2>
-                        <ul>
-                            <li>You are responsible for maintaining the confidentiality of your login credentials.</li>
-                            <li>You agree to provide accurate and complete information.</li>
-                            <li>You are responsible for all activities that occur under your account.</li>
-                            <li>Notify us immediately of any unauthorized use.</li>
-                        </ul>
-                        <h2>4. User Conduct</h2>
-                        <p>You agree to use Barvassi respectfully and in alignment with its mission as a cultural sanctuary. You shall not:</p>
-                        <ul>
-                            <li>Use the platform for illegal, harmful, or discriminatory purposes.</li>
-                            <li>Impersonate others or provide false information.</li>
-                            <li>Attempt to breach security measures or access other users' accounts.</li>
-                            <li>Upload content that violates the rights of others.</li>
-                        </ul>
-                        <p><strong>Barvassi is a space of silence, memory, and resilience – please honor that.</strong></p>
-                        <h2>5. Intellectual Property</h2>
-                        <ul>
-                            <li>The Barvassi name, logo, design, and content are the exclusive property of Barvassi and Nader.</li>
-                            <li>You may not reproduce, distribute, or create derivative works without our explicit permission.</li>
-                        </ul>
-                        <h2>6. User-Generated Content</h2>
-                        <ul>
-                            <li>By uploading an avatar or profile information, you grant Barvassi a worldwide, non‑exclusive, royalty‑free license to store, display, and use it to provide our services.</li>
-                            <li>You retain ownership of your content.</li>
-                        </ul>
-                        <h2>7. Termination</h2>
-                        <p>We reserve the right to suspend or terminate your account if you violate these terms, engage in harmful behavior, or at our discretion. You may also delete your account at any time.</p>
-                        <h2>8. Disclaimers & Limitation of Liability</h2>
-                        <ul>
-                            <li>Barvassi is provided <strong>"as is"</strong> and <strong>"as available"</strong> without warranties of any kind.</li>
-                            <li>We do not guarantee that the platform will be error‑free or uninterrupted.</li>
-                            <li>To the fullest extent permitted by law, Barvassi is not liable for any indirect, incidental, or consequential damages arising from your use of the platform.</li>
-                        </ul>
-                        <h2>9. Governing Law</h2>
-                        <p>These terms are governed by the laws applicable to the jurisdiction of Aleppo and international principles of data protection. Users from other countries accept that their data may be stored and processed globally.</p>
-                        <h2>10. Changes to Terms</h2>
-                        <p>We may update these terms periodically. Continued use of the platform constitutes acceptance of the revised terms.</p>
-                        <h2>11. Contact</h2>
-                        <p><strong>Barvassi</strong><br />Email: <strong>contact@barvassi.com</strong></p>
-                        <hr />
-                        <div class="footer-note">© 2026 Barvassi. All rights reserved.</div>
-                    `;
+                    <div class="sub">Last updated: June 22, 2026</div>
+                    <p>Welcome to <strong>Barvassi</strong> – a cultural and political project founded by Nader, born in Aleppo. By using our platform, you agree to the following terms.</p>
+                    <h2>1. Acceptance of Terms</h2>
+                    <p>By creating an account or accessing <strong>barvassi.com</strong>, you agree to be bound by these Terms of Service. If you do not agree, please do not use our services.</p>
+                    <h2>2. Eligibility</h2>
+                    <ul>
+                        <li>You must be at least <strong>13 years old</strong> to use Barvassi.</li>
+                        <li>By using the platform, you represent that you have the legal capacity to enter into this agreement.</li>
+                    </ul>
+                    <h2>3. Account Responsibilities</h2>
+                    <ul>
+                        <li>You are responsible for maintaining the confidentiality of your login credentials.</li>
+                        <li>You agree to provide accurate and complete information.</li>
+                        <li>You are responsible for all activities that occur under your account.</li>
+                        <li>Notify us immediately of any unauthorized use.</li>
+                    </ul>
+                    <h2>4. User Conduct</h2>
+                    <p>You agree to use Barvassi respectfully and in alignment with its mission as a cultural sanctuary. You shall not:</p>
+                    <ul>
+                        <li>Use the platform for illegal, harmful, or discriminatory purposes.</li>
+                        <li>Impersonate others or provide false information.</li>
+                        <li>Attempt to breach security measures or access other users' accounts.</li>
+                        <li>Upload content that violates the rights of others.</li>
+                    </ul>
+                    <p><strong>Barvassi is a space of silence, memory, and resilience – please honor that.</strong></p>
+                    <h2>5. Intellectual Property</h2>
+                    <ul>
+                        <li>The Barvassi name, logo, design, and content are the exclusive property of Barvassi and Nader.</li>
+                        <li>You may not reproduce, distribute, or create derivative works without our explicit permission.</li>
+                    </ul>
+                    <h2>6. User-Generated Content</h2>
+                    <ul>
+                        <li>By uploading an avatar or profile information, you grant Barvassi a worldwide, non‑exclusive, royalty‑free license to store, display, and use it to provide our services.</li>
+                        <li>You retain ownership of your content.</li>
+                    </ul>
+                    <h2>7. Termination</h2>
+                    <p>We reserve the right to suspend or terminate your account if you violate these terms, engage in harmful behavior, or at our discretion. You may also delete your account at any time.</p>
+                    <h2>8. Disclaimers & Limitation of Liability</h2>
+                    <ul>
+                        <li>Barvassi is provided <strong>"as is"</strong> and <strong>"as available"</strong> without warranties of any kind.</li>
+                        <li>We do not guarantee that the platform will be error‑free or uninterrupted.</li>
+                        <li>To the fullest extent permitted by law, Barvassi is not liable for any indirect, incidental, or consequential damages arising from your use of the platform.</li>
+                    </ul>
+                    <h2>9. Governing Law</h2>
+                    <p>These terms are governed by the laws applicable to the jurisdiction of Aleppo and international principles of data protection. Users from other countries accept that their data may be stored and processed globally.</p>
+                    <h2>10. Changes to Terms</h2>
+                    <p>We may update these terms periodically. Continued use of the platform constitutes acceptance of the revised terms.</p>
+                    <h2>11. Contact</h2>
+                    <p><strong>Barvassi</strong><br />Email: <strong>contact@barvassi.com</strong></p>
+                    <hr />
+                    <div class="footer-note">© 2026 Barvassi. All rights reserved.</div>
+                `;
             }
             modalContent.innerHTML = `<h1>${title}</h1>${content}`;
             modalOverlay.classList.add('active');
@@ -935,14 +961,18 @@
             toastProcessing = true;
             const { message, type } = toastQueue.shift();
 
+            // Clear any pending hide timer
             clearTimeout(toastHideTimeout);
 
+            // If toast is currently visible, fade it out first
             if (toast.classList.contains('show')) {
                 toast.classList.remove('show');
+                // Wait for fade-out transition (0.4s) then show next
                 setTimeout(() => {
                     showToastContent(message, type);
                 }, 400);
             } else {
+                // Not visible – show immediately
                 showToastContent(message, type);
             }
         }
@@ -953,15 +983,25 @@
             if (type === 'error') toast.classList.add('error');
             toast.classList.add('show');
 
+            // Auto-hide after 5s
             toastHideTimeout = setTimeout(() => {
                 toast.classList.remove('show');
+                // After fade-out, process next in queue
                 setTimeout(() => {
                     processToastQueue();
                 }, 400);
             }, 5000);
         }
 
-        // ─── Load Logo ──────────────────────────────────────────────────
+        // ─── Page Logic ──────────────────────────────────────────────
+        function hideTransition() {
+            const overlay = document.getElementById('pageTransition');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                setTimeout(() => overlay.style.display = 'none', 800);
+            }
+        }
+
         function loadLogo() {
             const logoEl = document.getElementById('leftLogo');
             const fallback = document.getElementById('logoFallback');
@@ -975,7 +1015,6 @@
             }
         }
 
-        // ─── Load Background ────────────────────────────────────────────
         function loadBackground() {
             const panel = document.getElementById('leftPanel');
             if (typeof BG === 'string' && BG.startsWith('data:image')) {
@@ -985,7 +1024,6 @@
             }
         }
 
-        // ─── Supabase ──────────────────────────────────────────────────
         let supabaseClient = null;
         try {
             if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
@@ -1003,73 +1041,30 @@
             console.error('❌ Supabase init error:', e);
         }
 
-        // ─── Check Session & Redirect ──────────────────────────────────
         async function checkSessionAndRedirect() {
             if (!supabaseClient) return;
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 console.log("✅ Session found, redirecting to dashboard.");
-                window.location.href = '/';
+                window.location.href = '/dashboard';
                 return;
             }
 
-            console.log("⏳ No immediate session, waiting 200ms...");
+            console.log("⏳ No immediate session, waiting 200ms for possible restore...");
             await new Promise(resolve => setTimeout(resolve, 200));
             const { data: { session: session2 } } = await supabaseClient.auth.getSession();
             if (session2) {
                 console.log("✅ Session restored, redirecting to dashboard.");
-                window.location.href = '/';
+                window.location.href = '/dashboard';
             } else {
                 console.log("🚫 No session, showing login form.");
                 document.getElementById('splitScreen').classList.add('visible');
                 document.getElementById('loadingOverlay').classList.add('hidden');
                 hideTransition();
-
-                // ─── Read URL mode param ────────────────────────────────
-                const urlParams = new URLSearchParams(window.location.search);
-                const mode = urlParams.get('mode');
-
-                // Set the initial mode
-                if (mode === 'signup') {
-                    // Trigger sign-up mode
-                    isSigningUp = true;
-                    formTitle.innerText = 'Create an account.';
-                    formSub.innerText = 'Enter the House.';
-                    btnText.innerText = 'Sign Up';
-                    signupFieldsWrapper.classList.add('open');
-                    toggleBtn.innerText = 'Already have an account? Sign In';
-                    forgotLink.style.display = 'none';
-                } else {
-                    // Default to sign-in
-                    isSigningUp = false;
-                    formTitle.innerText = 'Welcome back.';
-                    formSub.innerText = 'Been waiting for your return.';
-                    btnText.innerText = 'Sign In Here';
-                    signupFieldsWrapper.classList.remove('open');
-                    toggleBtn.innerText = "Don't have an account? Sign Up";
-                    forgotLink.style.display = 'inline-block';
-                }
-
-                // Clean the URL (remove mode param)
-                if (mode) {
-                    const cleanUrl = window.location.pathname;
-                    window.history.replaceState({}, document.title, cleanUrl);
-                }
-
                 setTimeout(() => emailInput.focus(), 300);
             }
         }
 
-        // ─── Page Transition ──────────────────────────────────────────
-        function hideTransition() {
-            const overlay = document.getElementById('pageTransition');
-            if (overlay) {
-                overlay.classList.add('hidden');
-                setTimeout(() => overlay.style.display = 'none', 800);
-            }
-        }
-
-        // ─── DOM Refs ──────────────────────────────────────────────────
         const mainBtn = document.getElementById('mainBtn');
         const btnText = document.getElementById('btnText');
         const signupFieldsWrapper = document.getElementById('signupFieldsWrapper');
@@ -1196,7 +1191,6 @@
             };
         }
 
-        // ─── Main Action ──────────────────────────────────────────────
         const handleMainAction = async function() {
             if (!supabaseClient) {
                 errorMsg.innerText = 'Database connection error.';
@@ -1274,7 +1268,7 @@
                     } else {
                         showToast('Account created successfully! 🎉');
                         setTimeout(() => {
-                            window.location.href = '/';
+                            window.location.href = '/dashboard';
                         }, 2000);
                     }
                 }
@@ -1292,7 +1286,7 @@
                     emailInput.classList.add('error');
                     passInput.classList.add('error');
                 } else {
-                    window.location.href = '/';
+                    window.location.href = '/dashboard';
                 }
             }
         };
