@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Barvassi — Independent Design Practice</title>
+    <meta name="description" content="Luxury branding, visual systems, identity design and digital experiences for ambitious companies and institutions." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet" />
+    <style>
+        /* ============================================================
+           GLOBAL RESET & BASE
+           ============================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-bg: #ffffff;
+            --color-surface: #fafafa;
+            --color-text-primary: #000000;
+            --color-text-secondary: #6e6e73;
+            --color-border: #e5e5e5;
+            --color-hover: #111111;
+            --font-display: 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --font-text: 'SF Pro Text', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --max-width: 1440px;
+            --grid-gap: 24px;
+            --padding-x: 40px;
+            --transition-smooth: cubic-bezier(0.25, 0.1, 0.15, 1);
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --padding-x: 20px;
+                --grid-gap: 16px;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            font-family: var(--font-text);
+            background-color: var(--color-bg);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            border: none;
+            background: none;
+            color: inherit;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ============================================================
+           UTILITY
+           ============================================================ */
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 var(--padding-x);
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        /* ============================================================
+           GRID
+           ============================================================ */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: var(--grid-gap);
+        }
+
+        .grid-full {
+            grid-column: 1 / -1;
+        }
+
+        /* ============================================================
+           TYPOGRAPHY — Apple-inspired hierarchy
+           ============================================================ */
+        .heading-hero {
+            font-family: var(--font-display);
+            font-size: clamp(3.5rem, 10vw, 7.5rem);
+            font-weight: 600;
+            letter-spacing: -0.035em;
+            line-height: 1.05;
+        }
+
+        .heading-xl {
+            font-family: var(--font-display);
+            font-size: clamp(2.8rem, 6vw, 4.5rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .heading-lg {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 600;
+            letter-spacing: -0.025em;
+            line-height: 1.15;
+        }
+
+        .heading-md {
+            font-family: var(--font-display);
+            font-size: clamp(1.25rem, 2vw, 1.75rem);
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .heading-sm {
+            font-family: var(--font-display);
+            font-size: clamp(1rem, 1.2vw, 1.25rem);
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            line-height: 1.3;
+        }
+
+        .body-lg {
+            font-family: var(--font-text);
+            font-size: clamp(1.1rem, 1.2vw, 1.35rem);
+            font-weight: 400;
+            line-height: 1.7;
+            letter-spacing: -0.01em;
+        }
+
+        .body-md {
+            font-family: var(--font-text);
+            font-size: clamp(0.95rem, 1vw, 1.1rem);
+            font-weight: 400;
+            line-height: 1.65;
+            letter-spacing: -0.005em;
+        }
+
+        .body-sm {
+            font-family: var(--font-text);
+            font-size: 0.8rem;
+            font-weight: 400;
+            line-height: 1.5;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+        }
+
+        .body-xs {
+            font-family: var(--font-text);
+            font-size: 0.7rem;
+            font-weight: 400;
+            line-height: 1.4;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+        }
+
+        /* ============================================================
+           BUTTON
+           ============================================================ */
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-text);
+            font-size: 1rem;
+            font-weight: 450;
+            letter-spacing: -0.01em;
+            color: var(--color-text-primary);
+            border-bottom: 1.5px solid var(--color-text-primary);
+            padding-bottom: 4px;
+            transition: all 0.4s var(--transition-smooth);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--color-text-secondary);
+            color: var(--color-text-secondary);
+            gap: 14px;
+        }
+
+        .btn-ghost .arrow {
+            display: inline-block;
+            transition: transform 0.4s var(--transition-smooth);
+        }
+
+        .btn-ghost:hover .arrow {
+            transform: translateX(6px);
+        }
+
+        /* ============================================================
+           NAVIGATION
+           ============================================================ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 20px var(--padding-x);
+            background: transparent;
+            transition: background 0.6s var(--transition-smooth), box-shadow 0.6s var(--transition-smooth);
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+        }
+
+        .navbar-inner {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar-logo {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--color-text-primary);
+            transition: opacity 0.3s;
+        }
+
+        .navbar-logo:hover {
+            opacity: 0.6;
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .navbar-links a {
+            font-family: var(--font-text);
+            font-size: 0.85rem;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+            color: var(--color-text-primary);
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .navbar-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--color-text-primary);
+            transition: width 0.4s var(--transition-smooth);
+        }
+
+        .navbar-links a:hover::after {
+            width: 100%;
+        }
+
+        .navbar-links a:hover {
+            color: var(--color-text-secondary);
+        }
+
+        .navbar-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            padding: 4px;
+            background: none;
+            border: none;
+        }
+
+        .navbar-toggle span {
+            display: block;
+            width: 24px;
+            height: 1.5px;
+            background: var(--color-text-primary);
+            transition: all 0.3s var(--transition-smooth);
+            transform-origin: center;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-links {
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                width: 280px;
+                background: var(--color-bg);
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                padding: 48px 32px;
+                gap: 20px;
+                transform: translateX(100%);
+                transition: transform 0.5s var(--transition-smooth);
+                box-shadow: -8px 0 40px rgba(0, 0, 0, 0.04);
+            }
+
+            .navbar-links.open {
+                transform: translateX(0);
+            }
+
+            .navbar-links a {
+                font-size: 1.4rem;
+                font-weight: 500;
+            }
+
+            .navbar-toggle {
+                display: flex;
+                z-index: 1001;
+            }
+
+            .navbar-toggle.open span:nth-child(1) {
+                transform: rotate(45deg) translate(4px, 4px);
+            }
+
+            .navbar-toggle.open span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .navbar-toggle.open span:nth-child(3) {
+                transform: rotate(-45deg) translate(4px, -4px);
+            }
+
+            .navbar-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.15);
+                z-index: 999;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.5s var(--transition-smooth);
+            }
+
+            .navbar-overlay.open {
+                opacity: 1;
+                pointer-events: auto;
+            }
+        }
+
+        /* ============================================================
+           HERO
+           ============================================================ */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 0 80px;
+            position: relative;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .hero-headline {
+            max-width: 900px;
+        }
+
+        .hero-headline .line {
+            display: block;
+            overflow: hidden;
+        }
+
+        .hero-headline .line-inner {
+            display: block;
+            transform: translateY(100%);
+            opacity: 0;
+            animation: heroReveal 1.2s var(--transition-smooth) forwards;
+        }
+
+        .hero-headline .line:nth-child(2) .line-inner {
+            animation-delay: 0.1s;
+        }
+        .hero-headline .line:nth-child(3) .line-inner {
+            animation-delay: 0.2s;
+        }
+        .hero-headline .line:nth-child(4) .line-inner {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes heroReveal {
+            0% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .hero-sub {
+            max-width: 560px;
+            color: var(--color-text-secondary);
+        }
+
+        .hero-actions {
+            margin-top: 8px;
+        }
+
+        /* ============================================================
+           SECTION
+           ============================================================ */
+        .section {
+            padding: 100px 0;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .section:first-of-type {
+            border-top: none;
+        }
+
+        .section-label {
+            margin-bottom: 48px;
+        }
+
+        /* ============================================================
+           SELECTED WORK
+           ============================================================ */
+        .work-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            padding: 60px 0;
+            border-top: 1px solid var(--color-border);
+            align-items: center;
+        }
+
+        .work-item:first-of-type {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .work-image-wrap {
+            overflow: hidden;
+            position: relative;
+            background: var(--color-surface);
+            border-radius: 4px;
+        }
+
+        .work-image-wrap img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            transition: transform 1.2s var(--transition-smooth);
+            will-change: transform;
+        }
+
+        .work-item:hover .work-image-wrap img {
+            transform: scale(1.03);
+        }
+
+        .work-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 8px 0;
+        }
+
+        .work-meta .name {
+            font-family: var(--font-display);
+            font-size: clamp(1.4rem, 2vw, 2rem);
+            font-weight: 500;
+            letter-spacing: -0.02em;
+        }
+
+        .work-meta .detail {
+            color: var(--color-text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .work-item {
+                grid-template-columns: 1fr;
+                gap: 24px;
+                padding: 40px 0;
+            }
+
+            .work-image-wrap img {
+                height: 260px;
+            }
+        }
+
+        /* ============================================================
+           MANIFESTO
+           ============================================================ */
+        .manifesto-text {
+            max-width: 720px;
+        }
+
+        .manifesto-text p {
+            margin-bottom: 20px;
+        }
+
+        .manifesto-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ============================================================
+           SERVICES
+           ============================================================ */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px 48px;
+        }
+
+        .services-grid li {
+            list-style: none;
+            font-family: var(--font-text);
+            font-size: 1rem;
+            font-weight: 400;
+            padding: 8px 0;
+            color: var(--color-text-primary);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ============================================================
+           JOURNAL
+           ============================================================ */
+        .journal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .journal-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: opacity 0.4s;
+        }
+
+        .journal-card:hover {
+            opacity: 0.6;
+        }
+
+        .journal-card .title {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 500;
+            letter-spacing: -0.015em;
+            line-height: 1.3;
+        }
+
+        .journal-card .meta {
+            color: var(--color-text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .journal-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 32px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .journal-grid {
+                grid-template-columns: 1fr;
+                gap: 28px;
+            }
+        }
+
+        /* ============================================================
+           ABOUT
+           ============================================================ */
+        .about-text {
+            max-width: 680px;
+        }
+
+        .about-text p {
+            margin-bottom: 20px;
+        }
+
+        .about-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ============================================================
+           CONTACT
+           ============================================================ */
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 400px;
+        }
+
+        .contact-list a {
+            font-family: var(--font-text);
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--color-text-primary);
+            border-bottom: 1px solid transparent;
+            padding-bottom: 2px;
+            transition: border-color 0.3s, color 0.3s;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .contact-list a:hover {
+            border-bottom-color: var(--color-text-primary);
+            color: var(--color-text-secondary);
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        .footer {
+            padding: 60px 0 40px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 32px;
+        }
+
+        .footer-brand .name {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .footer-brand .tag {
+            color: var(--color-text-secondary);
+            margin-top: 4px;
+        }
+
+        .footer-credit {
+            text-align: right;
+            color: var(--color-text-secondary);
+        }
+
+        @media (max-width: 600px) {
+            .footer-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .footer-credit {
+                text-align: left;
+                width: 100%;
+            }
+        }
+
+        /* ============================================================
+           REVEAL ANIMATIONS (GSAP will enhance these)
+           ============================================================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s var(--transition-smooth), transform 0.8s var(--transition-smooth);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 {
+            transition-delay: 0.1s;
+        }
+        .reveal-delay-2 {
+            transition-delay: 0.2s;
+        }
+        .reveal-delay-3 {
+            transition-delay: 0.3s;
+        }
+        .reveal-delay-4 {
+            transition-delay: 0.4s;
+        }
+
+        /* ============================================================
+           RESPONSIVE HELPERS
+           ============================================================ */
+        .hide-mobile {
+            display: block;
+        }
+        .show-mobile {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .hide-mobile {
+                display: none;
+            }
+            .show-mobile {
+                display: block;
+            }
+            .section {
+                padding: 64px 0;
+            }
+            .section-label {
+                margin-bottom: 32px;
+            }
+            .hero {
+                padding: 100px 0 60px;
+                min-height: 90vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 80px 0 40px;
+                min-height: 85vh;
+            }
+            .section {
+                padding: 48px 0;
+            }
+        }
+
+        /* ============================================================
+           LENIS OVERRIDE
+           ============================================================ */
+        html.lenis {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    NAVIGATION
+    ============================================================ -->
+    <header class="navbar" id="navbar" role="banner">
+        <div class="navbar-inner">
+            <a href="/" class="navbar-logo" aria-label="Barvassi Home">BARVASSI</a>
+
+            <nav aria-label="Main navigation">
+                <ul class="navbar-links" id="navLinks" role="list">
+                    <li><a href="#work">Work</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#journal">Journal</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+
+            <button class="navbar-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="navbar-overlay" id="navOverlay"></div>
+        </div>
+    </header>
+
+    <!-- ============================================================
+    HERO
+    ============================================================ -->
+    <section class="hero" id="hero">
+        <div class="container hero-content">
+            <h1 class="heading-hero hero-headline">
+                <span class="line"><span class="line-inner">Visual Systems</span></span>
+                <span class="line"><span class="line-inner">for ambitious</span></span>
+                <span class="line"><span class="line-inner">companies and</span></span>
+                <span class="line"><span class="line-inner">institutions.</span></span>
+            </h1>
+            <p class="body-lg hero-sub">
+                Independent design practice creating visual identities, luxury branding,
+                digital experiences and strategic design systems.
+            </p>
+            <div class="hero-actions">
+                <a href="#work" class="btn-ghost">
+                    View Selected Work
+                    <span class="arrow">→</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    SELECTED WORK
+    ============================================================ -->
+    <section class="section" id="work">
+        <div class="container">
+            <div class="section-label reveal">
+                <span class="body-sm">Selected Work</span>
+            </div>
+
+            <!-- Work Item 1 -->
+            <div class="work-item reveal">
+                <div class="work-image-wrap">
+                    <img src="https://picsum.photos/seed/barvassi1/800/600" alt="Project visual" loading="lazy" />
+                </div>
+                <div class="work-meta">
+                    <div class="name">Aethelred</div>
+                    <div class="detail body-md">Luxury Brand Identity · 2025</div>
+                    <div class="body-sm" style="margin-top:8px; color:var(--color-text-secondary);">Visual system, typography, packaging</div>
+                </div>
+            </div>
+
+            <!-- Work Item 2 -->
+            <div class="work-item reveal">
+                <div class="work-image-wrap">
+                    <img src="https://picsum.photos/seed/barvassi2/800/600" alt="Project visual" loading="lazy" />
+                </div>
+                <div class="work-meta">
+                    <div class="name">Ministry of Culture</div>
+                    <div class="detail body-md">Institutional Identity · 2024</div>
+                    <div class="body-sm" style="margin-top:8px; color:var(--color-text-secondary);">Brand architecture, editorial, wayfinding</div>
+                </div>
+            </div>
+
+            <!-- Work Item 3 -->
+            <div class="work-item reveal">
+                <div class="work-image-wrap">
+                    <img src="https://picsum.photos/seed/barvassi3/800/600" alt="Project visual" loading="lazy" />
+                </div>
+                <div class="work-meta">
+                    <div class="name">Veridian</div>
+                    <div class="detail body-md">Digital Experience · 2025</div>
+                    <div class="body-sm" style="margin-top:8px; color:var(--color-text-secondary);">Web design, interface, motion system</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    MANIFESTO + SERVICES
+    ============================================================ -->
+    <section class="section" id="about">
+        <div class="container">
+            <div class="grid" style="gap:64px;">
+                <!-- Manifesto -->
+                <div class="grid-full reveal">
+                    <div class="manifesto-text">
+                        <span class="body-sm" style="display:block; margin-bottom:24px;">Manifesto</span>
+                        <p class="heading-lg" style="font-weight:450; max-width:720px;">
+                            Barvassi is an independent design practice.
+                        </p>
+                        <p class="body-lg" style="color:var(--color-text-secondary); max-width:620px; margin-top:16px;">
+                            We build visual systems for companies, founders and institutions.
+                            Every project begins with strategy. Every decision serves clarity.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Services -->
+                <div class="grid-full reveal">
+                    <span class="body-sm" style="display:block; margin-bottom:24px;">Services</span>
+                    <ul class="services-grid">
+                        <li>Brand Identity</li>
+                        <li>Visual Systems</li>
+                        <li>Creative Direction</li>
+                        <li>Digital Experiences</li>
+                        <li>Web Design</li>
+                        <li>Editorial Design</li>
+                        <li>Typography Systems</li>
+                        <li>Luxury Branding</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    JOURNAL
+    ============================================================ -->
+    <section class="section" id="journal">
+        <div class="container">
+            <div class="section-label reveal">
+                <span class="body-sm">Journal</span>
+            </div>
+
+            <div class="journal-grid">
+                <article class="journal-card reveal reveal-delay-1">
+                    <div class="title">Why Luxury Brands Rarely Explain Themselves</div>
+                    <div class="meta body-sm">Essay · 2025</div>
+                </article>
+                <article class="journal-card reveal reveal-delay-2">
+                    <div class="title">The Architecture of Identity</div>
+                    <div class="meta body-sm">Essay · 2025</div>
+                </article>
+                <article class="journal-card reveal reveal-delay-3">
+                    <div class="title">Systems Over Logos</div>
+                    <div class="meta body-sm">Essay · 2024</div>
+                </article>
+                <article class="journal-card reveal reveal-delay-1">
+                    <div class="title">Branding Governments</div>
+                    <div class="meta body-sm">Essay · 2024</div>
+                </article>
+                <article class="journal-card reveal reveal-delay-2">
+                    <div class="title">Visual Power</div>
+                    <div class="meta body-sm">Essay · 2024</div>
+                </article>
+                <article class="journal-card reveal reveal-delay-3">
+                    <div class="title">The Quiet Luxury of Restraint</div>
+                    <div class="meta body-sm">Essay · 2023</div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    ABOUT
+    ============================================================ -->
+    <section class="section" id="about">
+        <div class="container">
+            <div class="section-label reveal">
+                <span class="body-sm">About</span>
+            </div>
+            <div class="about-text reveal">
+                <p class="body-lg">
+                    Barvassi is an independent design practice founded on the belief that
+                    great design is invisible — it serves the message, not itself.
+                </p>
+                <p class="body-md" style="color:var(--color-text-secondary);">
+                    We work with ambitious founders, companies, luxury brands, governments,
+                    and institutions to build visual systems that endure. Our approach is
+                    strategic, editorial, and timeless. We don't decorate — we articulate.
+                </p>
+                <p class="body-md" style="color:var(--color-text-secondary);">
+                    Based in Damascus. Working globally.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    CONTACT
+    ============================================================ -->
+    <section class="section" id="contact">
+        <div class="container">
+            <div class="section-label reveal">
+                <span class="body-sm">Contact</span>
+            </div>
+            <div class="grid" style="gap:48px;">
+                <div class="grid-full reveal" style="grid-column: span 6;">
+                    <p class="heading-md" style="font-weight:400; max-width:400px;">
+                        Available for selected projects.
+                    </p>
+                </div>
+                <div class="grid-full reveal" style="grid-column: span 6;">
+                    <ul class="contact-list">
+                        <li><a href="mailto:studio@barvassi.com">studio@barvassi.com</a></li>
+                        <li><a href="#" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+                        <li><a href="#" target="_blank" rel="noopener noreferrer">X</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    FOOTER
+    ============================================================ -->
+    <footer class="footer" role="contentinfo">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <div class="name">BARVASSI®</div>
+                <div class="tag body-sm">Independent Design Practice</div>
+            </div>
+            <div class="footer-credit body-sm">
+                Designed in Syria<br />
+                2026
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================================================
+    SCRIPTS
+    ============================================================ -->
+    <!-- Lenis (smooth scroll) -->
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js">
+    </script>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js">
+    </script>
+    <!-- SplitType -->
+    <script src="https://unpkg.com/split-type@0.3.4/umd/split-type.min.js">
+    </script>
+
+    <script>
+        // ============================================================
+        // LENIS — Smooth Scroll
+        // ============================================================
+        (function initLenis() {
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                orientation: 'vertical',
+                smoothWheel: true,
+                wheelMultiplier: 0.8,
+                touchMultiplier: 1.2,
+            });
+
+            lenis.on('scroll', () => {
+                // Navbar scroll state
+                const navbar = document.getElementById('navbar');
+                if (window.scrollY > 40) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+            requestAnimationFrame(raf);
+
+            // Expose for GSAP ScrollTrigger
+            window.lenis = lenis;
+        })();
+
+        // ============================================================
+        // NAVIGATION — Mobile toggle
+        // ============================================================
+        (function navToggle() {
+            const toggle = document.getElementById('navToggle');
+            const links = document.getElementById('navLinks');
+            const overlay = document.getElementById('navOverlay');
+
+            function openNav() {
+                links.classList.add('open');
+                overlay.classList.add('open');
+                toggle.classList.add('open');
+                toggle.setAttribute('aria-expanded', 'true');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeNav() {
+                links.classList.remove('open');
+                overlay.classList.remove('open');
+                toggle.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            }
+
+            toggle.addEventListener('click', () => {
+                if (links.classList.contains('open')) {
+                    closeNav();
+                } else {
+                    openNav();
+                }
+            });
+
+            overlay.addEventListener('click', closeNav);
+
+            // Close on link click
+            links.querySelectorAll('a').forEach((link) => {
+                link.addEventListener('click', closeNav);
+            });
+
+            // Close on Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && links.classList.contains('open')) {
+                    closeNav();
+                }
+            });
+        })();
+
+        // ============================================================
+        // GSAP + SCROLLTRIGGER — Reveal animations
+        // ============================================================
+        (function initAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // --- Hero text already animated via CSS, but we enhance with GSAP ---
+            // (Hero uses CSS keyframes for initial load, we keep it simple)
+
+            // --- Reveal elements: fade + slide up ---
+            const reveals = document.querySelectorAll('.reveal');
+
+            reveals.forEach((el) => {
+                // If already visible via CSS (e.g. hero) skip
+                if (el.closest('#hero')) return;
+
+                // Use GSAP for scroll-triggered reveal
+                gsap.fromTo(el, {
+                    opacity: 0,
+                    y: 40,
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1.2,
+                    ease: 'power2.out',
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 88%',
+                        toggleActions: 'play none none none',
+                        once: true,
+                    },
+                });
+            });
+
+            // --- Work items: image zoom on hover (CSS handles this) ---
+            // But we add a subtle parallax for the images on scroll
+            document.querySelectorAll('.work-image-wrap img').forEach((img) => {
+                gsap.fromTo(img, {
+                    scale: 1.05,
+                }, {
+                    scale: 1,
+                    duration: 1.6,
+                    ease: 'power1.out',
+                    scrollTrigger: {
+                        trigger: img.closest('.work-item'),
+                        start: 'top 90%',
+                        toggleActions: 'play none none none',
+                        once: true,
+                    },
+                });
+            });
+
+            // --- Journal cards: stagger ---
+            const journalCards = document.querySelectorAll('.journal-card');
+            if (journalCards.length) {
+                gsap.fromTo(journalCards, {
+                    opacity: 0,
+                    y: 30,
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.9,
+                    stagger: 0.12,
+                    ease: 'power2.out',
+                    scrollTrigger: {
+                        trigger: document.querySelector('.journal-grid'),
+                        start: 'top 85%',
+                        toggleActions: 'play none none none',
+                        once: true,
+                    },
+                });
+            }
+
+            // --- Services list: stagger ---
+            const servicesItems = document.querySelectorAll('.services-grid li');
+            if (servicesItems.length) {
+                gsap.fromTo(servicesItems, {
+                    opacity: 0,
+                    x: -12,
+                }, {
+                    opacity: 1,
+                    x: 0,
+                    duration: 0.7,
+                    stagger: 0.06,
+                    ease: 'power1.out',
+                    scrollTrigger: {
+                        trigger: document.querySelector('.services-grid'),
+                        start: 'top 88%',
+                        toggleActions: 'play none none none',
+                        once: true,
+                    },
+                });
+            }
+
+            // --- Section labels ---
+            document.querySelectorAll('.section-label').forEach((label) => {
+                gsap.fromTo(label, {
+                    opacity: 0,
+                    x: -20,
+                }, {
+                    opacity: 1,
+                    x: 0,
+                    duration: 0.8,
+                    ease: 'power2.out',
+                    scrollTrigger: {
+                        trigger: label,
+                        start: 'top 92%',
+                        toggleActions: 'play none none none',
+                        once: true,
+                    },
+                });
+            });
+
+            // --- Contact list ---
+            const contactItems = document.querySelectorAll('.contact-list li');
+            if (contactItems.length) {
+                gsap.fromTo(contactItems, {
+                    opacity: 0,
+                    y: 12,
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.6,
+                    stagger: 0.1,
+                    ease: 'power1.out',
+                    scrollTrigger: {
+                        trigger: document.querySelector('.contact-list'),
+                        start: 'top 90%',
+                        toggleActions: 'play none none none',
+                        once: true,
+                    },
+                });
+            }
+
+            // --- Footer ---
+            const footer = document.querySelector('.footer');
+            if (footer) {
+                gsap.fromTo(footer, {
+                    opacity: 0,
+                    y: 20,
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    ease: 'power2.out',
+                    scrollTrigger: {
+                        trigger: footer,
+                        start: 'top 95%',
+                        toggleActions: 'play none none none',
+                        once: true,
+                    },
+                });
+            }
+
+            // Refresh ScrollTrigger after everything
+            ScrollTrigger.refresh();
+        })();
+
+        // ============================================================
+        // SMOOTH ANCHOR LINKS (using Lenis)
+        // ============================================================
+        (function smoothAnchors() {
+            document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+                anchor.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    const target = document.querySelector(targetId);
+                    if (target && window.lenis) {
+                        e.preventDefault();
+                        window.lenis.scrollTo(target, {
+                            offset: -80,
+                            duration: 1.4,
+                        });
+                    }
+                });
+            });
+        })();
+
+        // ============================================================
+        // NAVBAR — Update on scroll (already in Lenis callback, but also
+        // handle manual scroll events for safety)
+        // ============================================================
+        (function navbarScroll() {
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 40) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            }, { passive: true });
+        })();
+
+        // ============================================================
+        // PERF: Lazy load images with Intersection Observer
+        // ============================================================
+        (function lazyImages() {
+            if ('IntersectionObserver' in window) {
+                const images = document.querySelectorAll('img[loading="lazy"]');
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.loading = 'lazy';
+                            observer.unobserve(img);
+                        }
+                    });
+                }, { rootMargin: '200px' });
+                images.forEach((img) => observer.observe(img));
+            }
+        })();
+
+        // ============================================================
+        // KEYBOARD ACCESSIBILITY
+        // ============================================================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                document.body.classList.add('user-is-tabbing');
+            }
+        });
+        document.addEventListener('mousedown', () => {
+            document.body.classList.remove('user-is-tabbing');
+        });
+
+        console.log('Barvassi — Independent Design Practice');
+        console.log('Designed with clarity, built with purpose.');
+    </script>
+
+</body>
+</html>
