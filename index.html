@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Barvassi — Visual Identity</title>
+    <title>Barvassi — Visual Identity Engineer</title>
     <style>
         /* ── reset ── */
         *,
@@ -26,84 +26,271 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* ── center everything ── */
-        body {
+        /* ── fixed luxury background ── */
+        #bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            background-color: #0c0c0c;
+            background-image: url('bgpic.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* ── scroll container ── */
+        #app {
+            height: 100vh;
+            height: 100dvh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        #app::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* ── each page ── */
+        .page {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem 1.5rem;
             min-height: 100vh;
+            min-height: 100dvh;
+            width: 100%;
+            padding: 3rem 2rem;
             text-align: center;
+            position: relative;
+            z-index: 1;
         }
 
-        /* ── main container ── */
-        .container {
+        /* ── lighter overlays to let the art breathe ── */
+        .page--light {
+            background-color: rgba(242, 242, 242, 0.88);
+            color: #0c0c0c;
+        }
+
+        .page--dark {
+            background-color: rgba(12, 12, 12, 0.82);
+            color: #f2f2f2;
+        }
+
+        /* ── content wrapper ── */
+        .content {
+            max-width: 52rem;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2.75rem;
-            max-width: 48rem;
-            width: 100%;
+            gap: 1.5rem;
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 1s cubic-bezier(0.23, 1, 0.32, 1),
+                transform 1s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: opacity, transform;
+            z-index: 2;
+            position: relative;
         }
 
-        /* ── logo ── */
+        .content.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── logo – perfectly sized for laptops and down ── */
         .logo {
             display: block;
             width: auto;
             height: auto;
-            max-width: 220px;
-            /* adjust to your logo's natural proportions */
-            max-height: 80px;
+            max-width: min(320px, 70%);
+            max-height: clamp(60px, 12vh, 110px);
             object-fit: contain;
-            filter: brightness(0) invert(1);
-            /* ensures logo is white on dark bg */
+            filter: brightness(0) saturate(100%);
         }
 
-        /* if your logo file is already light, remove the filter above */
-        /* if it's dark, keep it — it will render #f2f2f2 */
+        .page--dark .logo {
+            filter: brightness(0) invert(1);
+        }
+
+        /* ── manifestos ── */
+        .manifesto {
+            font-family: -apple-system, 'SF Pro Display', 'SF Pro Text',
+                'Helvetica Neue', system-ui, sans-serif;
+            font-weight: 300;
+            font-size: clamp(0.95rem, 1.6vw, 1.3rem);
+            line-height: 1.8;
+            letter-spacing: 0.03em;
+            max-width: 44rem;
+            margin: 0 auto;
+            text-align: left;
+            width: 100%;
+        }
+
+        .manifesto p {
+            margin-bottom: 1.2rem;
+        }
+
+        .manifesto p:last-child {
+            margin-bottom: 0;
+        }
+
+        .manifesto .highlight {
+            font-weight: 450;
+            letter-spacing: 0.08em;
+        }
+
+        .manifesto .divider {
+            display: block;
+            width: 2.4rem;
+            height: 1px;
+            background: currentColor;
+            opacity: 0.3;
+            margin: 1.8rem auto 1.8rem;
+        }
+
+        .manifesto__title {
+            font-weight: 400;
+            font-size: clamp(0.65rem, 0.8vw, 0.85rem);
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            opacity: 0.5;
+            margin-bottom: 1.2rem;
+            text-align: center;
+        }
+
+        .manifesto__title--light {
+            color: #0c0c0c;
+        }
+        .manifesto__title--dark {
+            color: #f2f2f2;
+        }
+
+        /* ── quote ── */
+        .quote {
+            font-family: -apple-system, 'SF Pro Display', 'SF Pro Text',
+                'Helvetica Neue', system-ui, sans-serif;
+            font-weight: 300;
+            font-size: clamp(1.2rem, 3.5vw, 2.4rem);
+            line-height: 1.5;
+            letter-spacing: 0.02em;
+            max-width: 40rem;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .quote__attribution {
+            display: block;
+            margin-top: 1.8rem;
+            font-weight: 400;
+            font-size: clamp(0.7rem, 0.9vw, 0.9rem);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: inherit;
+            opacity: 0.5;
+        }
 
         /* ── tagline ── */
         .tagline {
             font-family: -apple-system, 'SF Pro Display', 'SF Pro Text',
                 'Helvetica Neue', system-ui, sans-serif;
-            font-weight: 400;
-            font-size: clamp(1.25rem, 4vw, 2rem);
-            letter-spacing: 0.04em;
-            line-height: 1.4;
-            color: #f2f2f2;
-            max-width: 36rem;
-            margin: 0 auto;
+            font-weight: 300;
+            font-size: clamp(1.1rem, 3vw, 2rem);
+            letter-spacing: 0.06em;
+            line-height: 1.5;
+            color: inherit;
+            max-width: 34rem;
+            width: 100%;
+        }
+
+        .tagline__sub {
+            display: block;
+            margin-top: 1.2rem;
+            font-weight: 350;
+            font-size: clamp(0.7rem, 1vw, 0.95rem);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: inherit;
+            opacity: 0.5;
+        }
+
+        .tagline__origin {
+            display: block;
+            margin-top: 0.5rem;
+            font-weight: 300;
+            font-size: clamp(0.6rem, 0.8vw, 0.8rem);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: inherit;
+            opacity: 0.35;
+        }
+
+        .tagline__line {
+            display: block;
+            width: 3rem;
+            height: 1px;
+            background: currentColor;
+            opacity: 0.2;
+            margin: 1.5rem auto 0;
         }
 
         /* ── button ── */
         .btn {
-            display: inline-block;
-            background-color: #f2f2f2;
-            color: #0c0c0c;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            min-width: 48px;
+            background-color: transparent;
+            color: #f2f2f2;
             font-family: -apple-system, 'SF Pro Display', 'SF Pro Text',
                 'Helvetica Neue', system-ui, sans-serif;
-            font-weight: 500;
-            font-size: clamp(0.95rem, 1.4vw, 1.15rem);
-            letter-spacing: 0.06em;
+            font-weight: 450;
+            font-size: clamp(0.85rem, 1.2vw, 1.05rem);
+            letter-spacing: 0.16em;
             text-transform: uppercase;
             text-decoration: none;
-            padding: 0.9rem 3.2rem;
+            padding: 0.9rem 3.8rem;
+            border: 1px solid #f2f2f2;
             border-radius: 0;
-            /* sharp, luxury minimalism */
-            border: none;
             cursor: pointer;
-            transition: background-color 0.25s ease, color 0.25s ease,
-                box-shadow 0.25s ease;
+            transition: background-color 0.5s ease, color 0.5s ease,
+                box-shadow 0.5s ease, border-color 0.5s ease,
+                transform 0.4s ease;
             box-shadow: 0 0 0 0 rgba(242, 242, 242, 0);
+            text-align: center;
+            word-break: keep-all;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 480px) {
+            .btn {
+                white-space: normal;
+                padding: 0.9rem 2.4rem;
+                width: 100%;
+                max-width: 320px;
+            }
         }
 
         .btn:hover {
-            background-color: #d9d9d9;
-            /* slightly lighter than #f2f2f2 */
+            background-color: #f2f2f2;
             color: #0c0c0c;
-            box-shadow: 0 0 0 1px #f2f2f2;
+            border-color: #f2f2f2;
+            box-shadow: 0 4px 32px rgba(242, 242, 242, 0.06);
+            transform: scale(1.02);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
         }
 
         .btn:focus-visible {
@@ -111,56 +298,442 @@
             outline-offset: 4px;
         }
 
-        /* ── spacing for very small screens ── */
-        @media (max-width: 480px) {
-            .container {
-                gap: 2rem;
+        .page--light .btn {
+            color: #0c0c0c;
+            border-color: #0c0c0c;
+        }
+
+        .page--light .btn:hover {
+            background-color: #0c0c0c;
+            color: #f2f2f2;
+            border-color: #0c0c0c;
+            box-shadow: 0 4px 32px rgba(12, 12, 12, 0.06);
+        }
+
+        .page--light .btn:focus-visible {
+            outline-color: #0c0c0c;
+        }
+
+        /* ── scroll indicator ── */
+        .scroll-hint {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: -apple-system, 'SF Pro Display', 'SF Pro Text',
+                'Helvetica Neue', system-ui, sans-serif;
+            font-size: 0.55rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: inherit;
+            opacity: 0.18;
+            animation: pulse 3s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .page--light .scroll-hint {
+            color: #0c0c0c;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 0.1;
+                transform: translateX(-50%) translateY(0);
             }
-            .logo {
-                max-width: 160px;
-                max-height: 60px;
-            }
-            .btn {
-                padding: 0.8rem 2.4rem;
+            50% {
+                opacity: 0.4;
+                transform: translateX(-50%) translateY(-6px);
             }
         }
 
-        /* ── reduce motion if preferred ── */
+        /* ── responsive fine-tuning ── */
+
+        /* Laptops & large screens (default) */
+        @media (max-width: 1200px) {
+            .logo {
+                max-height: clamp(50px, 10vh, 100px);
+            }
+            .manifesto {
+                font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+            }
+        }
+
+        /* Tablets & small laptops */
+        @media (max-width: 1024px) {
+            .page {
+                padding: 2.5rem 1.8rem;
+            }
+            .manifesto {
+                max-width: 38rem;
+                font-size: clamp(0.9rem, 2vw, 1.1rem);
+            }
+            .content {
+                gap: 1.5rem;
+            }
+        }
+
+        /* Large phones & small tablets */
+        @media (max-width: 768px) {
+            .page {
+                padding: 2.5rem 1.5rem;
+            }
+            .manifesto {
+                max-width: 100%;
+                font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+                line-height: 1.7;
+            }
+            .manifesto .divider {
+                margin: 1.4rem auto;
+            }
+            .quote {
+                max-width: 100%;
+                font-size: clamp(1.1rem, 4vw, 1.8rem);
+            }
+            .tagline {
+                max-width: 100%;
+                font-size: clamp(1rem, 3.5vw, 1.6rem);
+            }
+            .logo {
+                max-height: clamp(50px, 10vh, 80px);
+            }
+        }
+
+        /* Small phones */
+        @media (max-width: 480px) {
+            .page {
+                padding: 2rem 1.25rem;
+                min-height: 100vh;
+                min-height: 100dvh;
+            }
+            .logo {
+                max-height: clamp(50px, 8vh, 70px);
+                max-width: min(240px, 80%);
+            }
+            .content {
+                gap: 1.25rem;
+            }
+            .manifesto {
+                font-size: 0.95rem;
+                line-height: 1.6;
+                letter-spacing: 0.02em;
+            }
+            .manifesto .divider {
+                width: 2rem;
+                margin: 1.2rem auto;
+            }
+            .manifesto__title {
+                margin-bottom: 1rem;
+                font-size: 0.6rem;
+            }
+            .quote {
+                font-size: 1.15rem;
+                line-height: 1.4;
+            }
+            .quote__attribution {
+                margin-top: 1.2rem;
+                font-size: 0.65rem;
+            }
+            .tagline {
+                font-size: 1.05rem;
+                line-height: 1.4;
+            }
+            .tagline__line {
+                margin: 1.2rem auto 0;
+            }
+            .scroll-hint {
+                display: none;
+            }
+            .btn {
+                font-size: 0.85rem;
+                padding: 0.8rem 1.8rem;
+                min-height: 44px;
+                width: 100%;
+                max-width: 280px;
+                white-space: normal;
+            }
+        }
+
+        /* Very small phones (iPhone SE, etc.) */
+        @media (max-width: 380px) {
+            .page {
+                padding: 1.5rem 1rem;
+            }
+            .logo {
+                max-height: 50px;
+                max-width: 160px;
+            }
+            .manifesto {
+                font-size: 0.85rem;
+                line-height: 1.5;
+            }
+            .manifesto .divider {
+                margin: 1rem auto;
+            }
+            .quote {
+                font-size: 1rem;
+            }
+            .tagline {
+                font-size: 0.95rem;
+            }
+            .btn {
+                font-size: 0.8rem;
+                padding: 0.7rem 1.5rem;
+                max-width: 240px;
+            }
+        }
+
+        /* Landscape orientation for phones */
+        @media (max-height: 480px) and (orientation: landscape) {
+            .page {
+                padding: 1.5rem 1.5rem;
+                min-height: 100vh;
+                min-height: 100dvh;
+            }
+            .logo {
+                max-height: 50px;
+                max-width: 160px;
+            }
+            .manifesto {
+                font-size: 0.8rem;
+                line-height: 1.5;
+            }
+            .manifesto .divider {
+                margin: 0.8rem auto;
+                width: 1.8rem;
+            }
+            .manifesto p {
+                margin-bottom: 0.6rem;
+            }
+            .manifesto__title {
+                margin-bottom: 0.6rem;
+                font-size: 0.5rem;
+            }
+            .quote {
+                font-size: 0.95rem;
+            }
+            .quote__attribution {
+                margin-top: 0.8rem;
+            }
+            .tagline {
+                font-size: 0.9rem;
+            }
+            .tagline__line {
+                margin: 1rem auto 0;
+            }
+            .scroll-hint {
+                display: none;
+            }
+            .btn {
+                font-size: 0.75rem;
+                padding: 0.6rem 1.5rem;
+                min-height: 38px;
+                max-width: 200px;
+            }
+            .content {
+                gap: 0.8rem;
+            }
+        }
+
+        /* ── reduce motion ── */
         @media (prefers-reduced-motion: reduce) {
+            .content {
+                transition: none;
+                opacity: 1;
+                transform: none;
+            }
             .btn {
                 transition: none;
+            }
+            .btn:hover {
+                transform: none;
+            }
+            .scroll-hint {
+                animation: none;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <!-- Fixed Background Art -->
+    <div id="bg"></div>
 
-        <!-- 1. LOGO -->
-        <img
-        class="logo"
-        src="logo.png"
-        alt="Barvassi"
-        width="220"
-        height="80"
-        />
+    <!-- Scrollable Content -->
+    <div id="app">
+        <!-- ===== PAGE 1 – LIGHT | LOGO ===== -->
+        <section class="page page--light">
+            <div class="content active">
+                <img class="logo" src="logo.png" alt="Barvassi" width="380" height="130" />
+            </div>
+            <span class="scroll-hint">Scroll</span>
+        </section>
 
-        <!-- 2. TAGLINE -->
-        <p class="tagline">
-            Visual Identity for brands that seek eternity.
-        </p>
+        <!-- ===== PAGE 2 – DARK | ABOUT BARVASSI ===== -->
+        <section class="page page--dark">
+            <div class="content">
+                <div class="manifesto">
+                    <div class="manifesto__title manifesto__title--dark">— The Threshold —</div>
+                    <p>
+                        Barvassi is not an agency.<br />
+                        It is not a studio.<br />
+                        It is a belief.
+                    </p>
+                    <span class="divider"></span>
+                    <p>
+                        The name stands on the edge of two worlds:<br />
+                        <span class="highlight">Bar</span> — the threshold, the gate.<br />
+                        <span class="highlight">Vassi</span> — the vast, the infinite, the unknown.
+                    </p>
+                    <p>
+                        Together, they mean:<br />
+                        <em>The doorway to the vast.</em>
+                    </p>
+                    <span class="divider"></span>
+                    <p>
+                        Black is the depth of space before creation.<br />
+                        White is the first photon that split the dark.<br />
+                        Everything else is just distraction.
+                    </p>
+                    <span class="divider"></span>
+                    <p>
+                        We do not follow trends.<br />
+                        Trends are ghosts that die in the morning.<br />
+                        We follow the eternal laws:<br />
+                        Balance. Contrast. Proportion. Silence.
+                    </p>
+                    <span class="divider"></span>
+                    <p>
+                        Barvassi builds identities for those who wish to be remembered,<br />
+                        not just seen.<br />
+                        We give brands a spine, not just a skin.
+                    </p>
+                    <span class="divider"></span>
+                    <p>
+                        We are based in Aleppo.<br />
+                        We think in galaxies.<br />
+                        We design in black and white.
+                    </p>
+                    <span class="divider"></span>
+                    <p>
+                        If your brand is ready to stop shouting and start existing,<br />
+                        you already know where to find us.
+                    </p>
+                </div>
+            </div>
+            <span class="scroll-hint">Scroll</span>
+        </section>
 
-        <!-- 3. BUTTON → email -->
-        <a
-        class="btn"
-        href="mailto:contact@barvassi.com"
-        aria-label="Send an email to Barvassi"
-        >
-        Let's build
-        </a>
+        <!-- ===== PAGE 3 – LIGHT | PHILOSOPHY QUOTE ===== -->
+        <section class="page page--light">
+            <div class="content">
+                <blockquote class="quote">
+                    “In a universe of visual noise, silence is the ultimate luxury.
+                    Barvassi is the absence of the unnecessary.”
+                    <span class="quote__attribution">— Barvassi Philosophy</span>
+                </blockquote>
+            </div>
+            <span class="scroll-hint">Scroll</span>
+        </section>
 
+        <!-- ===== PAGE 4 – DARK | ABOUT ME (NADER) ===== -->
+        <section class="page page--dark">
+            <div class="content">
+                <div class="manifesto">
+                    <div class="manifesto__title manifesto__title--dark">— The Architect —</div>
+                    <p>
+                        I am not a designer.<br />
+                        I am an architect of visual silence.
+                    </p>
+                    <span class="divider"></span>
+                    <p>
+                        I was born in Aleppo, a city that has been erased and rewritten<br />
+                        more times than any book.<br />
+                        From its stones, I learned that what survives is never the loudest—<br />
+                        it is the most solid.
+                    </p>
+                    <span class="divider"></span>
+                    <p>
+                        I am 18 years old.<br />
+                        I have spent five of those years chasing the invisible line<br />
+                        between nothing and everything.<br />
+                        I do not add colors to fill emptiness.<br />
+                        I subtract noise until only the truth remains.
+                    </p>
+                    <span class="divider"></span>
+                    <p>
+                        When I look at a blank canvas, I do not see emptiness.<br />
+                        I see the universe before the first star ignited.<br />
+                        I place black on white, not to create conflict,<br />
+                        but to remind the eye what light actually looks like.
+                    </p>
+                    <span class="divider"></span>
+                    <p>
+                        I design for brands that are not afraid of silence.<br />
+                        For founders who understand that identity is not a mask—<br />
+                        it is a mirror.
+                    </p>
+                    <span class="divider"></span>
+                    <p>
+                        My name is <span class="highlight">Nader</span>.<br />
+                        I am from <span class="highlight">Aleppo</span>.<br />
+                        And I build things that last.
+                    </p>
+                </div>
+            </div>
+            <span class="scroll-hint">Scroll</span>
+        </section>
+
+        <!-- ===== PAGE 5 – LIGHT | TAGLINE + POSITIONING ===== -->
+        <section class="page page--light">
+            <div class="content">
+                <p class="tagline">
+                    Visual Identity for brands that seek eternity.
+                    <span class="tagline__line"></span>
+                    <span class="tagline__sub">visual identity engineer</span>
+                    <span class="tagline__origin">by Nader — Aleppo, Syria</span>
+                </p>
+            </div>
+            <span class="scroll-hint">Scroll</span>
+        </section>
+
+        <!-- ===== PAGE 6 – DARK | CALL TO ACTION ===== -->
+        <section class="page page--dark">
+            <div class="content">
+                <a class="btn" href="mailto:contact@barvassi.com" aria-label="Send an email to Barvassi">
+                    Let's build
+                </a>
+            </div>
+            <span class="scroll-hint">∞</span>
+        </section>
     </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const pages = document.querySelectorAll('.page');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const content = entry.target.querySelector('.content');
+                    if (!content) return;
+
+                    if (entry.isIntersecting) {
+                        content.classList.add('active');
+                    } else {
+                        content.classList.remove('active');
+                    }
+                });
+            }, {
+                threshold: 0.28
+            });
+
+            pages.forEach(page => observer.observe(page));
+
+        })();
+    </script>
 
 </body>
 </html>
